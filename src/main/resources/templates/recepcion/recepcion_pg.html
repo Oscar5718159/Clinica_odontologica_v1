@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cubic Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../static/CSS/panel.css">
+    <link rel="stylesheet" th:href="@{/CSS/panel.css}">
+    <!-- <link rel="stylesheet" href="../../static/CSS/panel.css">  -->
 </head>
 <body>          
     <!-- Sidebar -->    
@@ -31,11 +32,10 @@
                 <span class="menu-text">Dashboard</span>
                 <span class="badge">3</span>
             </li>
-            <li onclick="loadPage('guia_posi_ver1.html', 'Nuevo Consulta', 'historiaClinicaFrame')">
-           
-                <span class="menu-text">✚   Nueva Consulta</span>
+            <li onclick="loadPage('/recepcion/paginas/registro_paciente', 'Nuevo Paciente', 'historiaClinicaFrame', this)">
+                <span class="menu-text">✚   Nuevo Paciente</span>
             </li>
-            <li onclick="loadPage('solicitud_insumos.html', 'Solicitud de Insumos', 'solicitudInsumosFrame')">
+            <li onclick="loadPage('solicitud_insumos', 'Solicitud de Insumos', 'solicitudInsumosFrame', this)">
                 <i class="fas fa-box"></i>
                 <span class="menu-text">Solicitud de insumos</span>
             </li>
@@ -322,7 +322,7 @@
             document.getElementById('pageTitle').textContent = 'Dashboard';
         }
 
-        function loadPage(pageUrl, pageTitle, frameId) {
+        function loadPage(pageUrl, pageTitle, frameId, menuItem) {
             // Ocultar todo el contenido
             document.querySelectorAll('.content-area').forEach(content => {
                 content.classList.remove('active');
@@ -341,7 +341,12 @@
             }
             
             // Activar el item del menú clickeado
-            event.currentTarget.classList.add('active');
+            // Preferimos el menuItem pasado desde el onclick (this). Si no existe, intentamos usar event como fallback.
+            if (menuItem && menuItem.classList) {
+                menuItem.classList.add('active');
+            } else if (typeof event !== 'undefined' && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
             
             // Actualizar el título de la página
             document.getElementById('pageTitle').textContent = pageTitle;

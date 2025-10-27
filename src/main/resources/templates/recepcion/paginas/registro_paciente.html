@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Pacientes - Clínica Odontológica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        html, body {
+            height: 100%;
+            background-color: #f0f8ff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #2c5aa0, #1e3d6f);
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        
+        .university-name {
+            font-weight: bold;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .document-title {
+            font-weight: bold;
+            font-size: 28px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .document-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .form-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #f39200;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+            font-size: 18px;
+        }
+        
+        .form-row {
+            display: flex;
+            margin-bottom: 15px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .form-field {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2e8b57;
+            box-shadow: 0 0 5px rgba(46, 139, 87, 0.3);
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+            gap: 15px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+        
+        .submit-btn {
+            background-color: #2e8b57;
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            background-color: #26734a;
+        }
+        
+        .submit-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .reset-btn {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .reset-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            color: #666;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .address {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .phone {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .code {
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #2e8b57;
+            font-weight: bold;
+        }
+        
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        @media (max-width: 768px) {
+            .header-image {
+                height: 180px;
+            }
+            
+            .university-name {
+                font-size: 26px;
+            }
+            
+            .document-title {
+                font-size: 22px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .form-field {
+                min-width: 100%;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header-image {
+                height: 150px;
+            }
+            
+            .university-name {
+                font-size: 22px;
+            }
+            
+            .document-title {
+                font-size: 18px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+            }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Imagen de encabezado completa -->
+        <div class="header-image">
+            <div class="header-content">
+                <div class="university-name">UNIVERSIDAD AMAZÓNICA DE PANDO</div>
+                <div class="document-title">REGISTRO DE PACIENTES</div>
+                <div class="document-subtitle">Clínica Odontológica Universitaria</div>
+            </div>
+        </div>
+
+        <!-- Mensajes de estado -->
+        <div id="successMessage" class="message success"></div>
+        <div id="errorMessage" class="message error"></div>
+        <div id="loadingMessage" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Registrando paciente...
+        </div>
+        
+        <!-- FORMULARIO ACTUALIZADO - Usa tu endpoint del controlador -->
+        <form id="patientRegistrationForm" th:action="@{/recepcion/paciente/crear}" method="post">
+            <div class="form-section">
+                <div class="section-title">INFORMACIÓN PERSONAL DEL PACIENTE</div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="nombre">NOMBRES</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ingrese nombres completos" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="apellido">APELLIDOS</label>
+                        <input type="text" id="apellido" name="apellido" placeholder="Ingrese apellidos completos" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="edad">EDAD</label>
+                        <input type="number" id="edad" name="edad" placeholder="Ingrese su edad" min="1" max="120" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="sexo">GÉNERO</label>
+                        <select id="sexo" name="sexo" required>
+                            <option value="">Seleccione género</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="fechaNacimiento">FECHA DE NACIMIENTO</label>
+                        <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="lugarNacimiento">LUGAR DE NACIMIENTO</label>
+                        <input type="text" id="lugarNacimiento" name="lugarNacimiento" placeholder="Lugar de nacimiento" required>
+                    </div>                    
+                    <div class="form-field">
+                        <label for="ocupacion">OCUPACIÓN</label>
+                        <input type="text" id="ocupacion" name="ocupacion" placeholder="Ocupación" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="direccion">DIRECCIÓN</label>
+                        <input type="text" id="direccion" name="direccion" placeholder="Dirección completa" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="telefono">TELÉFONO / CELULAR</label>
+                        <input type="tel" id="telefono" name="telefono" placeholder="Número de contacto" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="estadoCivil">ESTADO CIVIL</label>
+                        <select id="estadoCivil" name="estadoCivil" required>
+                            <option value="">Seleccione el estado civil</option>
+                            <option value="S">Soltero(a)</option>
+                            <option value="C">Casado(a)</option>
+                            <option value="V">Viudo(a)</option>
+                            <option value="D">Divorciado(a)</option>
+                            <option value="U">Unión libre</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="nacionesOriginarias">NACIONES ORIGINARIAS</label>
+                        <input type="text" id="nacionesOriginarias" name="nacionesOriginarias" placeholder="Ej: Quechua, Aymara, etc.">
+                    </div>
+                    <div class="form-field">
+                        <label for="idioma">IDIOMA O DIALECTO</label>
+                        <input type="text" id="idioma" name="idioma" placeholder="Idioma principal">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button type="submit" class="submit-btn" id="submitBtn">Registrar Paciente</button>
+                <button type="reset" class="reset-btn">Limpiar Formulario</button>
+            </div>
+        </form>
+        
+        <div class="footer">
+            <div class="contact-info">
+                <div class="address">
+                    <strong>Dirección:</strong> Av. Principal S/N, Cobija, Pando, Bolivia
+                </div>
+                <div class="phone">
+                    <strong>Teléfono:</strong> +591 1234-5678
+                </div>
+            </div>
+            <div class="code">
+                Código: FOU-REG-2024 | Formulario de Registro de Pacientes
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Mostrar/ocultar mensajes
+    function showMessage(element, message, type = 'info') {
+        element.textContent = message;
+        element.className = type === 'error' ? 'alert alert-danger' : 'alert alert-success';
+        element.style.display = 'block';
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, 5000);
+    }
+
+    // Mostrar loading
+    function showLoading(show) {
+        const loading = document.getElementById('loadingMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (show) {
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Registrando...';
+        } else {
+            loading.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Registrar Paciente';
+        }
+    }
+
+    // Calcular edad automáticamente desde fecha de nacimiento
+    document.getElementById('fechaNacimiento').addEventListener('change', function() {
+        const fechaNacimiento = new Date(this.value);
+        const hoy = new Date();
+        const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+        
+        // Ajuste para si aún no ha cumplido años este año
+        const m = hoy.getMonth() - fechaNacimiento.getMonth();
+        if (m < 0 || (m === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+            edad--;
+        }
+        
+        if (edad > 0 && edad <= 120) {
+            document.getElementById('edad').value = edad;
+        }
+    });
+
+    // Validar edad manual
+    document.getElementById('edad').addEventListener('change', function() {
+        const edad = parseInt(this.value);
+        if (edad < 1 || edad > 120) {
+            alert('La edad debe estar entre 1 y 120 años');
+            this.value = '';
+        }
+    });
+
+    // ENVÍO DEL FORMULARIO CON AJAX - VERSIÓN MODIFICADA
+    document.getElementById('patientRegistrationForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevenir envío normal del formulario
+        
+        // Validación básica
+        const requiredFields = document.querySelectorAll('input[required], select[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.style.borderColor = 'red';
+            } else {
+                field.style.borderColor = '#ccc';
+            }
+        });
+        
+        if (!isValid) {
+            showMessage(document.getElementById('errorMessage'), 'Por favor, complete todos los campos obligatorios.', 'error');
+            return;
+        }
+
+        // Mostrar loading
+        showLoading(true);
+        
+        // Preparar datos para AJAX
+        const formData = new FormData(this);
+        
+        // Enviar via AJAX
+        fetch('/recepcion/paciente/crear', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Error en la respuesta del servidor: ' + response.status);
+            }
+        })
+        .then(mensaje => {
+            // Mostrar mensaje de éxito
+            showMessage(document.getElementById('successMessage'), mensaje, 'success');
+            
+            // Limpiar formulario
+            this.reset();
+            
+            // Ocultar loading
+            showLoading(false);
+            
+            // NO redirigir - quedarse en la misma página
+            // El formulario se limpia y muestra mensaje de éxito
+        });
+        
+    });
+
+    // Limpiar mensajes de error al cambiar campos
+    document.querySelectorAll('input, select').forEach(field => {
+        field.addEventListener('input', function() {
+            this.style.borderColor = '#ccc';
+            // Ocultar mensajes de error cuando el usuario empiece a escribir
+            document.getElementById('errorMessage').style.display = 'none';
+        });
+    });
+
+    // Mostrar mensaje de éxito si viene por parámetro URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+        showMessage(document.getElementById('successMessage'), '¡Paciente registrado exitosamente!', 'success');
+    }
+
+    // Función adicional para limpiar formulario manualmente
+    function limpiarFormulario() {
+        document.getElementById('patientRegistrationForm').reset();
+        document.getElementById('errorMessage').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
