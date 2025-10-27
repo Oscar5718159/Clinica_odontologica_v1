@@ -1,0 +1,25 @@
+CREATE TABLE paciente (
+    id_paciente BIGSERIAL PRIMARY KEY,
+    id_persona BIGINT NOT NULL,
+    lugar_nacimiento VARCHAR(100) NOT NULL,
+    fecha_nacimiento DATE NOT NULL,
+    ocupacion VARCHAR(50) NOT NULL,
+    direccion VARCHAR(200) NOT NULL,
+    telefono INTEGER NOT NULL,
+    estado_civil CHAR(1) NOT NULL,
+    naciones_originarias VARCHAR(50),
+    idioma VARCHAR(50),
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    numero_historial_clinico VARCHAR(50) UNIQUE NOT NULL,
+    FOREIGN KEY (id_persona) REFERENCES persona(id_persona) ON DELETE CASCADE
+);
+
+
+-- Creación de la tabla persona en PostgreSQL usando SERIAL
+CREATE TABLE persona (
+    id_persona BIGSERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    edad INT NOT NULL,
+    sexo CHAR(1) NOT NULL CHECK (sexo IN ('M', 'F'))
+);
