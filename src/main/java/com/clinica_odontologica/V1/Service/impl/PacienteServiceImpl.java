@@ -1,12 +1,14 @@
 package com.clinica_odontologica.V1.Service.impl;
 
 import com.clinica_odontologica.V1.Model.Entity.Paciente;
+import com.clinica_odontologica.V1.Model.Entity.Persona;
 import com.clinica_odontologica.V1.Model.Dao.PacienteRepository;
 import com.clinica_odontologica.V1.Service.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PacienteServiceImpl implements PacienteService {
@@ -33,13 +35,8 @@ public class PacienteServiceImpl implements PacienteService {
     public Paciente actualizar(Long id, Paciente pacienteActualizado) {
         return pacienteRepository.findById(id)
             .map(paciente -> {
-                // Actualizar campos de Persona (heredados)
-                paciente.setNombre(pacienteActualizado.getNombre());
-                paciente.setApellido(pacienteActualizado.getApellido());
-                paciente.setEdad(pacienteActualizado.getEdad());
-                paciente.setSexo(pacienteActualizado.getSexo());
-                
                 // Actualizar campos específicos de Paciente
+                paciente.setHistorialClinico(pacienteActualizado.getHistorialClinico());
                 paciente.setLugarNacimiento(pacienteActualizado.getLugarNacimiento());
                 paciente.setFechaNacimiento(pacienteActualizado.getFechaNacimiento());
                 paciente.setOcupacion(pacienteActualizado.getOcupacion());
@@ -48,6 +45,15 @@ public class PacienteServiceImpl implements PacienteService {
                 paciente.setEstadoCivil(pacienteActualizado.getEstadoCivil());
                 paciente.setNacionesOriginarias(pacienteActualizado.getNacionesOriginarias());
                 paciente.setIdioma(pacienteActualizado.getIdioma());
+                
+                // Actualizar datos de Persona (a través de la relación)
+                if (pacienteActualizado.getPersona() != null) {
+                    Persona persona = paciente.getPersona();
+                    Persona personaActualizada = pacienteActualizado.getPersona();
+                    
+                    persona.setNombre(personaActualizada.getNombre());
+                    persona.setApellido(personaActualizada.getApellido());
+                }
                 
                 return pacienteRepository.save(paciente);
             })
@@ -70,22 +76,46 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     @Override
-    public List<Paciente> buscarPorEstadoCivil(Character estadoCivil) {
+    public List<Paciente> buscarPorEstadoCivil(String estadoCivil) {
         return pacienteRepository.findByEstadoCivil(estadoCivil);
     }
 
     @Override
     public List<Paciente> buscarPorNombre(String nombre) {
-        return pacienteRepository.findByNombreContainingIgnoreCase(nombre);
+        return pacienteRepository.findByPersonaNombreContainingIgnoreCase(nombre);
     }
 
     @Override
     public List<Paciente> buscarPorApellido(String apellido) {
-        return pacienteRepository.findByApellidoContainingIgnoreCase(apellido);
+        return pacienteRepository.findByPersonaApellidoContainingIgnoreCase(apellido);
     }
 
     @Override
-    public List<Paciente> buscarPorEdad(Integer edad) {
-        return pacienteRepository.findByEdad(edad);
+    public Optional<Paciente> buscarPorHistorialClinico(String historialClinico) {
+        return pacienteRepository.findByHistorialClinico(historialClinico);
+    }
+
+    // ✅ NUEVO MÉTODO PARA BÚSQUEDA POR NOMBRE COMPLETO
+    @Override
+    public List<Paciente> buscarPorNombreCompleto(String nombreCompleto) {
+        // Dividir el nombre completo en partes
+        String[] partes = nombreCompleto.trim().split("\\s+");
+        
+        if (partes.length == 0) {
+            return List.of(); // Retorna lista vacía si no hay nombre
+        }
+        
+        // Buscar por nombre (primera parte) y apellido (última parte)
+        String nombre = partes[0];
+        String apellido = partes[partes.length - 1];
+        
+        // Buscar pacientes que coincidan con el nombre Y el apellido
+        List<Paciente> porNombre = pacienteRepository.findByPersonaNombreContainingIgnoreCase(nombre);
+        List<Paciente> porApellido = pacienteRepository.findByPersonaApellidoContainingIgnoreCase(apellido);
+        
+        // Retornar la intersección (pacientes que están en ambas listas)
+        return porNombre.stream()
+                .filter(porApellido::contains)
+                .collect(Collectors.toList());
     }
 }

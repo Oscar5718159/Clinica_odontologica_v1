@@ -25,10 +25,9 @@ public class RecepcionViewController {
     @Autowired
     private PacienteService pacienteService;
 
-    // Página principal de recepción - MANTIENE IGUAL
+    // Página principal de recepción
     @GetMapping
     public String paginaRecepcion(Model model) {
-        // Puedes cargar datos necesarios para la recepción
         List<Persona> personas = personaService.obtenerTodos();
         List<Paciente> pacientes = pacienteService.obtenerTodos();
         
@@ -45,14 +44,10 @@ public class RecepcionViewController {
     // Crear persona desde recepción - MANTIENE IGUAL
     @PostMapping("/persona/crear")
     public String crearPersona(@RequestParam String nombre,
-                              @RequestParam String apellido,
-                              @RequestParam Integer edad,
-                              @RequestParam Character sexo) {
+                              @RequestParam String apellido) {
         Persona persona = new Persona();
         persona.setNombre(nombre);
         persona.setApellido(apellido);
-        persona.setEdad(edad);
-        persona.setSexo(sexo);
         
         personaService.guardar(persona);
         return "redirect:/recepcion";
@@ -60,31 +55,36 @@ public class RecepcionViewController {
 
     // ========== OPERACIONES PARA PACIENTE ==========
 
-    // Crear paciente desde recepción - ESTE SÍ CAMBIA
+    // Crear paciente desde recepción - ACTUALIZADO
     @PostMapping("/paciente/crear")
-    @ResponseBody  // ← AÑADE ESTO
+    @ResponseBody
     public ResponseEntity<String> crearPaciente(@RequestParam String nombre,
                                                @RequestParam String apellido,
-                                               @RequestParam Integer edad,
+                                               @RequestParam Integer edad, 
                                                @RequestParam Character sexo,
+                                               @RequestParam String historialClinico,
                                                @RequestParam String lugarNacimiento,
                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaNacimiento,
                                                @RequestParam String ocupacion,
                                                @RequestParam String direccion,
-                                               @RequestParam Integer telefono,
+                                               @RequestParam String telefono,
                                                @RequestParam String estadoCivil,
                                                @RequestParam(required = false) String nacionesOriginarias,
                                                @RequestParam(required = false) String idioma) {
         
         try {
-            Paciente paciente = new Paciente();
-            // Campos de Persona
-            paciente.setNombre(nombre);
-            paciente.setApellido(apellido);
-            paciente.setEdad(edad);
-            paciente.setSexo(sexo);
+            // 1. Crear o buscar la Persona
+            Persona persona = new Persona();
+            persona.setNombre(nombre);
+            persona.setApellido(apellido);
+            persona.setEdad(edad);       
+            persona.setSexo(sexo);
+            persona = personaService.guardar(persona); // Guardar para obtener ID
             
-            // Campos específicos de Paciente
+            // 2. Crear el Paciente
+            Paciente paciente = new Paciente();
+            paciente.setHistorialClinico(historialClinico);
+            paciente.setPersona(persona);
             paciente.setLugarNacimiento(lugarNacimiento);
             paciente.setFechaNacimiento(fechaNacimiento);
             paciente.setOcupacion(ocupacion);
@@ -105,43 +105,55 @@ public class RecepcionViewController {
         }
     }
 
+    // Actualizar paciente - ACTUALIZADO
     @PostMapping("/paciente/actualizar/{id}")
     public String actualizarPaciente(@PathVariable Long id,
                                     @RequestParam String nombre,
                                     @RequestParam String apellido,
-                                    @RequestParam Integer edad,
-                                    @RequestParam Character sexo,
+                                    @RequestParam String historialClinico,
                                     @RequestParam String lugarNacimiento,
-                                    @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaNacimiento, // AÑADE ESTA LÍNEA
+                                    @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaNacimiento,
                                     @RequestParam String ocupacion,
                                     @RequestParam String direccion,
-                                    @RequestParam Integer telefono,
+                                    @RequestParam String telefono,
                                     @RequestParam String estadoCivil,
                                     @RequestParam(required = false) String nacionesOriginarias,
                                     @RequestParam(required = false) String idioma) {
         
-        Paciente pacienteActualizado = new Paciente();
-        // Campos de Persona
-        pacienteActualizado.setNombre(nombre);
-        pacienteActualizado.setApellido(apellido);
-        pacienteActualizado.setEdad(edad);
-        pacienteActualizado.setSexo(sexo);
+        try {
+            // Obtener el paciente existente
+            Paciente pacienteExistente = pacienteService.obtenerPorId(id)
+                    .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+            
+            // Actualizar datos de Persona
+            Persona persona = pacienteExistente.getPersona();
+            persona.setNombre(nombre);
+            persona.setApellido(apellido);
+    
+            personaService.guardar(persona); // Actualizar persona
+            
+            // Actualizar datos específicos de Paciente
+            pacienteExistente.setHistorialClinico(historialClinico);
+            pacienteExistente.setLugarNacimiento(lugarNacimiento);
+            pacienteExistente.setFechaNacimiento(fechaNacimiento);
+            pacienteExistente.setOcupacion(ocupacion);
+            pacienteExistente.setDireccion(direccion);
+            pacienteExistente.setTelefono(telefono);
+            pacienteExistente.setEstadoCivil(estadoCivil);
+            pacienteExistente.setNacionesOriginarias(nacionesOriginarias);
+            pacienteExistente.setIdioma(idioma);
+            
+            pacienteService.guardar(pacienteExistente);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Puedes manejar el error de manera más específica aquí
+        }
         
-        // Campos específicos de Paciente
-        pacienteActualizado.setLugarNacimiento(lugarNacimiento);
-        pacienteActualizado.setFechaNacimiento(fechaNacimiento); // ESTABLECER LA FECHA
-        pacienteActualizado.setOcupacion(ocupacion);
-        pacienteActualizado.setDireccion(direccion);
-        pacienteActualizado.setTelefono(telefono);
-        pacienteActualizado.setEstadoCivil(estadoCivil);
-        pacienteActualizado.setNacionesOriginarias(nacionesOriginarias);
-        pacienteActualizado.setIdioma(idioma);
-        
-        pacienteService.actualizar(id, pacienteActualizado);
         return "redirect:/recepcion";
     }
 
-    // Eliminar paciente
+    // Eliminar paciente - MANTIENE IGUAL
     @GetMapping("/paciente/eliminar/{id}")
     public String eliminarPaciente(@PathVariable Long id) {
         pacienteService.eliminar(id);
@@ -150,7 +162,7 @@ public class RecepcionViewController {
 
     // ========== BÚSQUEDAS ==========
 
-    // Buscar personas por nombre
+    // Buscar personas por nombre - MANTIENE IGUAL
     @GetMapping("/buscar/personas")
     public String buscarPersonas(@RequestParam String nombre, Model model) {
         List<Persona> personas = personaService.buscarPorNombre(nombre);
@@ -164,7 +176,7 @@ public class RecepcionViewController {
         return "recepcion/recepcion_pg";
     }
 
-    // Buscar pacientes por nombre
+    // Buscar pacientes por nombre - ACTUALIZADO
     @GetMapping("/buscar/pacientes")
     public String buscarPacientes(@RequestParam String nombre, Model model) {
         List<Persona> personas = personaService.obtenerTodos();
@@ -178,11 +190,9 @@ public class RecepcionViewController {
         return "recepcion/recepcion_pg";
     }
 
-    // Mostrar formulario de registro de paciente (página interna)
+    // Servir la página de registro de paciente dentro del iframe
     @GetMapping("/paginas/registro_paciente")
-    public String mostrarRegistroPaciente(Model model) {
-        // Preparar modelo con un objeto Paciente vacío si la plantilla lo necesita
-        model.addAttribute("paciente", new Paciente());
+    public String mostrarRegistroPaciente() {
         return "recepcion/paginas/registro_paciente";
     }
 

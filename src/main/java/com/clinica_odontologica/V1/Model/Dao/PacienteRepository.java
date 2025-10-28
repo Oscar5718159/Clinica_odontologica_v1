@@ -3,6 +3,7 @@ package com.clinica_odontologica.V1.Model.Dao;
 import com.clinica_odontologica.V1.Model.Entity.Paciente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+import java.util.Optional;
 
 public interface PacienteRepository extends JpaRepository<Paciente, Long> {
     
@@ -11,15 +12,13 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
     
     List<Paciente> findByLugarNacimientoContainingIgnoreCase(String lugarNacimiento);
     
-    List<Paciente> findByEstadoCivil(Character estadoCivil);
+    List<Paciente> findByEstadoCivil(String estadoCivil);
     
-    List<Paciente> findByNacionesOriginariasContainingIgnoreCase(String nacionesOriginarias);
+    // ✅ MÉTODOS CORREGIDOS - Buscar a través de la relación Persona
+    List<Paciente> findByPersonaNombreContainingIgnoreCase(String nombre);
     
+    List<Paciente> findByPersonaApellidoContainingIgnoreCase(String apellido);
     
-    // Métodos que heredan de Persona también funcionan
-    List<Paciente> findByNombreContainingIgnoreCase(String nombre);
-    
-    List<Paciente> findByApellidoContainingIgnoreCase(String apellido);
-    
-    List<Paciente> findByEdad(Integer edad);
+    // ✅ MÉTODO PARA BUSCAR POR HISTORIAL CLÍNICO
+    Optional<Paciente> findByHistorialClinico(String historialClinico);
 }

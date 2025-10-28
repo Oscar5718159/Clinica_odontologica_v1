@@ -294,7 +294,13 @@
         <form id="patientRegistrationForm" th:action="@{/recepcion/paciente/crear}" method="post">
             <div class="form-section">
                 <div class="section-title">INFORMACIÓN PERSONAL DEL PACIENTE</div>
-                
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="historialClinico">Historia clinica</label>
+                        <input type="text" id="historialClinico" name="historialClinico" placeholder="Ingrese rl historial clinico" required>
+                    </div>
+                </div>
                 <div class="form-row">
                     <div class="form-field">
                         <label for="nombre">NOMBRES</label>

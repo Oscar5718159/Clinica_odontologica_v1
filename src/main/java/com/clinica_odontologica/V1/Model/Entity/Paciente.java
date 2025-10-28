@@ -2,12 +2,22 @@ package com.clinica_odontologica.V1.Model.Entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "paciente")
-@PrimaryKeyJoinColumn(name = "id_persona")
-public class Paciente extends Persona {
+public class Paciente {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_paciente")
+    private Long idPaciente;
+
+    @Column(name = "historial_clinico", unique = true, nullable = false, length = 50)
+    private String historialClinico;
+
+    @ManyToOne
+    @JoinColumn(name = "id_persona", nullable = false)  
+    private Persona persona;
 
     @Column(name = "lugar_nacimiento", nullable = false, length = 100)
     private String lugarNacimiento;
@@ -22,10 +32,10 @@ public class Paciente extends Persona {
     private String direccion;
 
     @Column(nullable = false)
-    private Integer telefono; // Cambiado a String para formatos internacionales
+    private String telefono; // Cambiado a String para formatos internacionales
 
     @Column(name = "estado_civil", nullable = false, length = 1)
-    private String estadoCivil; // Cambiado a String: S, C, V, D
+    private String estadoCivil; // S, C, V, D
 
     @Column(name = "naciones_originarias", length = 50)
     private String nacionesOriginarias;
@@ -33,20 +43,35 @@ public class Paciente extends Persona {
     @Column(length = 50)
     private String idioma;
 
-    @Column(name = "fecha_registro")
-    private LocalDateTime fechaRegistro;
-
-    @PrePersist
-    protected void onCreate() {
-        fechaRegistro = LocalDateTime.now();
-    }
-
     // Constructor
     public Paciente() {
-        super();
     }
 
     // Getters y setters
+    public Long getIdPaciente() {
+        return idPaciente;
+    }
+
+    public void setIdPaciente(Long idPaciente) {
+        this.idPaciente = idPaciente;
+    }
+
+    public String getHistorialClinico() {
+        return historialClinico;
+    }
+
+    public void setHistorialClinico(String historialClinico) {
+        this.historialClinico = historialClinico;
+    }
+
+    public Persona getPersona() {
+        return persona;
+    }
+
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
+
     public String getLugarNacimiento() {
         return lugarNacimiento;
     }
@@ -79,11 +104,11 @@ public class Paciente extends Persona {
         this.direccion = direccion;
     }
 
-    public Integer getTelefono() {
+    public String getTelefono() {
         return telefono;
     }
 
-    public void setTelefono(Integer telefono) {
+    public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
 
@@ -109,9 +134,5 @@ public class Paciente extends Persona {
 
     public void setIdioma(String idioma) {
         this.idioma = idioma;
-    }
-
-    public LocalDateTime getFechaRegistro() {
-        return fechaRegistro;
     }
 }

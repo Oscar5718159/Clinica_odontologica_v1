@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pacientes")
+@CrossOrigin(origins = "*") // Añade esta anotación para permitir CORS
 public class PacienteController {
 
     @Autowired
@@ -72,11 +73,11 @@ public class PacienteController {
     }
 
     @GetMapping("/buscar/estado-civil")
-    public List<Paciente> buscarPorEstadoCivil(@RequestParam Character estadoCivil) {
+    public List<Paciente> buscarPorEstadoCivil(@RequestParam String estadoCivil) {
         return pacienteService.buscarPorEstadoCivil(estadoCivil);
     }
 
-    // Métodos heredados de Persona (para Paciente)
+    // Métodos de búsqueda por datos de Persona (relación)
     @GetMapping("/buscar/nombre")
     public List<Paciente> buscarPorNombre(@RequestParam String nombre) {
         return pacienteService.buscarPorNombre(nombre);
@@ -87,8 +88,16 @@ public class PacienteController {
         return pacienteService.buscarPorApellido(apellido);
     }
 
-    @GetMapping("/buscar/edad")
-    public List<Paciente> buscarPorEdad(@RequestParam Integer edad) {
-        return pacienteService.buscarPorEdad(edad);
+    @GetMapping("/buscar/historial-clinico")
+    public ResponseEntity<Paciente> buscarPorHistorialClinico(@RequestParam String historialClinico) {
+        Optional<Paciente> paciente = pacienteService.buscarPorHistorialClinico(historialClinico);
+        return paciente.map(ResponseEntity::ok)
+                      .orElse(ResponseEntity.notFound().build());
+    }
+
+    // ✅ NUEVO ENDPOINT PARA BÚSQUEDA POR NOMBRE COMPLETO (FRONTEND)
+    @GetMapping("/buscar-por-nombre-completo")
+    public List<Paciente> buscarPorNombreCompleto(@RequestParam String nombreCompleto) {
+        return pacienteService.buscarPorNombreCompleto(nombreCompleto);
     }
 }

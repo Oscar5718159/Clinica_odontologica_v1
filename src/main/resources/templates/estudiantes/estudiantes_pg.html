@@ -6,6 +6,7 @@
     <title>Cubic Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../static/CSS/panel.css">
+    <link rel="stylesheet" th:href="@{/CSS/panel.css}">
 </head>
 <body>          
     <!-- Sidebar -->    
@@ -31,7 +32,7 @@
                 <span class="menu-text">Dashboard</span>
                 <span class="badge">3</span>
             </li>
-            <li onclick="loadPage('guia_posi_ver1.html', 'Nuevo Consulta', 'historiaClinicaFrame')">
+            <li onclick="loadPage('/estudiantes/Revision/revision', 'Nuevo Consulta', 'historiaClinicaFrame')">
            
                 <span class="menu-text">✚   Nueva Consulta</span>
             </li>
