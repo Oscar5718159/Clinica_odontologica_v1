@@ -100,4 +100,12 @@ public class PacienteController {
     public List<Paciente> buscarPorNombreCompleto(@RequestParam String nombreCompleto) {
         return pacienteService.buscarPorNombreCompleto(nombreCompleto);
     }
+
+    // ✅ ENDPOINT PARA BÚSQUEDA EXACTA POR NOMBRE Y APELLIDO
+    @GetMapping("/buscar-por-nombre-completo-exacto")
+    public List<Paciente> buscarPorNombreCompletoExacto(
+            @RequestParam String nombre,
+            @RequestParam String apellido) {
+        return pacienteService.buscarPorNombreCompletoExacto(nombre, apellido);
+    }
 }

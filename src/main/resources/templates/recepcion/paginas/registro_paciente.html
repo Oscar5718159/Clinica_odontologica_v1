@@ -30,43 +30,12 @@
         .header-image {
             width: 100%;
             height: 200px;
-            background: linear-gradient(135deg, #2c5aa0, #1e3d6f);
+            background: url('/img/logo_de_uap.png') center no-repeat;
+            background-size: 1780px 200px; /* Ancho 1780px, Alto 200px */
             margin-bottom: 20px;
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .header-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: white;
-            padding: 20px;
-        }
-        
-        .university-name {
-            font-weight: bold;
-            font-size: 32px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .document-title {
-            font-weight: bold;
-            font-size: 28px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        }
-        
-        .document-subtitle {
-            font-size: 16px;
-            opacity: 0.9;
+            background-color: white;
         }
         
         .form-section {
@@ -223,14 +192,6 @@
                 height: 180px;
             }
             
-            .university-name {
-                font-size: 26px;
-            }
-            
-            .document-title {
-                font-size: 22px;
-            }
-            
             .form-row {
                 flex-direction: column;
             }
@@ -253,14 +214,6 @@
                 height: 150px;
             }
             
-            .university-name {
-                font-size: 22px;
-            }
-            
-            .document-title {
-                font-size: 18px;
-            }
-            
             .section-title {
                 font-size: 16px;
             }
@@ -274,14 +227,8 @@
 </head>
 <body>
     <div class="container">
-        <!-- Imagen de encabezado completa -->
-        <div class="header-image">
-            <div class="header-content">
-                <div class="university-name">UNIVERSIDAD AMAZÓNICA DE PANDO</div>
-                <div class="document-title">REGISTRO DE PACIENTES</div>
-                <div class="document-subtitle">Clínica Odontológica Universitaria</div>
-            </div>
-        </div>
+        <!-- Solo la imagen en el header -->
+        <div class="header-image"></div>
 
         <!-- Mensajes de estado -->
         <div id="successMessage" class="message success"></div>
@@ -299,6 +246,10 @@
                     <div class="form-field">
                         <label for="historialClinico">Historia clinica</label>
                         <input type="text" id="historialClinico" name="historialClinico" placeholder="Ingrese rl historial clinico" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="ci">CÉDULA DE IDENTIDAD</label>
+                        <input type="number" id="ci" name="ci" placeholder="Ingrese número de cédula" required>
                     </div>
                 </div>
                 <div class="form-row">
@@ -495,14 +446,12 @@
             // Mostrar mensaje de éxito
             showMessage(document.getElementById('successMessage'), mensaje, 'success');
             
-            // Limpiar formulario
+
             this.reset();
             
-            // Ocultar loading
+
             showLoading(false);
             
-            // NO redirigir - quedarse en la misma página
-            // El formulario se limpia y muestra mensaje de éxito
         });
         
     });

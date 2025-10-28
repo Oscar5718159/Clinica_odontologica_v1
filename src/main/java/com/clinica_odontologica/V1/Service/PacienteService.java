@@ -31,6 +31,9 @@ public interface PacienteService {
     // Método para buscar por historial clínico
     Optional<Paciente> buscarPorHistorialClinico(String historialClinico);
     
-    // ✅ NUEVO MÉTODO PARA BÚSQUEDA POR NOMBRE COMPLETO
+    // ✅ MÉTODO PARA BÚSQUEDA POR NOMBRE COMPLETO EXACTO
+    List<Paciente> buscarPorNombreCompletoExacto(String nombre, String apellido);
+    
+    // ✅ MÉTODO PARA BÚSQUEDA POR NOMBRE COMPLETO (STRING ÚNICO)
     List<Paciente> buscarPorNombreCompleto(String nombreCompleto);
 }

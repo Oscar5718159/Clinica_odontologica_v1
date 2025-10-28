@@ -43,6 +43,9 @@ public class Paciente {
     @Column(length = 50)
     private String idioma;
 
+    @Column(nullable = false)
+    private Integer ci;
+
     // Constructor
     public Paciente() {
     }
@@ -134,5 +137,12 @@ public class Paciente {
 
     public void setIdioma(String idioma) {
         this.idioma = idioma;
+    }
+    public Integer getCi() {
+        return ci;
+    }
+
+    public void setCi(Integer ci) {
+        this.ci = ci;
     }
 }

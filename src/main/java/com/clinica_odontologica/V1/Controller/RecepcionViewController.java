@@ -70,7 +70,8 @@ public class RecepcionViewController {
                                                @RequestParam String telefono,
                                                @RequestParam String estadoCivil,
                                                @RequestParam(required = false) String nacionesOriginarias,
-                                               @RequestParam(required = false) String idioma) {
+                                               @RequestParam(required = false) String idioma,
+                                               @RequestParam Integer ci) {
         
         try {
             // 1. Crear o buscar la Persona
@@ -93,7 +94,8 @@ public class RecepcionViewController {
             paciente.setEstadoCivil(estadoCivil);
             paciente.setNacionesOriginarias(nacionesOriginarias);
             paciente.setIdioma(idioma);
-            
+            paciente.setCi(ci);
+
             pacienteService.guardar(paciente);
             
             return ResponseEntity.ok("¡Paciente registrado exitosamente!");
@@ -118,7 +120,8 @@ public class RecepcionViewController {
                                     @RequestParam String telefono,
                                     @RequestParam String estadoCivil,
                                     @RequestParam(required = false) String nacionesOriginarias,
-                                    @RequestParam(required = false) String idioma) {
+                                    @RequestParam(required = false) String idioma,
+                                    @RequestParam Integer ci) {
         
         try {
             // Obtener el paciente existente

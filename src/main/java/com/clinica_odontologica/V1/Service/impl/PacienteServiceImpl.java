@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PacienteServiceImpl implements PacienteService {
@@ -45,6 +44,7 @@ public class PacienteServiceImpl implements PacienteService {
                 paciente.setEstadoCivil(pacienteActualizado.getEstadoCivil());
                 paciente.setNacionesOriginarias(pacienteActualizado.getNacionesOriginarias());
                 paciente.setIdioma(pacienteActualizado.getIdioma());
+                paciente.setCi(pacienteActualizado.getCi());
                 
                 // Actualizar datos de Persona (a través de la relación)
                 if (pacienteActualizado.getPersona() != null) {
@@ -95,27 +95,14 @@ public class PacienteServiceImpl implements PacienteService {
         return pacienteRepository.findByHistorialClinico(historialClinico);
     }
 
-    // ✅ NUEVO MÉTODO PARA BÚSQUEDA POR NOMBRE COMPLETO
+    // ✅ MÉTODO ACTUALIZADO: Usa la consulta personalizada del repositorio
     @Override
     public List<Paciente> buscarPorNombreCompleto(String nombreCompleto) {
-        // Dividir el nombre completo en partes
-        String[] partes = nombreCompleto.trim().split("\\s+");
-        
-        if (partes.length == 0) {
-            return List.of(); // Retorna lista vacía si no hay nombre
-        }
-        
-        // Buscar por nombre (primera parte) y apellido (última parte)
-        String nombre = partes[0];
-        String apellido = partes[partes.length - 1];
-        
-        // Buscar pacientes que coincidan con el nombre Y el apellido
-        List<Paciente> porNombre = pacienteRepository.findByPersonaNombreContainingIgnoreCase(nombre);
-        List<Paciente> porApellido = pacienteRepository.findByPersonaApellidoContainingIgnoreCase(apellido);
-        
-        // Retornar la intersección (pacientes que están en ambas listas)
-        return porNombre.stream()
-                .filter(porApellido::contains)
-                .collect(Collectors.toList());
+        return pacienteRepository.buscarPorNombreCompleto(nombreCompleto);
+    }
+
+    @Override
+    public List<Paciente> buscarPorNombreCompletoExacto(String nombre, String apellido) {
+        return pacienteRepository.buscarPorNombreCompletoExacto(nombre, apellido);
     }
 }

@@ -30,7 +30,7 @@
         .header-image {
             width: 100%;
             height: 200px;
-            background: url('../../../static/img/encabezado.png') center/cover no-repeat;
+            background: url('/img/logo_de_uap.png') center/cover no-repeat;
             margin-bottom: 20px;
             border-radius: 8px;
             display: flex;
@@ -991,7 +991,7 @@
 
     <script>
         // URL base de tu API Spring Boot - AJUSTA SEGÚN TU CONFIGURACIÓN
-        const API_BASE_URL = 'http://localhost:8080';
+        const API_BASE_URL = 'http://localhost:8080/api/pacientes';
         
         document.addEventListener('DOMContentLoaded', function() {
             // ========== FUNCIONALIDAD DE BÚSQUEDA ==========
@@ -1029,11 +1029,10 @@
             // Función para buscar pacientes en el backend
             async function buscarPacientes() {
                 const nombre = nombreBusqueda.value.trim();
-                const ci = ciBusqueda.value.trim();
                 
                 // Validar que al menos un campo tenga datos
-                if (!nombre && !ci) {
-                    alert('Por favor, ingrese al menos un nombre o un CI para buscar.');
+                if (!nombre) {
+                    alert('Por favor, ingrese un nombre para buscar.');
                     return;
                 }
                 
@@ -1044,35 +1043,29 @@
                 btnBuscar.textContent = 'BUSCANDO...';
                 
                 try {
-                    let url;
-                    if (nombre && ci) {
-                        // Buscar por nombre y CI
-                        url = `${API_BASE_URL}/recepcion/buscar/pacientes?nombre=${encodeURIComponent(nombre)}`;
-                    } else if (nombre) {
-                        // Buscar solo por nombre
-                        url = `${API_BASE_URL}/recepcion/buscar/pacientes?nombre=${encodeURIComponent(nombre)}`;
-                    } else {
-                        // Buscar solo por CI
-                        url = `${API_BASE_URL}/recepcion/buscar/pacientes?nombre=${encodeURIComponent(ci)}`;
+                        
+                        const url = `${API_BASE_URL}/buscar-por-nombre-completo?nombreCompleto=${encodeURIComponent(nombre)}`;
+                        
+                        console.log('Buscando pacientes con URL:', url);
+                        
+                        const response = await fetch(url);
+                        
+                        if (!response.ok) {
+                            throw new Error(`Error en la búsqueda: ${response.status}`);
+                        }
+                        
+                        const pacientes = await response.json();
+                        console.log('Pacientes encontrados:', pacientes);
+                        mostrarResultados(pacientes);
+                        
+                    } catch (error) {
+                        console.error('Error al buscar pacientes:', error);
+                        listaResultados.innerHTML = '<div class="no-results">Error al realizar la búsqueda. Verifique la conexión.</div>';
+                    } finally {
+                        btnBuscar.disabled = false;
+                        btnBuscar.textContent = 'BUSCAR';
                     }
-                    
-                    const response = await fetch(url);
-                    
-                    if (!response.ok) {
-                        throw new Error(`Error en la búsqueda: ${response.status}`);
-                    }
-                    
-                    const pacientes = await response.json();
-                    mostrarResultados(pacientes);
-                    
-                } catch (error) {
-                    console.error('Error al buscar pacientes:', error);
-                    listaResultados.innerHTML = '<div class="no-results">Error al realizar la búsqueda. Verifique la conexión.</div>';
-                } finally {
-                    btnBuscar.disabled = false;
-                    btnBuscar.textContent = 'BUSCAR';
                 }
-            }
             
             // Función para mostrar resultados de búsqueda
             function mostrarResultados(pacientes) {
