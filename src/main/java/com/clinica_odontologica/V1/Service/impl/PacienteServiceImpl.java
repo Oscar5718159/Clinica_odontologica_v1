@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.ArrayList;
 
 @Service
 public class PacienteServiceImpl implements PacienteService {
@@ -41,6 +44,7 @@ public class PacienteServiceImpl implements PacienteService {
                 paciente.setOcupacion(pacienteActualizado.getOcupacion());
                 paciente.setDireccion(pacienteActualizado.getDireccion());
                 paciente.setTelefono(pacienteActualizado.getTelefono());
+                paciente.setGradoInstruccion(pacienteActualizado.getGradoInstruccion()); // ✅ NO OLVIDES ESTE
                 paciente.setEstadoCivil(pacienteActualizado.getEstadoCivil());
                 paciente.setNacionesOriginarias(pacienteActualizado.getNacionesOriginarias());
                 paciente.setIdioma(pacienteActualizado.getIdioma());
@@ -52,7 +56,10 @@ public class PacienteServiceImpl implements PacienteService {
                     Persona personaActualizada = pacienteActualizado.getPersona();
                     
                     persona.setNombre(personaActualizada.getNombre());
-                    persona.setApellido(personaActualizada.getApellido());
+                    persona.setApellidoPaterno(personaActualizada.getApellidoPaterno());
+                    persona.setApellidoMaterno(personaActualizada.getApellidoMaterno());
+                    persona.setEdad(personaActualizada.getEdad());
+                    persona.setSexo(personaActualizada.getSexo());
                 }
                 
                 return pacienteRepository.save(paciente);
@@ -81,28 +88,76 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     @Override
-    public List<Paciente> buscarPorNombre(String nombre) {
-        return pacienteRepository.findByPersonaNombreContainingIgnoreCase(nombre);
-    }
-
-    @Override
-    public List<Paciente> buscarPorApellido(String apellido) {
-        return pacienteRepository.findByPersonaApellidoContainingIgnoreCase(apellido);
-    }
-
-    @Override
     public Optional<Paciente> buscarPorHistorialClinico(String historialClinico) {
         return pacienteRepository.findByHistorialClinico(historialClinico);
     }
 
-    // ✅ MÉTODO ACTUALIZADO: Usa la consulta personalizada del repositorio
     @Override
     public List<Paciente> buscarPorNombreCompleto(String nombreCompleto) {
         return pacienteRepository.buscarPorNombreCompleto(nombreCompleto);
     }
 
     @Override
-    public List<Paciente> buscarPorNombreCompletoExacto(String nombre, String apellido) {
-        return pacienteRepository.buscarPorNombreCompletoExacto(nombre, apellido);
+    public List<Paciente> buscarPorTermino(String termino) {
+        if (termino == null || termino.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        String t = termino.trim();
+        Set<Paciente> resultados = new LinkedHashSet<>();
+
+        // Buscar por concatenación nombre + apellidos
+        try {
+            resultados.addAll(pacienteRepository.buscarPorNombreCompleto(t));
+        } catch (Exception ignored) {}
+
+        // Buscar en los campos individuales (por si no está en el mismo orden)
+        try {
+            resultados.addAll(pacienteRepository.findByPersonaNombreContainingIgnoreCase(t));
+        } catch (Exception ignored) {}
+        try {
+            resultados.addAll(pacienteRepository.findByPersonaApellidoPaternoContainingIgnoreCase(t));
+        } catch (Exception ignored) {}
+        try {
+            resultados.addAll(pacienteRepository.findByPersonaApellidoMaternoContainingIgnoreCase(t));
+        } catch (Exception ignored) {}
+
+        // Si el término es numérico, buscar por CI exacto
+        try {
+            Integer ci = Integer.valueOf(t);
+            resultados.addAll(pacienteRepository.findByCi(ci));
+        } catch (NumberFormatException ignored) {
+            // no es número, ignorar
+        }
+
+        return new ArrayList<>(resultados);
+    }
+
+
+
+    // ✅ NUEVOS MÉTODOS
+    @Override
+    public List<Paciente> buscarPorApellidoPaterno(String apellidoPaterno) {
+        return pacienteRepository.findByPersonaApellidoPaternoContainingIgnoreCase(apellidoPaterno);
+    }
+
+    @Override
+    public List<Paciente> buscarPorApellidoMaterno(String apellidoMaterno) {
+        return pacienteRepository.findByPersonaApellidoMaternoContainingIgnoreCase(apellidoMaterno);
+    }
+
+    @Override
+    public List<Paciente> buscarPorNombre(String nombre) {
+        return pacienteRepository.findByPersonaNombreContainingIgnoreCase(nombre);
+    }
+
+    @Override
+    public List<Paciente> buscarPorCi(Integer ci) {
+        return pacienteRepository.findByCi(ci);
+    }
+
+    @Override
+    public List<Paciente> buscarPorCiContaining(String ci) {
+        return pacienteRepository.findByCiContaining(ci);
     }
 }

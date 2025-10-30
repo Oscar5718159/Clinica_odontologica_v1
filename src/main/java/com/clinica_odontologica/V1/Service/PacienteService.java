@@ -18,22 +18,25 @@ public interface PacienteService {
     
     // Métodos específicos de Paciente
     List<Paciente> buscarPorOcupacion(String ocupacion);
-
     List<Paciente> buscarPorLugarNacimiento(String lugarNacimiento);
-    
     List<Paciente> buscarPorEstadoCivil(String estadoCivil);
-    
-    // Métodos de búsqueda por datos de Persona (relación)
-    List<Paciente> buscarPorNombre(String nombre);
-    
-    List<Paciente> buscarPorApellido(String apellido);
     
     // Método para buscar por historial clínico
     Optional<Paciente> buscarPorHistorialClinico(String historialClinico);
     
-    // ✅ MÉTODO PARA BÚSQUEDA POR NOMBRE COMPLETO EXACTO
-    List<Paciente> buscarPorNombreCompletoExacto(String nombre, String apellido);
-    
+
     // ✅ MÉTODO PARA BÚSQUEDA POR NOMBRE COMPLETO (STRING ÚNICO)
     List<Paciente> buscarPorNombreCompleto(String nombreCompleto);
+
+    // Buscar por término único que puede ser nombre completo o CI
+    List<Paciente> buscarPorTermino(String termino);
+    
+    // ✅ NUEVOS MÉTODOS PARA BÚSQUEDA POR APELLIDOS
+    List<Paciente> buscarPorApellidoPaterno(String apellidoPaterno);
+    List<Paciente> buscarPorApellidoMaterno(String apellidoMaterno);
+    List<Paciente> buscarPorNombre(String nombre);
+
+    
+    List<Paciente> buscarPorCi(Integer ci);
+    List<Paciente> buscarPorCiContaining(String ci);
 }

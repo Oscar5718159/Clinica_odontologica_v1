@@ -65,20 +65,6 @@ public class PersonaController {
         return personaService.buscarPorNombre(nombre);
     }
 
-    @GetMapping("/buscar/apellido")
-    public List<Persona> buscarPorApellido(@RequestParam String apellido) {
-        return personaService.buscarPorApellido(apellido);
-    }
-
-    @GetMapping("/buscar/edad")
-    public List<Persona> buscarPorEdad(@RequestParam Integer edad) {
-        return personaService.buscarPorEdad(edad);
-    }
-
-    @GetMapping("/buscar/sexo")
-    public List<Persona> buscarPorSexo(@RequestParam Character sexo) {
-        return personaService.buscarPorSexo(sexo);
-    }
 
     @GetMapping("/buscar/nombre-apellido")
     public List<Persona> buscarPorNombreYApellido(@RequestParam String nombre, 

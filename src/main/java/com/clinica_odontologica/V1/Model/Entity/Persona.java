@@ -1,7 +1,7 @@
 package com.clinica_odontologica.V1.Model.Entity;
 import jakarta.persistence.*;
-
 @Entity
+
 @Table(name = "persona")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Persona {
@@ -12,8 +12,13 @@ public class Persona {
     @Column(nullable = false, length = 50)
     private String nombre;
 
+
     @Column(nullable = false, length = 50)
-    private String apellido;
+    private String apellidoPaterno;
+
+    @Column(nullable = false, length = 50)
+    private String apellidoMaterno;
+
 
     @Column(nullable = false)
     private Integer edad;
@@ -41,13 +46,22 @@ public class Persona {
         this.nombre = nombre;
     }
 
-    public String getApellido() {
-        return apellido;
+
+
+    public String getApellidoPaterno() {
+        return apellidoPaterno;
+    }
+    public void setApellidoPaterno(String apellidoPaterno) {
+        this.apellidoPaterno = apellidoPaterno;
+    }
+    public String getApellidoMaterno() {
+        return apellidoMaterno;
+    }
+    public void setApellidoMaterno(String apellidoMaterno) {
+        this.apellidoMaterno = apellidoMaterno;
     }
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
+
 
     public Integer getEdad() {
         return edad;

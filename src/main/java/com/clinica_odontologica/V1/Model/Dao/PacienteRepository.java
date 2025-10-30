@@ -18,22 +18,22 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
     
     // ✅ MÉTODO PARA BUSCAR POR HISTORIAL CLÍNICO
     Optional<Paciente> findByHistorialClinico(String historialClinico);
-    // ✅ Buscar por nombre (dentro del objeto Persona)
+
+    // Búsquedas a través de la relación Persona - CORREGIDAS
     List<Paciente> findByPersonaNombreContainingIgnoreCase(String nombre);
+    List<Paciente> findByPersonaApellidoPaternoContainingIgnoreCase(String apellidoPaterno);
+    List<Paciente> findByPersonaApellidoMaternoContainingIgnoreCase(String apellidoMaterno);
 
-    // ✅ Buscar por apellido (dentro del objeto Persona)
-    List<Paciente> findByPersonaApellidoContainingIgnoreCase(String apellido);
-
-    // ✅ BUSCAR POR NOMBRE COMPLETO EXACTO (case-insensitive)
+    // ✅ NUEVO MÉTODO: Buscar por nombre completo (concatena nombre y apellidos)
     @Query("SELECT p FROM Paciente p WHERE " +
-           "LOWER(p.persona.nombre) = LOWER(:nombre) AND " +
-           "LOWER(p.persona.apellido) = LOWER(:apellido)")
-    List<Paciente> buscarPorNombreCompletoExacto(@Param("nombre") String nombre, 
-                                               @Param("apellido") String apellido);
-
-    // ✅ NUEVO MÉTODO: Buscar por nombre completo (concatena nombre y apellido)
-    @Query("SELECT p FROM Paciente p WHERE " +
-           "LOWER(CONCAT(p.persona.nombre, ' ', p.persona.apellido)) " +
+           "LOWER(CONCAT(p.persona.nombre, ' ', p.persona.apellidoPaterno, ' ', p.persona.apellidoMaterno)) " +
            "LIKE LOWER(CONCAT('%', :nombreCompleto, '%'))")
     List<Paciente> buscarPorNombreCompleto(@Param("nombreCompleto") String nombreCompleto);
+
+    // ✅ Este método ya existe, verifica que funcione
+    List<Paciente> findByCi(Integer ci);
+    
+    // ✅ AGREGAR para búsqueda parcial por CI
+    @Query("SELECT p FROM Paciente p WHERE CAST(p.ci AS string) LIKE %:ci%")
+    List<Paciente> findByCiContaining(@Param("ci") String ci);
 }

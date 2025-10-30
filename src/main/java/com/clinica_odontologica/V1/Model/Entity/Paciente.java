@@ -32,9 +32,12 @@ public class Paciente {
     private String direccion;
 
     @Column(nullable = false)
-    private String telefono; // Cambiado a String para formatos internacionales
+    private String telefono; 
 
-    @Column(name = "estado_civil", nullable = false, length = 1)
+    @Column(name = "grado_Instruccion", nullable = false, length = 20)
+    private String gradoInstruccion; // P, S, T, U
+
+    @Column(name = "estado_civil", nullable = false, length = 20)
     private String estadoCivil; // S, C, V, D
 
     @Column(name = "naciones_originarias", length = 50)
@@ -113,6 +116,14 @@ public class Paciente {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public String getGradoInstruccion() {
+        return gradoInstruccion;
+    }
+
+    public void setGradoInstruccion(String gradoInstruccion) {
+        this.gradoInstruccion = gradoInstruccion;
     }
 
     public String getEstadoCivil() {

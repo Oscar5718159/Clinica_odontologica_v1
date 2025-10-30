@@ -60,52 +60,26 @@ public class PacienteController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    // Métodos específicos de Paciente
-    @GetMapping("/buscar/ocupacion")
-    public List<Paciente> buscarPorOcupacion(@RequestParam String ocupacion) {
-        return pacienteService.buscarPorOcupacion(ocupacion);
-    }
-
-    @GetMapping("/buscar/lugar-nacimiento")
-    public List<Paciente> buscarPorLugarNacimiento(@RequestParam String lugarNacimiento) {
-        return pacienteService.buscarPorLugarNacimiento(lugarNacimiento);
-    }
-
-    @GetMapping("/buscar/estado-civil")
-    public List<Paciente> buscarPorEstadoCivil(@RequestParam String estadoCivil) {
-        return pacienteService.buscarPorEstadoCivil(estadoCivil);
-    }
-
-    // Métodos de búsqueda por datos de Persona (relación)
-    @GetMapping("/buscar/nombre")
-    public List<Paciente> buscarPorNombre(@RequestParam String nombre) {
-        return pacienteService.buscarPorNombre(nombre);
-    }
-
-    @GetMapping("/buscar/apellido")
-    public List<Paciente> buscarPorApellido(@RequestParam String apellido) {
-        return pacienteService.buscarPorApellido(apellido);
-    }
-
-    @GetMapping("/buscar/historial-clinico")
-    public ResponseEntity<Paciente> buscarPorHistorialClinico(@RequestParam String historialClinico) {
-        Optional<Paciente> paciente = pacienteService.buscarPorHistorialClinico(historialClinico);
-        return paciente.map(ResponseEntity::ok)
-                      .orElse(ResponseEntity.notFound().build());
-    }
-
     // ✅ NUEVO ENDPOINT PARA BÚSQUEDA POR NOMBRE COMPLETO (FRONTEND)
     @GetMapping("/buscar-por-nombre-completo")
     public List<Paciente> buscarPorNombreCompleto(@RequestParam String nombreCompleto) {
         return pacienteService.buscarPorNombreCompleto(nombreCompleto);
     }
 
-    // ✅ ENDPOINT PARA BÚSQUEDA EXACTA POR NOMBRE Y APELLIDO
-    @GetMapping("/buscar-por-nombre-completo-exacto")
-    public List<Paciente> buscarPorNombreCompletoExacto(
-            @RequestParam String nombre,
-            @RequestParam String apellido) {
-        return pacienteService.buscarPorNombreCompletoExacto(nombre, apellido);
+    // Nuevo endpoint: buscar por término único (nombre completo o CI)
+    @GetMapping("/buscar")
+    public List<Paciente> buscarPorTermino(@RequestParam String term) {
+        return pacienteService.buscarPorTermino(term);
+    }
+    @GetMapping("/buscar-por-ci")
+    public List<Paciente> buscarPorCi(@RequestParam String ci) {
+        try {
+            // Intentar como número exacto
+            Integer ciNumero = Integer.valueOf(ci);
+            return pacienteService.buscarPorCi(ciNumero);
+        } catch (NumberFormatException e) {
+            // Si no es número válido, buscar como string parcial
+            return pacienteService.buscarPorCiContaining(ci);
+        }
     }
 }

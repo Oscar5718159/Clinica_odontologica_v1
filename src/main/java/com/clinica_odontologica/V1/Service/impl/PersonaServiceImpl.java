@@ -34,7 +34,8 @@ public class PersonaServiceImpl implements PersonaService {
         return personaRepository.findById(id)
             .map(persona -> {
                 persona.setNombre(personaActualizada.getNombre());
-                persona.setApellido(personaActualizada.getApellido());
+                persona.setApellidoPaterno(personaActualizada.getApellidoPaterno());
+                persona.setApellidoMaterno(personaActualizada.getApellidoMaterno());
                 persona.setEdad(personaActualizada.getEdad());
                 persona.setSexo(personaActualizada.getSexo());
                 return personaRepository.save(persona);
@@ -52,9 +53,15 @@ public class PersonaServiceImpl implements PersonaService {
         return personaRepository.findByNombreContainingIgnoreCase(nombre);
     }
 
+    // ✅ NUEVOS MÉTODOS
     @Override
-    public List<Persona> buscarPorApellido(String apellido) {
-        return personaRepository.findByApellidoContainingIgnoreCase(apellido);
+    public List<Persona> buscarPorApellidoPaterno(String apellidoPaterno) {
+        return personaRepository.findByApellidoPaternoContainingIgnoreCase(apellidoPaterno);
+    }
+
+    @Override
+    public List<Persona> buscarPorApellidoMaterno(String apellidoMaterno) {
+        return personaRepository.findByApellidoMaternoContainingIgnoreCase(apellidoMaterno);
     }
 
     @Override
@@ -67,8 +74,9 @@ public class PersonaServiceImpl implements PersonaService {
         return personaRepository.findBySexo(sexo);
     }
 
+    // ✅ CORREGIDO: Cambiar "apellido" por "apellidoPaterno"
     @Override
-    public List<Persona> buscarPorNombreYApellido(String nombre, String apellido) {
-        return personaRepository.findByNombreAndApellido(nombre, apellido);
+    public List<Persona> buscarPorNombreYApellido(String nombre, String apellidoPaterno) {
+        return personaRepository.findByNombreAndApellidoPaterno(nombre, apellidoPaterno);
     }
 }

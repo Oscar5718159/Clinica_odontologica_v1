@@ -258,9 +258,19 @@
                         <input type="text" id="nombre" name="nombre" placeholder="Ingrese nombres completos" required>
                     </div>
 
-                    <div class="form-field">
+                    <!-- <div class="form-field">
                         <label for="apellido">APELLIDOS</label>
                         <input type="text" id="apellido" name="apellido" placeholder="Ingrese apellidos completos" required>
+                    </div> -->
+
+                    <div class="form-field">
+                        <label for="apellido">APELLIDO PATERNO</label>
+                        <input type="text" id="apellidoPaterno" name="apellidoPaterno" placeholder="Ingrese apellido paterno" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="apellido">APELLIDO MATERNO</label>
+                        <input type="text" id="apellidoMaterno" name="apellidoMaterno" placeholder="Ingrese apellido materno" required>
                     </div>
                 </div>
                 
@@ -299,6 +309,18 @@
                         <label for="direccion">DIRECCIÓN</label>
                         <input type="text" id="direccion" name="direccion" placeholder="Dirección completa" required>
                     </div>
+                    <div class="form-field">
+                        <label for="gradoInstruccion">GRADO DE INSTRUCCIÓN</label>
+                        <select id="gradoInstruccion" name="gradoInstruccion" required>
+                            <option value="">Seleccione grado de instrucción</option>
+                            <option value="Inicial">Inicial</option>
+                            <option value="Primaria">Primaria</option>
+                            <option value="Secundaria">Secundaria</option>
+                            <option value="Universidad">Universidad</option>
+                            <option value="Tecnico">Técnico</option>
+                            <option value="Profesional">Profesional</option>
+                        </select>
+                    </div>                    
                     <div class="form-field">
                         <label for="telefono">TELÉFONO / CELULAR</label>
                         <input type="tel" id="telefono" name="telefono" placeholder="Número de contacto" required>
