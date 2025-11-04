@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Formulario CSS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/CSS/login_dise.css}">
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+
+    <div class="contenedor-formulario contenedor">
+        <div class="imagen-formulario">
+            
+        </div>
+
+        <form class="formulario">
+            <div class="texto-formulario">
+                <h2>Clinica odontologica UAP</h2>
+                <p>Inicia sesión con tu cuenta</p>
+            </div>
+            <div class="input">
+                <label for="usuario">Usuario</label>
+                <input placeholder="Ingresa tu nombre" type="text" id="usuario">
+            </div>
+            <div class="input">
+                <label for="contraseña">Contraseña</label>
+                <input placeholder="Ingresa tu contraseña" type="password" id="contraseña">
+            </div>
+            <div class="password-olvidada">
+                <a href="#">¿Olvidaste tu contraseña?</a>
+            </div>
+            <div class="input">
+                <input type="submit" value="Login">
+            </div>
+        </form>
+    </div>
+<script>
+document.querySelector('.formulario').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const usuario = document.getElementById('usuario').value;
+    const contraseña = document.getElementById('contraseña').value;
+    
+    fetch('/login/autenticar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            usuario: usuario,
+            contraseña: contraseña
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Login exitoso - redirigir o mostrar mensaje
+            alert(`Bienvenido ${data.nombre} ${data.apellidos}`);
+            // Redirigir a otra página
+            window.location.href = '/estudiantes'; // Ajusta esta ruta
+        } else {
+            // Mostrar error
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error en el servidor');
+    });
+});
+</script>
+</body>
+
+</html>

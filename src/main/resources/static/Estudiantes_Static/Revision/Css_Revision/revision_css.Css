@@ -24,6 +24,7 @@
             width: 100%;
             height: 200px;
             background: url('/img/logo_de_uap.png') center/cover no-repeat;
+            background-size: 1720px 200px; /* Ancho 1780px, Alto 200px */
             margin-bottom: 20px;
             border-radius: 8px;
             display: flex;

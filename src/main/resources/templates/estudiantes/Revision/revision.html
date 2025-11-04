@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historia Clínica Odontológica U.A.P.</title>
     <link rel="stylesheet" th:href="@{/Estudiantes_Static/Revision/Css_Revision/revision_css.Css}">
+    <!-- <link rel="stylesheet" href="../../../static/Estudiantes_Static/Revision/Css_Revision/revision_css.Css"> -->
 </head>
 <body>
     <div class="container">
@@ -55,8 +56,7 @@
         
         <!-- Formulario de datos del paciente -->
         <div class="form-section">
-            <h1>SECCION 2</h1>
-            <h2 class="section-title">DATOS DE IDENTIFICACIÓN</h2>
+            <h2 class="section-title">DATOS DE IDENTIFICACIÓN DEL PACIENTE</h2>
             <div class="form-row">
                 <div class="form-group">
                     <label>N.º de Historia Clínica</label>
@@ -71,11 +71,28 @@
                     <input type="text" id="numExpediente" readonly>
                 </div>
             </div>
-
-            
+        </div>
+        
+        <!-- Sección de datos personales -->
+        <div class="form-section">
+            <h2 class="section-title">DATOS PERSONALES DEL PACIENTE</h2>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Persona que brinda la información</label>
+                    <label>Apellido Paterno</label>
+                    <input type="text" id="apellidoPaterno" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Apellido Materno</label>
+                    <input type="text" id="apellidoMaterno" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Nombres</label>
+                    <input type="text" id="nombres" readonly>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nombre completo</label>
                     <input type="text" id="personaInformacion">
                 </div>
                 <div class="form-group">
@@ -96,26 +113,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Sección de datos personales -->
-        <div class="form-section">
-            <h2 class="section-title">DATOS PERSONALES</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Apellido Paterno</label>
-                    <input type="text" id="apellidoPaterno" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Apellido Materno</label>
-                    <input type="text" id="apellidoMaterno" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Nombres</label>
-                    <input type="text" id="nombres" readonly>
-                </div>
-            </div>
-            
             <div class="form-row">
                 <div class="form-group">
                     <label>Lugar y Fecha de Nacimiento</label>
@@ -132,13 +129,10 @@
             </div>
             
             <div class="form-row">
-                <div class="form-group" style="flex: 2;">
+                <div class="form-group">
                     <label>Dirección</label>
                     <input type="text" id="direccion" readonly>
                 </div>
-            </div>
-            
-            <div class="form-row">
                 <div class="form-group">
                     <label>Teléfono o Celular</label>
                     <input type="text" id="telefono" readonly>
@@ -148,8 +142,37 @@
                     <input type="text" id="gradoInstruccion" readonly>
                 </div>
             </div>
+
         </div>
         
+        <!-- Sección de datos personales -->
+        <div class="form-section">
+            <h2 class="section-title">PERSONA QUE BRINDA LA INFORMACIÓN</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Apellido Paterno</label>
+                    <input type="text" id="apellidoPaterno_persona" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Apellido Materno</label>
+                    <input type="text" id="apellidoMaterno_persona" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Nombres</label>
+                    <input type="text" id="nombres_pesona" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" id="direccion_persona" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono o Celular</label>
+                    <input type="text" id="telefono_persona" readonly>
+                </div>
+            </div>
+
+        </div>        
+
         <!-- Resto de las secciones del formulario (se mantienen igual) -->
         <div class="form-section">
             <h2 class="section-title">ANTECEDENTES PATOLÓGICOS</h2>
