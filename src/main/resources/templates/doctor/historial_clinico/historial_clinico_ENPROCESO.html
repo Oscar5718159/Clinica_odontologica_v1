@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial Clínico - U.A.P.</title>
+    <link rel="stylesheet" href="../../css/styles.css"> <!-- Ajusta la ruta a tu CSS -->
+    <style>
+        /* Estilos específicos para el historial clínico */
+        .historial-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+        }
+
+        .historial-content {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .consulta-item {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .consulta-item:hover {
+            background-color: #f0f8ff;
+            border-color: #007bff;
+        }
+
+        .consulta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .consulta-fecha {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .consulta-tipo {
+            background-color: #28a745;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .consulta-detalles {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .detalle-item {
+            margin-bottom: 5px;
+        }
+
+        .detalle-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        /* Estilos para impresión */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .modal-content,
+            .modal-content * {
+                visibility: visible;
+            }
+            .modal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                background-color: white;
+            }
+            .modal-content {
+                margin: 0;
+                padding: 20px;
+                box-shadow: none;
+                border: none;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Imagen de encabezado con tu imagen -->
+        <div class="header-image">
+            <div class="header-content">
+                <!-- El contenido se mostrará sobre la imagen -->
+            </div>
+        </div>
+        
+        <div class="header">
+            <h1>HISTORIAL CLÍNICO ODONTOLÓGICO U.A.P.</h1>
+            <p>Universidad Amazonica de Pando</p>
+        </div>
+        
+        <!-- SECCIÓN DE BÚSQUEDA MEJORADA -->
+        <div class="search-section">
+            <h1>BUSCAR PACIENTE</h1>
+            <div class="search-form">
+                <div class="form-group">
+                    <label>NOMBRE Y APELLIDOS</label>
+                    <input type="text" id="nombreBusqueda" placeholder="Ingrese nombre completo">
+                </div>
+                <div class="form-group">
+                    <label>C.I.</label>
+                    <input type="text" id="ciBusqueda" placeholder="Ingrese CI">
+                </div>
+                <div class="form-group">
+                    <button type="button" class="search-btn" id="btnBuscar">BUSCAR</button>
+                </div>
+            </div>
+            
+            <div class="search-info">
+                Puede buscar por nombre completo o por CI. Al menos uno de los campos debe estar completo.
+            </div>
+            
+            <!-- Resultados de búsqueda -->
+            <div class="search-results" id="resultadosBusqueda">
+                <div class="results-header">Resultados de la búsqueda</div>
+                <div class="results-list" id="listaResultados">
+                    <!-- Los resultados se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECCIÓN DE VISUALIZACIÓN DE HISTORIAL CLÍNICO -->
+        <div class="form-section" id="historialSection" style="display: none;">
+            <h2 class="section-title">HISTORIAL CLÍNICO DEL PACIENTE</h2>
+            
+            <!-- Información del paciente -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>N.º de Historia Clínica</label>
+                    <input type="text" id="numHistoriaClinica" readonly>
+                </div>
+                <div class="form-group">
+                    <label>C.I.</label>
+                    <input type="text" id="ciPaciente" readonly>
+                </div>
+                <div class="form-group">
+                    <label>N.º de Expediente Clínico</label>
+                    <input type="text" id="numExpediente" readonly>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" id="personaInformacion" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Edad</label>
+                    <input type="text" id="edadPaciente" readonly>
+                </div>
+            </div>
+
+            <!-- Selector de tipo de historial -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tipo de Historial:</label>
+                    <select id="tipoHistorial" class="form-control">
+                        <option value="consultas">Consultas Odontológicas</option>
+                        <option value="tratamientos">Tratamientos</option>
+                        <option value="completo">Historial Completo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-secondary" id="btnCargarHistorial">
+                        Cargar Historial
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnDescargarHistorial" style="margin-left: 10px;">
+                        Descargar PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenedor del historial -->
+            <div class="historial-container" id="contenedorHistorial">
+                <div class="loading" id="loadingHistorial" style="display: none;">
+                    Cargando historial...
+                </div>
+                <div class="historial-content" id="contenidoHistorial">
+                    <!-- El historial se cargará aquí -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para detalles de consulta -->
+        <div id="modalDetalleConsulta" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Detalles de la Consulta</h3>
+                <div id="detalleConsultaContent"></div>
+                <button class="btn btn-primary no-print" onclick="imprimirDetalleConsulta()">Imprimir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL base de tu API Spring Boot - AJUSTA SEGÚN TU CONFIGURACIÓN
+        const API_BASE_URL = 'http://localhost:8080/api/pacientes';
+
+        // Elementos de búsqueda
+        const nombreBusqueda = document.getElementById('nombreBusqueda');
+        const ciBusqueda = document.getElementById('ciBusqueda');
+        const btnBuscar = document.getElementById('btnBuscar');
+        const resultadosBusqueda = document.getElementById('resultadosBusqueda');
+        const listaResultados = document.getElementById('listaResultados');
+        
+        // Elementos del formulario para llenar con datos del paciente
+        const numHistoriaClinica = document.getElementById('numHistoriaClinica');
+        const ciPaciente = document.getElementById('ciPaciente');
+        const numExpediente = document.getElementById('numExpediente');
+        const personaInformacion = document.getElementById('personaInformacion');
+        const edadPaciente = document.getElementById('edadPaciente');
+        
+        // Sección de historial
+        const historialSection = document.getElementById('historialSection');
+        const btnCargarHistorial = document.getElementById('btnCargarHistorial');
+        const btnDescargarHistorial = document.getElementById('btnDescargarHistorial');
+        const tipoHistorial = document.getElementById('tipoHistorial');
+        const contenedorHistorial = document.getElementById('contenedorHistorial');
+        const contenidoHistorial = document.getElementById('contenidoHistorial');
+        const loadingHistorial = document.getElementById('loadingHistorial');
+
+        // Modal
+        const modalDetalleConsulta = document.getElementById('modalDetalleConsulta');
+        const detalleConsultaContent = document.getElementById('detalleConsultaContent');
+        const closeModal = document.querySelector('.close');
+
+        // Función para buscar pacientes en el backend
+        async function buscarPacientes() {
+            const nombre = nombreBusqueda.value.trim();
+            const ci = ciBusqueda.value.trim();
+
+            // Validar que al menos un campo tenga datos
+            if (!nombre && !ci) {
+                alert('Por favor, ingrese un nombre o CI para buscar.');
+                return;
+            }
+
+            listaResultados.innerHTML = '<div class="loading">Buscando pacientes...</div>';
+            resultadosBusqueda.style.display = 'block';
+            btnBuscar.disabled = true;
+            btnBuscar.textContent = 'BUSCANDO...';
+
+            try {
+                let url;
+                
+                // ✅ BÚSQUEDA SEPARADA: Si hay CI, buscar solo por CI
+                if (ci) {
+                    url = `${API_BASE_URL}/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
+                } else {
+                    // Si solo hay nombre, buscar por nombre
+                    url = `${API_BASE_URL}/buscar?term=${encodeURIComponent(nombre)}`;
+                }
+
+                console.log('Buscando pacientes con URL:', url);
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`Error en la búsqueda: ${response.status}`);
+                }
+
+                const pacientes = await response.json();
+                console.log('Pacientes encontrados:', pacientes);
+                mostrarResultados(pacientes);
+
+            } catch (error) {
+                console.error('Error al buscar pacientes:', error);
+                listaResultados.innerHTML = '<div class="no-results">Error al realizar la búsqueda. Verifique la conexión.</div>';
+            } finally {
+                btnBuscar.disabled = false;
+                btnBuscar.textContent = 'BUSCAR';
+            }
+        }
+        
+        // Función para mostrar resultados de búsqueda
+        function mostrarResultados(pacientes) {
+            listaResultados.innerHTML = '';
+            
+            if (!pacientes || pacientes.length === 0) {
+                listaResultados.innerHTML = '<div class="no-results">No se encontraron pacientes con los criterios de búsqueda.</div>';
+            } else {
+                pacientes.forEach(paciente => {
+                    const item = document.createElement('div');
+                    item.className = 'result-item';
+
+                    // Formatear nombre completo usando los campos reales
+                    const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
+
+                    // CI está en la entidad Paciente (campo ci)
+                    const ciMostrado = paciente.ci !== null && paciente.ci !== undefined ? paciente.ci : (paciente.persona?.ci || 'N/A');
+
+                    item.innerHTML = `
+                        <strong>${nombreCompleto}</strong> - CI: ${ciMostrado} - Historial: ${paciente.historialClinico || 'N/A'}
+                    `;
+                    item.addEventListener('click', () => seleccionarPaciente(paciente));
+                    listaResultados.appendChild(item);
+                });
+            }
+            
+            resultadosBusqueda.style.display = 'block';
+        }
+        
+        // Función para seleccionar un paciente y llenar el formulario
+        function seleccionarPaciente(paciente) {
+            // Llenar campos del formulario con datos del paciente
+            numHistoriaClinica.value = paciente.historialClinico || '';
+            ciPaciente.value = paciente.ci !== null && paciente.ci !== undefined ? paciente.ci : '';
+            numExpediente.value = paciente.idPaciente || paciente.id || '';
+            const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
+            personaInformacion.value = nombreCompleto;
+            edadPaciente.value = paciente.persona?.edad || '';
+
+            // Mostrar sección de historial
+            historialSection.style.display = 'block';
+
+            // Ocultar resultados
+            resultadosBusqueda.style.display = 'none';
+
+            // Limpiar campos de búsqueda
+            nombreBusqueda.value = '';
+            ciBusqueda.value = '';
+
+            // Desplazar a la sección de historial
+            historialSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Cargar historial del paciente
+        async function cargarHistorial() {
+            const idPaciente = document.getElementById('numExpediente').value;
+            const tipo = tipoHistorial.value;
+            
+            if (!idPaciente) {
+                alert('Debe seleccionar un paciente primero');
+                return;
+            }
+
+            loadingHistorial.style.display = 'block';
+            contenidoHistorial.innerHTML = '';
+
+            try {
+                let url;
+                switch(tipo) {
+                    case 'consultas':
+                        url = `http://localhost:8080/api/consultas/paciente/${idPaciente}`;
+                        break;
+                    case 'tratamientos':
+                        url = `http://localhost:8080/api/tratamientos/paciente/${idPaciente}`;
+                        break;
+                    case 'completo':
+                        url = `http://localhost:8080/api/historial/completo/${idPaciente}`;
+                        break;
+                    default:
+                        url = `http://localhost:8080/api/consultas/paciente/${idPaciente}`;
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Error al cargar el historial');
+                }
+
+                const historial = await response.json();
+                mostrarHistorial(historial, tipo);
+
+            } catch (error) {
+                console.error('Error:', error);
+                contenidoHistorial.innerHTML = '<div class="no-results">Error al cargar el historial</div>';
+            } finally {
+                loadingHistorial.style.display = 'none';
+            }
+        }
+
+        // Mostrar historial en la interfaz
+        function mostrarHistorial(historial, tipo) {
+            contenidoHistorial.innerHTML = '';
+
+            if (!historial || historial.length === 0) {
+                contenidoHistorial.innerHTML = '<div class="no-results">No se encontraron registros en el historial</div>';
+                return;
+            }
+
+            if (tipo === 'consultas') {
+                mostrarConsultas(historial);
+            } else if (tipo === 'tratamientos') {
+                mostrarTratamientos(historial);
+            } else {
+                mostrarHistorialCompleto(historial);
+            }
+        }
+
+        // Mostrar consultas
+        function mostrarConsultas(consultas) {
+            consultas.forEach((consulta, index) => {
+                const consultaItem = document.createElement('div');
+                consultaItem.className = 'consulta-item';
+                consultaItem.onclick = () => mostrarDetalleConsulta(consulta);
+                
+                consultaItem.innerHTML = `
+                    <div class="consulta-header">
+                        <span class="consulta-fecha">Consulta #${index + 1} - ${formatearFecha(consulta.fecha)}</span>
+                        <span class="consulta-tipo">CONSULTA</span>
+                    </div>
+                    <div class="consulta-detalles">
+                        <div class="detalle-item">
+                            <span class="detalle-label">Observaciones:</span>
+                            <span>${consulta.observaciones || 'Sin observaciones'}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Alergias:</span>
+                            <span>${consulta.alergias ? 'Sí' : 'No'} ${consulta.especifiqueAlergia ? `- ${consulta.especifiqueAlergia}` : ''}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Embarazo:</span>
+                            <span>${consulta.embarazo ? 'Sí' : 'No'} ${consulta.semanaEmbarazo ? `- ${consulta.semanaEmbarazo} semanas` : ''}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Higiene Bucal:</span>
+                            <span>${consulta.higieneBucal || 'No especificado'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                contenidoHistorial.appendChild(consultaItem);
+            });
+        }
+
+        // Mostrar tratamientos
+        function mostrarTratamientos(tratamientos) {
+            tratamientos.forEach((tratamiento, index) => {
+                const tratamientoItem = document.createElement('div');
+                tratamientoItem.className = 'consulta-item';
+                
+                tratamientoItem.innerHTML = `
+                    <div class="consulta-header">
+                        <span class="consulta-fecha">Tratamiento #${index + 1} - ${formatearFecha(tratamiento.fecha)}</span>
+                        <span class="consulta-tipo" style="background-color: #dc3545;">TRATAMIENTO</span>
+                    </div>
+                    <div class="consulta-detalles">
+                        <div class="detalle-item">
+                            <span class="detalle-label">Tipo:</span>
+                            <span>${tratamiento.tipoTratamiento || 'No especificado'}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Descripción:</span>
+                            <span>${tratamiento.descripcion || 'Sin descripción'}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Estado:</span>
+                            <span>${tratamiento.estado || 'No especificado'}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Procedimientos:</span>
+                            <span>${tratamiento.procedimientos || 'No especificado'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                contenidoHistorial.appendChild(tratamientoItem);
+            });
+        }
+
+        // Mostrar historial completo
+        function mostrarHistorialCompleto(historial) {
+            // Agrupar por fecha o tipo
+            historial.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'consulta-item';
+                
+                const esTratamiento = item.tipo === 'tratamiento' || item.tipoTratamiento;
+                const tipo = esTratamiento ? 'TRATAMIENTO' : 'CONSULTA';
+                const bgColor = esTratamiento ? '#dc3545' : '#28a745';
+                
+                itemElement.innerHTML = `
+                    <div class="consulta-header">
+                        <span class="consulta-fecha">${esTratamiento ? 'Tratamiento' : 'Consulta'} #${index + 1} - ${formatearFecha(item.fecha)}</span>
+                        <span class="consulta-tipo" style="background-color: ${bgColor};">${tipo}</span>
+                    </div>
+                    <div class="consulta-detalles">
+                        ${esTratamiento ? `
+                            <div class="detalle-item">
+                                <span class="detalle-label">Tipo:</span>
+                                <span>${item.tipoTratamiento || 'No especificado'}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Descripción:</span>
+                                <span>${item.descripcion || 'Sin descripción'}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Estado:</span>
+                                <span>${item.estado || 'No especificado'}</span>
+                            </div>
+                        ` : `
+                            <div class="detalle-item">
+                                <span class="detalle-label">Observaciones:</span>
+                                <span>${item.observaciones || 'Sin observaciones'}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Alergias:</span>
+                                <span>${item.alergias ? 'Sí' : 'No'} ${item.especifiqueAlergia ? `- ${item.especifiqueAlergia}` : ''}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Higiene Bucal:</span>
+                                <span>${item.higieneBucal || 'No especificado'}</span>
+                            </div>
+                        `}
+                    </div>
+                `;
+                
+                contenidoHistorial.appendChild(itemElement);
+            });
+        }
+
+        // Mostrar detalle completo de consulta en modal
+        function mostrarDetalleConsulta(consulta) {
+            detalleConsultaContent.innerHTML = `
+                <div class="detalle-completo">
+                    <h4>Consulta del ${formatearFecha(consulta.fecha)}</h4>
+                    
+                    <div class="seccion-detalle">
+                        <h5>Datos Generales</h5>
+                        <p><strong>Observaciones:</strong> ${consulta.observaciones || 'Sin observaciones'}</p>
+                        <p><strong>Fecha de Revisión:</strong> ${formatearFecha(consulta.fechaRevision) || 'No especificada'}</p>
+                    </div>
+                    
+                    <div class="seccion-detalle">
+                        <h5>Antecedentes Patológicos</h5>
+                        <p><strong>Enfermedades:</strong> ${consulta.nombrePatologia || 'Ninguna'}</p>
+                        <p><strong>Alergias:</strong> ${consulta.alergias ? 'Sí - ' + consulta.especifiqueAlergia : 'No'}</p>
+                        <p><strong>Embarazo:</strong> ${consulta.embarazo ? `Sí - ${consulta.semanaEmbarazo} semanas` : 'No'}</p>
+                        <p><strong>Tratamiento Médico:</strong> ${consulta.tratamientoMedico ? 'Sí - ' + consulta.tratamientoMedicoDetalle : 'No'}</p>
+                        <p><strong>Medicamentos:</strong> ${consulta.recibeAlgunMedicamento ? 'Sí - ' + consulta.medicamentoActual : 'No'}</p>
+                        <p><strong>Hemorragia Dental:</strong> ${consulta.tuvoHemorragiaDental ? 'Sí - ' + consulta.especifiqueHemorragia : 'No'}</p>
+                    </div>
+                    
+                    <div class="seccion-detalle">
+                        <h5>Examen Clínico</h5>
+                        <p><strong>ATM:</strong> ${consulta.atm || 'No especificado'}</p>
+                        <p><strong>Ganglios Linfáticos:</strong> ${consulta.gangliosLinfaticos || 'No especificado'}</p>
+                        <p><strong>Respirador:</strong> ${consulta.respirador || 'No especificado'}</p>
+                        <p><strong>Labios:</strong> ${consulta.labios || 'No especificado'}</p>
+                        <p><strong>Lengua:</strong> ${consulta.lengua || 'No especificado'}</p>
+                        <p><strong>Paladar:</strong> ${consulta.paladar || 'No especificado'}</p>
+                        <p><strong>Encías:</strong> ${consulta.encias || 'No especificado'}</p>
+                    </div>
+                    
+                    <div class="seccion-detalle">
+                        <h5>Prótesis Dental</h5>
+                        <p><strong>Utiliza Prótesis:</strong> ${consulta.utilizaProtesisDental ? 'Sí' : 'No'}</p>
+                        ${consulta.utilizaProtesisDental ? `
+                            <p><strong>Tipo:</strong> ${consulta.tipoProtesis}</p>
+                            <p><strong>Tiempo de Uso:</strong> ${consulta.tiempoProtesis}</p>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="seccion-detalle">
+                        <h5>Higiene Oral</h5>
+                        <p><strong>Cepillo Dental:</strong> ${consulta.utilizaCepilloDental ? 'Sí' : 'No'}</p>
+                        <p><strong>Hilo Dental:</strong> ${consulta.utilizaHiloDental ? 'Sí' : 'No'}</p>
+                        <p><strong>Enjuague Bucal:</strong> ${consulta.utilizaEnjuagueBucal ? 'Sí' : 'No'}</p>
+                        <p><strong>Frecuencia de Cepillado:</strong> ${consulta.frecuenciaCepillo || 'No especificado'}</p>
+                        <p><strong>Sangrado de Encías:</strong> ${consulta.sangradoEncias ? 'Sí' : 'No'}</p>
+                        <p><strong>Higiene Bucal:</strong> ${consulta.higieneBucal || 'No especificado'}</p>
+                        <p><strong>Observaciones:</strong> ${consulta.observacionesHigiene || 'Sin observaciones'}</p>
+                    </div>
+                </div>
+            `;
+            
+            modalDetalleConsulta.style.display = 'block';
+        }
+
+        // Función para formatear fecha
+        function formatearFecha(fechaString) {
+            if (!fechaString) return 'No especificada';
+            
+            try {
+                const fecha = new Date(fechaString);
+                return fecha.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return fechaString;
+            }
+        }
+
+        // Descargar historial como PDF
+        async function descargarHistorialPDF() {
+            const idPaciente = document.getElementById('numExpediente').value;
+            const tipo = tipoHistorial.value;
+            
+            if (!idPaciente) {
+                alert('Debe seleccionar un paciente primero');
+                return;
+            }
+
+            try {
+                // En una implementación real, aquí llamarías a tu backend para generar el PDF
+                // Por ahora, usaremos una solución simple con window.print()
+                
+                // Crear una ventana de impresión con el contenido del historial
+                const ventanaImpresion = window.open('', '_blank');
+                const nombrePaciente = document.getElementById('personaInformacion').value;
+                
+                ventanaImpresion.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Historial Clínico - ${nombrePaciente}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+                            .consulta { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; }
+                            .seccion { margin-bottom: 15px; }
+                            .label { font-weight: bold; }
+                            @media print { body { margin: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>HISTORIAL CLÍNICO ODONTOLÓGICO</h1>
+                            <h2>Universidad Amazónica de Pando</h2>
+                            <h3>Paciente: ${nombrePaciente}</h3>
+                            <p>Expediente: ${document.getElementById('numExpediente').value} | 
+                               Historia Clínica: ${document.getElementById('numHistoriaClinica').value} | 
+                               CI: ${document.getElementById('ciPaciente').value}</p>
+                            <p>Fecha de generación: ${new Date().toLocaleDateString()}</p>
+                        </div>
+                        <div id="contenido">
+                            ${contenidoHistorial.innerHTML}
+                        </div>
+                    </body>
+                    </html>
+                `);
+                
+                ventanaImpresion.document.close();
+                ventanaImpresion.print();
+                
+            } catch (error) {
+                console.error('Error al generar PDF:', error);
+                alert('Error al generar el PDF');
+            }
+        }
+
+        // Función para imprimir detalle de consulta
+        function imprimirDetalleConsulta() {
+            window.print();
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Búsqueda
+            btnBuscar.addEventListener('click', buscarPacientes);
+            
+            // Permitir búsqueda con Enter
+            nombreBusqueda.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    buscarPacientes();
+                }
+            });
+            
+            ciBusqueda.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    buscarPacientes();
+                }
+            });
+            
+            // Ocultar resultados al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!resultadosBusqueda.contains(e.target) && 
+                    e.target !== nombreBusqueda && 
+                    e.target !== ciBusqueda && 
+                    e.target !== btnBuscar) {
+                    resultadosBusqueda.style.display = 'none';
+                }
+            });
+
+            // Historial
+            btnCargarHistorial.addEventListener('click', cargarHistorial);
+            btnDescargarHistorial.addEventListener('click', descargarHistorialPDF);
+
+            // Modal
+            closeModal.addEventListener('click', function() {
+                modalDetalleConsulta.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target === modalDetalleConsulta) {
+                    modalDetalleConsulta.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
