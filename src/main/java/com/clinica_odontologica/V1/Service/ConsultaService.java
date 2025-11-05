@@ -1,6 +1,7 @@
 package com.clinica_odontologica.V1.Service;
 
 import com.clinica_odontologica.V1.Model.Entity.Consulta;
+import com.clinica_odontologica.V1.Model.Dto.ConsultaCompletaDTO;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,8 @@ public interface ConsultaService {
     Optional<Consulta> obtenerPorId(Long id);
     
     Consulta guardar(Consulta consulta);
+    
+    Consulta guardarConsultaCompleta(ConsultaCompletaDTO consultaDTO);
     
     void eliminar(Long id);
     

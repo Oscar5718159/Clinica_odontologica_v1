@@ -151,47 +151,46 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Apellido Paterno</label>
-                    <input type="text" id="apellidoPaterno_persona" readonly>
+                    <input type="text" id="apellidoPaterno_persona" >
                 </div>
                 <div class="form-group">
                     <label>Apellido Materno</label>
-                    <input type="text" id="apellidoMaterno_persona" readonly>
+                    <input type="text" id="apellidoMaterno_persona" >
                 </div>
                 <div class="form-group">
                     <label>Nombres</label>
-                    <input type="text" id="nombres_pesona" readonly>
+                    <input type="text" id="nombres_pesona" >
                 </div>
                 <div class="form-group">
                     <label>Dirección</label>
-                    <input type="text" id="direccion_persona" readonly>
+                    <input type="text" id="direccion_persona" >
                 </div>
                 <div class="form-group">
                     <label>Teléfono o Celular</label>
-                    <input type="text" id="telefono_persona" readonly>
+                    <input type="text" id="telefono_persona" >
                 </div>
             </div>
 
         </div>        
 
-        <!-- Resto de las secciones del formulario (se mantienen igual) -->
         <div class="form-section">
             <h2 class="section-title">ANTECEDENTES PATOLÓGICOS</h2>
             
-            <div class="form-row">
+            <!-- <div class="form-row">
                 <div class="form-group full-width">
                     <label>Antecedentes Patológicos Familiares</label>
-                    <textarea rows="3"></textarea>
+                    <textarea rows="3" id="antFamiliares"></textarea>
                 </div>
-            </div>
+            </div> -->
             
             <div class="form-row">
                 <div class="form-group full-width">
                     <label>Antecedentes Patológicos Personales</label>
-                    <textarea rows="3"></textarea>
                 </div>
             </div>
             
-            <table class="diseases-table">
+            <!-- Primera tabla de enfermedades -->
+            <table class="diseases-table" id="enfermedadesTabla1">
                 <thead>
                     <tr>
                         <th>Anemia</th>
@@ -203,16 +202,17 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox" id="anemia" class="enfermedad-checkbox"></td>
+                        <td><input type="checkbox" id="cardiopatias" class="enfermedad-checkbox"></td>
+                        <td><input type="checkbox" id="gastricas" class="enfermedad-checkbox"></td>
+                        <td><input type="checkbox" id="hepatitis" class="enfermedad-checkbox"></td>
+                        <td><input type="checkbox" id="tuberculosis" class="enfermedad-checkbox"></td>
                     </tr>
                 </tbody>
             </table>
             
-            <table class="diseases-table">
+            <!-- Segunda tabla de enfermedades -->
+            <table class="diseases-table" id="enfermedadesTabla2">
                 <thead>
                     <tr>
                         <th>Asma</th>
@@ -224,11 +224,11 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox" id="asma" class="enfermedad-checkbox"></td>
+                        <td><input type="checkbox" id="diabetes" class="enfermedad-checkbox"></td>
+                        <td><input type="checkbox" id="epilepsia" class="enfermedad-checkbox"></td>
+                        <td><input type="checkbox" id="hipertension" class="enfermedad-checkbox"></td>
+                        <td><input type="checkbox" id="vih" class="enfermedad-checkbox"></td>
                     </tr>
                 </tbody>
             </table>
@@ -236,32 +236,32 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Otros:</label>
-                    <input type="text">
+                    <input type="text" id="otrosEnfermedades">
+                    <div class="validation-message" id="otrosValidation"></div>
                 </div>
                 <div class="form-group">
                     <label>Ninguno:</label>
-                    <input type="checkbox">
+                    <input type="checkbox" id="ningunaEnfermedad">
+                    <div class="validation-message" id="ningunoValidation">No puede seleccionar "Ninguno" junto con otras enfermedades</div>
                 </div>
-            </div>
-            
-            <div class="form-row">
                 <div class="form-group">
                     <label>Alergias:</label>
                     <div class="checkbox-group">
                         <div class="checkbox-item">
-                            <input type="radio" id="alergias-si" name="alergias">
+                            <input type="radio" id="alergias-si" name="alergias" value="si">
                             <label for="alergias-si">SI</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="radio" id="alergias-no" name="alergias">
+                            <input type="radio" id="alergias-no" name="alergias" value="no">
                             <label for="alergias-no">NO</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Especifique:</label>
-                    <input type="text">
-                </div>
+                    <label>Especifique la Alergia:</label>
+                    <input type="text" id="especifiqueAlergia" disabled>
+                    <div class="validation-message" id="alergiaValidation">Debe especificar la alergia</div>
+                </div>                
             </div>
             
             <div class="form-row">
@@ -269,29 +269,30 @@
                     <label>Embarazo:</label>
                     <div class="checkbox-group">
                         <div class="checkbox-item">
-                            <input type="radio" id="embarazo-si" name="embarazo">
+                            <input type="radio" id="embarazo-si" name="embarazo" value="si">
                             <label for="embarazo-si">SI</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="radio" id="embarazo-no" name="embarazo">
+                            <input type="radio" id="embarazo-no" name="embarazo" value="no">
                             <label for="embarazo-no">NO</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Semanas:</label>
-                    <input type="text">
+                    <input type="text" id="semanasEmbarazo" disabled>
+                    <div class="validation-message" id="embarazoValidation">Debe especificar las semanas de embarazo</div>
                 </div>
             </div>
             
             <div class="form-row">
                 <div class="form-group">
                     <label>¿Está en tratamiento médico?</label>
-                    <input type="text">
+                    <input type="text" id="tratamientoMedico">
                 </div>
                 <div class="form-group">
                     <label>¿Actualmente recibe algún medicamento?</label>
-                    <input type="text">
+                    <input type="text" id="medicamentoActual">
                 </div>
             </div>
             
@@ -300,40 +301,261 @@
                     <label>¿Tuvo hemorragia después de una extracción dental?</label>
                     <div class="checkbox-group">
                         <div class="checkbox-item">
-                            <input type="radio" id="hemorragia-si" name="hemorragia">
+                            <input type="radio" id="hemorragia-si" name="hemorragia" value="si">
                             <label for="hemorragia-si">SI</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="radio" id="hemorragia-no" name="hemorragia">
+                            <input type="radio" id="hemorragia-no" name="hemorragia" value="no">
                             <label for="hemorragia-no">NO</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Especifique:</label>
-                    <input type="text" placeholder="Inmediata - Mediata">
+                    <input type="text" id="especifiqueHemorragia" placeholder="Inmediata - Mediata" disabled>
+                    <div class="validation-message" id="hemorragiaValidation">Debe especificar el tipo de hemorragia</div>
                 </div>
             </div>
         </div>
         
+        <div class="form-section">
+            <h2 class="section-title">EXAMEN EXTRA ORAL</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ATM:</label>
+                    <input type="text" id="atm">
+                </div>
+                <div class="form-group">
+                    <label>Ganglios linfáticos:</label>
+                    <input type="text" id="ganglios">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Respirador:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="resp-nasal" name="respirador" value="nasal">
+                            <label for="resp-nasal">Nasal</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="resp-bucal" name="respirador" value="bucal">
+                            <label for="resp-bucal">Bucal</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="resp-buco-nasal" name="respirador" value="buco-nasal">
+                            <label for="resp-buco-nasal">Buco nasal</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Otros:</label>
+                    <input type="text" id="otrosRespiratorio">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2 class="section-title">EXAMEN INTRA ORAL</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Labios:</label>
+                    <input type="text" id="labios">
+                </div>
+                <div class="form-group">
+                    <label>Lengua:</label>
+                    <input type="text" id="lengua">
+                </div>
+            </div>            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Paladar:</label>
+                    <input type="text" id="paladar">
+                </div>
+                <div class="form-group">
+                    <label>Piso de la boca:</label>
+                    <input type="text" id="pisoBoca">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Mucosa Yugal:</label>
+                    <input type="text" id="mucosaYugal">
+                </div>
+                <div class="form-group">
+                    <label>Encías:</label>
+                    <input type="text" id="encias">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Utiliza prótesis dental:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="protesis-si" name="protesis" value="si">
+                            <label for="protesis-si">SI</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="protesis-no" name="protesis" value="no">
+                            <label for="protesis-no">NO</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de prótesis:</label>
+                    <input type="text" id="tipoProtesis" disabled>
+                    <div class="validation-message" id="protesisValidation">Debe especificar el tipo de prótesis</div>
+                </div>
+                <div class="form-group">
+                    <label>Tiempo de uso:</label>
+                    <input type="text" id="tiempoProtesis" disabled>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2 class="section-title">ANTECEDENTES BUCODENTALES</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Fecha de la última visita al odontólogo:</label>
+                    <input type="date" id="ultimaVisita">
+                </div>
+                <div class="form-group">
+                    <label>HÁBITOS:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fuma" class="habito-checkbox">
+                            <label for="fuma">Fuma</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="bebe" class="habito-checkbox">
+                            <label for="bebe">Bebe</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Otros hábitos:</label>
+                    <input type="text" id="otrosHabitos">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2 class="section-title">ANTECEDENTES DE HIGIENE ORAL</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Utiliza cepillo dental:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="cepillo-si" name="cepillo" value="si">
+                            <label for="cepillo-si">SI</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="cepillo-no" name="cepillo" value="no">
+                            <label for="cepillo-no">NO</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Utiliza hilo dental:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="hilo-si" name="hilo" value="si">
+                            <label for="hilo-si">SI</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="hilo-no" name="hilo" value="no">
+                            <label for="hilo-no">NO</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Utiliza enjuague bucal:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="enjuague-si" name="enjuague" value="si">
+                            <label for="enjuague-si">SI</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="enjuague-no" name="enjuague" value="no">
+                            <label for="enjuague-no">NO</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Frecuencia del cepillado dental:</label>
+                    <input type="text" id="frecuenciaCepillado">
+                </div>
+                <div class="form-group">
+                    <label>Durante el cepillado dental le sangran las encías:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="sangrado-si" name="sangrado" value="si">
+                            <label for="sangrado-si">SI</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="sangrado-no" name="sangrado" value="no">
+                            <label for="sangrado-no">NO</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>HIGIENE BUCAL:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="higiene-buena" name="higiene" value="buena">
+                            <label for="higiene-buena">Buena</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="higiene-regular" name="higiene" value="regular">
+                            <label for="higiene-regular">Regular</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="higiene-mala" name="higiene" value="mala">
+                            <label for="higiene-mala">Mala</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label>Observaciones:</label>
+                    <textarea rows="3" id="observacionesHigiene"></textarea>
+                </div>
+            </div>
+        </div>
+
         <!-- Las demás secciones se mantienen igual... -->
         
         <!-- SECCIÓN DEL ODONTOGRAMA -->
-        <div class="odontograma-section">
+        <!-- <div class="odontograma-section">
             <h1>SECCION 8</h1>
             <h2>ODONTOGRAMA</h2>
             
             <div class="odontograma-container">
                 <div class="dental-chart" id="dentalChart">
-                    <!-- Los dientes se generarán con JavaScript -->
+                
                 </div>
             </div>
             
             <div class="current-selection" id="currentSelection">
                 Seleccione un diente y luego elija un área y un diagnóstico
             </div>
-            
-            <!-- Selector de áreas -->
+     
             <div class="area-selector" id="areaSelector">
                 <div class="area-selector-title">Seleccione un área del diente:</div>
                 <div class="area-buttons">
@@ -345,7 +567,7 @@
                 </div>
             </div>
             
-            <!-- Criterios de diagnóstico -->
+        
             <h3 style="text-align: center; margin: 15px 0 10px; font-size: 16px;">CRITERIOS DE DIAGNÓSTICO</h3>
             
             <div class="diagnostic-criteria" id="diagnosticCriteria">
@@ -400,7 +622,7 @@
                 </div>
             </div>
             
-            <!-- Sección CPO-D -->
+           
             <div class="cpod-section">
                 <div class="cpod-item">
                     <span>C</span>
@@ -435,7 +657,7 @@
                     <span>Diente seleccionado</span>
                 </div>
             </div>
-        </div>
+        </div> -->
         
         <!-- Botón de envío final -->
         <div class="form-section">

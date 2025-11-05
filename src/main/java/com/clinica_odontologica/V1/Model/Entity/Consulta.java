@@ -19,7 +19,7 @@ public class Consulta {
     private String observaciones;
 
     // Relaciones con otras entidades
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_paciente", nullable = false)
     private Paciente paciente;
 
@@ -27,25 +27,33 @@ public class Consulta {
     @JoinColumn(name = "id_estudiante", nullable = false)
     private Estudiante estudiante;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_informante", nullable = false)
     private Informante informante;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_examen_extra_oral")
     private ExamenExtraOral examenExtraOral;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_examen_intra_oral")
     private ExamenIntraOral examenIntraOral;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_antecedentes_bucodentales")
     private AntecedentesBucodentales antecedentesBucodentales;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_antecedentes_higiene_oral")
     private AntecedentesHigieneOral antecedentesHigieneOral;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_patologia_personal")
+    private PatologiaPersonal patologiaPersonal;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_tratamiento_medico")
+    private TratamientoMedico tratamientoMedico;
 
     // Constructores
     public Consulta() {
@@ -138,5 +146,21 @@ public class Consulta {
 
     public void setAntecedentesHigieneOral(AntecedentesHigieneOral antecedentesHigieneOral) {
         this.antecedentesHigieneOral = antecedentesHigieneOral;
+    }
+
+    public PatologiaPersonal getPatologiaPersonal() {
+        return patologiaPersonal;
+    }
+
+    public void setPatologiaPersonal(PatologiaPersonal patologiaPersonal) {
+        this.patologiaPersonal = patologiaPersonal;
+    }
+
+    public TratamientoMedico getTratamientoMedico() {
+        return tratamientoMedico;
+    }
+
+    public void setTratamientoMedico(TratamientoMedico tratamientoMedico) {
+        this.tratamientoMedico = tratamientoMedico;
     }
 }

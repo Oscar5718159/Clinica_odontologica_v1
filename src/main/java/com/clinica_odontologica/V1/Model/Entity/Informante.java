@@ -26,11 +26,17 @@ public class Informante {
     @Column(length = 20)
     private String telefono;
 
+    // Constructor sin parámetros (OBLIGATORIO)
+    public Informante() {
+    }
+
+    // Constructor con parámetros
     public Informante(String nombres, String apellidoPaterno, String apellidoMaterno, String direccion, String telefono) {
         this.nombres = nombres;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.direccion = direccion;
+        this.telefono = telefono;
     }
 
     // Getters y Setters
