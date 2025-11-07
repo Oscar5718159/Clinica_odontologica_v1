@@ -158,4 +158,13 @@ public class ConsultaServiceImpl implements ConsultaService {
     public List<Consulta> obtenerPorRangoFechas(LocalDate fechaInicio, LocalDate fechaFin) {
         return consultaRepository.findByFechaBetween(fechaInicio, fechaFin);
     }
+    @Override
+    public List<Consulta> buscarPorCriterio(String criterio) {
+        return consultaRepository.buscarPorCriterio(criterio);
+    }
+
+    @Override
+    public Optional<Consulta> obtenerConsultaCompleta(Long idConsulta) {
+        return consultaRepository.findById(idConsulta);
+    }
 }

@@ -18,4 +18,12 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
     @Query("SELECT c FROM Consulta c WHERE c.fecha BETWEEN :fechaInicio AND :fechaFin")
     List<Consulta> findByFechaBetween(@Param("fechaInicio") LocalDate fechaInicio, 
                                     @Param("fechaFin") LocalDate fechaFin);
+
+    // En ConsultaRepository.java - AGREGAR:
+    @Query("SELECT c FROM Consulta c WHERE " +
+        "c.paciente.nombres LIKE %:criterio% OR " +
+        "c.paciente.apellidoPaterno LIKE %:criterio% OR " +
+        "c.paciente.apellidoMaterno LIKE %:criterio% OR " +
+        "CAST(c.idConsulta AS string) LIKE %:criterio%")
+    List<Consulta> buscarPorCriterio(@Param("criterio") String criterio);
 }

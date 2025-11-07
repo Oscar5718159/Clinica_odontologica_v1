@@ -25,4 +25,9 @@ public interface ConsultaService {
     List<Consulta> obtenerPorEstudiante(Long idEstudiante);
     
     List<Consulta> obtenerPorRangoFechas(LocalDate fechaInicio, LocalDate fechaFin);
+
+    // esto es para buscar
+    List<Consulta> buscarPorCriterio(String criterio);
+    
+    Optional<Consulta> obtenerConsultaCompleta(Long idConsulta);
 }
