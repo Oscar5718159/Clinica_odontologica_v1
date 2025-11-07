@@ -19,11 +19,11 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
     List<Consulta> findByFechaBetween(@Param("fechaInicio") LocalDate fechaInicio, 
                                     @Param("fechaFin") LocalDate fechaFin);
 
-    // En ConsultaRepository.java - AGREGAR:
+    // CORRECCIÓN: Usar paciente.persona.nombre en lugar de paciente.nombres
     @Query("SELECT c FROM Consulta c WHERE " +
-        "c.paciente.nombres LIKE %:criterio% OR " +
-        "c.paciente.apellidoPaterno LIKE %:criterio% OR " +
-        "c.paciente.apellidoMaterno LIKE %:criterio% OR " +
+        "c.paciente.persona.nombre LIKE %:criterio% OR " +
+        "c.paciente.persona.apellidoPaterno LIKE %:criterio% OR " +
+        "c.paciente.persona.apellidoMaterno LIKE %:criterio% OR " +
         "CAST(c.idConsulta AS string) LIKE %:criterio%")
     List<Consulta> buscarPorCriterio(@Param("criterio") String criterio);
 }

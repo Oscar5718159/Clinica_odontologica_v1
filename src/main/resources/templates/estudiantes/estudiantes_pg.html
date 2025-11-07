@@ -26,25 +26,24 @@
             <input type="text" placeholder="Search...">
         </div>
         
-        <ul class="menu">
-            <li class="active" onclick="showDashboard()">
-                <i class="fas fa-th-large"></i>
-                <span class="menu-text">Dashboard</span>
-                <span class="badge">3</span>
-            </li>
-            <li onclick="loadPage('/estudiantes/Revision/revision', 'Nuevo Consulta', 'historiaClinicaFrame')">
-           
-                <span class="menu-text">✚   Nueva Consulta</span>
-            </li>
-            <li onclick="loadPage('solicitud_insumos.html', 'Solicitud de Insumos', 'solicitudInsumosFrame')">
-                <i class="fas fa-box"></i>
-                <span class="menu-text">Solicitud de insumos</span>
-            </li>
-            <li>
-                <i class="fas fa-palette"></i>
-                <span class="menu-text">encargado de citas</span>
-
-            </li>
+            <ul class="menu">
+                <li class="active" onclick="showDashboard()">
+                    <i class="fas fa-th-large"></i>
+                    <span class="menu-text">Dashboard</span>
+                    <span class="badge">3</span>
+                </li>
+                <li onclick="loadPage('/estudiantes/Revision/revision', 'Nuevo Consulta', 'historiaClinicaFrame')">
+            
+                    <span class="menu-text">✚   Nueva Consulta</span>
+                </li>
+                <li onclick="loadPage('/estudiantes/consentimiento/consentimiento-vista', 'Consentimiento', 'consentimientoFrame')">
+                    <i class="fas fa-file-signature"></i> <!-- Icono apropiado para consentimiento -->
+                    <span class="menu-text">Consentimiento</span>
+                </li>
+                <li onclick="loadPage('solicitud_insumos.html', 'Solicitud de Insumos', 'solicitudInsumosFrame')">
+                    <i class="fas fa-box"></i>
+                    <span class="menu-text">Solicitud de insumos</span>
+                </li>
             <li>
                 <i class="fas fa-edit"></i>
                 <span class="menu-text">Forms</span>
@@ -290,10 +289,15 @@
         <div id="nuevoPacienteContent" class="content-area">
             <iframe id="historiaClinicaFrame" src="about:blank"></iframe>
         </div>
-        
+
         <!-- Contenido de Solicitud de Insumos -->
         <div id="solicitudInsumosContent" class="content-area">
             <iframe id="solicitudInsumosFrame" src="about:blank"></iframe>
+        </div>
+
+        <!-- Contenido de Consentimiento -->
+        <div id="consentimientoContent" class="content-area">
+            <iframe id="consentimientoFrame" src="about:blank"></iframe>
         </div>
     </div>
 
@@ -339,8 +343,9 @@
                 document.getElementById('nuevoPacienteContent').classList.add('active');
             } else if (frameId === 'solicitudInsumosFrame') {
                 document.getElementById('solicitudInsumosContent').classList.add('active');
+            } else if (frameId === 'consentimientoFrame') {
+                document.getElementById('consentimientoContent').classList.add('active');
             }
-            
             // Activar el item del menú clickeado
             event.currentTarget.classList.add('active');
             

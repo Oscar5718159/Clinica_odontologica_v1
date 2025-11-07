@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Consentimiento Odontológico</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      background-color: #f0f8ff;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      min-height: 100vh;
+      background-color: white;
+      padding: 20px;
+      border: 1px solid #ddd;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-image {
+      width: 100%;
+      height: 200px;
+      background: url('/img/logo_de_uap.png') center/cover no-repeat;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: rgb(0, 0, 0);
+      padding: 20px;
+    }
+
+    .document-title {
+      font-weight: bold;
+      font-size: 28px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .document-subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .consentimiento-texto {
+      margin: 20px 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      line-height: 1.6;
+    }
+
+    .consentimiento-texto p {
+      margin-bottom: 15px;
+      text-align: justify;
+    }
+
+    .editable-field {
+      display: inline-block;
+      min-width: 150px;
+      border-bottom: 1px solid #333;
+      padding: 2px 5px;
+      margin: 0 5px;
+      background-color: white;
+      min-height: 20px;
+    }
+
+    .editable-field:focus {
+      outline: none;
+      background-color: #f0fff0;
+      border-bottom: 2px solid #2e8b57;
+    }
+
+    .short-field { min-width: 80px; }
+    .medium-field { min-width: 200px; }
+    .long-field { min-width: 300px; }
+
+    .search-form {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .search-form label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .search-form input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      min-width: 200px;
+    }
+
+    .search-form button {
+      padding: 8px 15px;
+      background-color: #4a6fa5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .search-form button:hover {
+      background-color: #3a5985;
+    }
+
+    .consulta-info {
+      background-color: #e8f4fd;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border-left: 4px solid #4a6fa5;
+      display: none;
+    }
+    
+    .consulta-info p {
+      margin-bottom: 8px;
+    }
+    
+    .doctor-selection {
+      margin: 15px 0;
+      padding: 15px;
+      background-color: #f0f8ff;
+      border-radius: 5px;
+      border: 1px solid #cce0ff;
+      display: none;
+    }
+    
+    .doctor-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .doctor-option {
+      padding: 10px 15px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+      background-color: white;
+    }
+    
+    .doctor-option:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .doctor-option.selected {
+      border-color: #2e8b57;
+      background-color: #e8f5e9;
+    }
+  
+    .procedimiento-texto {
+      width: 100%;
+      min-height: 120px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
+      margin-top: 10px;
+    }
+    
+    .procedimiento-section {
+      margin: 15px 0;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+      display: none;
+    }
+    
+    .decision-section {
+      margin: 25px 0;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+      display: none;
+    }
+    
+    .decision-options {
+      display: flex;
+      gap: 20px;
+      margin-top: 15px;
+    }
+    
+    .decision-option {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .decision-option:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .decision-option.selected {
+      border-color: #2e8b57;
+      background-color: #e8f5e9;
+    }
+    
+    .decision-option.rechazado.selected {
+      border-color: #d32f2f;
+      background-color: #ffebee;
+    }
+
+    .revocatorio {
+      margin-top: 25px;
+      padding: 15px;
+      background-color: #fff3f3;
+      border: 1px solid #ffcccc;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .signature-section {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      display: none;
+    }
+
+    .signature-box {
+      flex: 1;
+      text-align: center;
+      min-width: 200px;
+    }
+
+    .signature-line {
+      border-top: 1px solid #333;
+      margin-top: 40px;
+      padding-top: 5px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 25px;
+      gap: 15px;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-size: 16px;
+    }
+
+    .submit-btn { background-color: #2e8b57; color: white; }
+    .submit-btn:hover { background-color: #26734a; }
+    .reset-btn { background-color: #f0f0f0; color: #333; }
+    .reset-btn:hover { background-color: #e0e0e0; }
+    .print-btn { background-color: #4a6fa5; color: white; }
+    .print-btn:hover { background-color: #3a5985; }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      border-top: 1px solid #ddd;
+      padding-top: 15px;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .search-form { flex-direction: column; align-items: stretch; }
+      .decision-options { flex-direction: column; }
+      .doctor-options { flex-direction: column; }
+    }
+
+    @media print {
+      .button-container { display: none; }
+      .header-image { -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header-image">
+      <div class="header-content"></div>
+    </div>
+
+    <div class="header-content">
+      <div class="document-title">CONSENTIMIENTO INFORMADO</div>
+      <div class="document-subtitle">Odontología General y Especialidades</div>
+    </div>
+
+    <!-- 🔍 SECCIÓN DE BÚSQUEDA DE CONSULTA -->
+    <div class="consentimiento-texto">
+      <h2>Selección de Consulta</h2>
+      <p>Para generar el consentimiento, primero seleccione la consulta correspondiente:</p>
+      <div class="search-form">
+        <label for="buscaConsulta">Buscar consulta:</label>
+        <input type="text" id="buscaConsulta" placeholder="Ingrese nombre del paciente o número de consulta">
+        <button type="button" id="btnBuscar">Buscar</button>
+      </div>
+      
+      <!-- Información de la consulta seleccionada -->
+      <div id="infoConsulta" class="consulta-info">
+        <h3>Información de la Consulta</h3>
+        <p><strong>Paciente:</strong> <span id="pacienteNombre">-</span></p>
+        <p><strong>Edad:</strong> <span id="edadPaciente">-</span></p>
+        <p><strong>Fecha de consulta:</strong> <span id="fechaConsulta">-</span></p>
+      </div>
+    </div>
+
+    <!-- FORMULARIO DE CONSENTIMIENTO -->
+    <div id="formularioConsentimiento" class="consentimiento-texto" style="display: none;">
+      <h2>Formulario de Consentimiento</h2>
+      
+      <!-- EXPLICACIÓN DEL PROCEDIMIENTO -->
+      <div id="seccionProcedimiento" class="procedimiento-section">
+        <h3>Explicación del Procedimiento</h3>
+        <p>Por favor, ingrese una breve explicación del procedimiento que se realizará al paciente:</p>
+        <textarea id="explicacionProcedimiento" class="procedimiento-texto" placeholder="Describa el procedimiento dental que se realizará..."></textarea>
+      </div>
+
+      <!-- SELECCIÓN DE DOCTOR -->
+      <div id="seccionDoctor" class="doctor-selection">
+        <h3>Seleccione al doctor responsable del consentimiento</h3>
+        <div class="doctor-options">
+          <div th:each="docente : ${docentes}" 
+               class="doctor-option" 
+               th:attr="data-id=${docente.idDocente}"
+               th:data-nombre="${docente.nombreDocente}">
+            <strong th:text="${docente.nombreDocente}">Nombre Docente</strong><br>
+            <small th:text="${docente.especialidad}">Especialidad</small>
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <strong>Nombre del/la paciente:</strong>
+        <span id="nombrePaciente" class="editable-field medium-field">-</span>
+        <strong>Edad:</strong>
+        <span id="edadPacienteForm" class="editable-field short-field">-</span>
+      </p>
+
+      <p>
+        Declaro bajo mi responsabilidad que el Dr. (a)
+        <span id="nombre_doctor" class="editable-field medium-field">-</span>
+        me ha explicado personalmente el tratamiento que debo seguir en mi caso.
+      </p>
+
+      <p>Que por explicación del Dr. (a) he comprendido el tratamiento que se me realizará, también se me informó de las consecuencias que puede surgir de no cumplir con las indicaciones descritas.</p>
+
+      <p>Que consiento que el Dr. (a) proceda al tratamiento que requiero y que si en el curso de ella, estima necesario o conveniente llevar a cabo cualquier otra medida que también me ha explicado, lo haga sin demora.</p>
+
+      <!-- SECCIÓN DE DECISIÓN -->
+      <div id="seccionDecision" class="decision-section">
+        <h3>Decisión del Paciente</h3>
+        <div class="decision-options">
+          <div class="decision-option" data-decision="aceptar">
+            <h4>Acepto el tratamiento</h4>
+            <p>Consiento realizar el procedimiento explicado</p>
+          </div>
+          <div class="decision-option rechazado" data-decision="rechazar">
+            <h4>Rechazo el tratamiento</h4>
+            <p>No consiento realizar el procedimiento explicado</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVOCATORIO (solo se muestra si rechaza) -->
+      <div id="revocatorio" class="revocatorio">
+        <p><strong>REVOCATORIO (rechazo el tratamiento)</strong></p>
+        <p>Yo 
+          <span id="nombreRevocatorio" class="editable-field medium-field">-</span> 
+          con C.I. 
+          <span id="ciRevocatorio" class="editable-field short-field" contenteditable="true"></span> 
+          declaro que 
+          <span class="editable-field long-field" contenteditable="true"></span> 
+          por 
+          <span class="editable-field medium-field" contenteditable="true"></span> 
+          rechazo el tratamiento que el Dr. (a) 
+          <span id="doctorRevocatorio" class="editable-field medium-field">-</span> 
+          me explicó.
+        </p>
+        <p>Lugar y fecha: 
+          <span id="fechaRevocatorio" class="editable-field long-field">-</span>
+        </p>
+      </div>
+
+      <!-- SECCIÓN DE FIRMAS -->
+      <div id="seccionFirmas" class="signature-section">
+        <div class="signature-box">
+          <p>Firma del Paciente o Representante Legal</p>
+          <div class="signature-line"></div>
+        </div>
+        <div class="signature-box">
+          <p>Firma del Odontólogo</p>
+          <div class="signature-line"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <button type="button" class="print-btn" onclick="window.print()">Imprimir Formulario</button>
+      <button type="button" class="reset-btn" onclick="limpiarFormulario()">Limpiar Formulario</button>
+      <button type="button" class="submit-btn" id="btnGuardar">Guardar Formulario</button>
+    </div>
+
+    <div class="footer">
+      <div class="code">Código Privado: Edificio</div>
+    </div>
+  </div>
+
+  <script>
+    
+    let consultaSeleccionada = null;
+    let decision = null;
+    let docenteSeleccionado = null;
+
+    // Búsqueda de consultas
+    document.getElementById('btnBuscar').addEventListener('click', buscarConsulta);
+
+    async function buscarConsulta() {
+        const criterio = document.getElementById('buscaConsulta').value.trim();
+        
+        if (!criterio) {
+            alert('Por favor, escriba algo para buscar.');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/consentimientos/buscar-consulta?criterio=${encodeURIComponent(criterio)}`);
+            
+            if (!response.ok) {
+                throw new Error('Error en la búsqueda');
+            }
+            
+            const consultas = await response.json();
+            
+            // DEBUG: Ver la estructura completa de la respuesta
+            console.log("Respuesta completa:", consultas);
+            if (consultas.length > 0) {
+                console.log("Primera consulta:", consultas[0]);
+                console.log("Estructura paciente:", consultas[0].paciente);
+                
+                consultaSeleccionada = consultas[0];
+                mostrarInfoConsulta(consultaSeleccionada);
+                mostrarFormularioCompleto();
+            } else {
+                alert('No se encontró ninguna consulta con esos criterios.');
+            }
+        } catch (error) {
+            console.error('Error al buscar consulta:', error);
+            alert('Error al buscar consulta: ' + error.message);
+        }
+    }
+
+    function mostrarInfoConsulta(consulta) {
+        document.getElementById('infoConsulta').style.display = 'block';
+        
+        // DEBUG: Ver la estructura real del objeto consulta
+        console.log("Consulta en mostrarInfoConsulta:", consulta);
+        
+        // Acceso seguro con verificación de existencia
+        const paciente = consulta.paciente || {};
+        const persona = paciente.persona || {};
+        
+        // Construir nombre completo de forma segura
+        const nombreCompleto = [persona.nombre, persona.apellidoPaterno, persona.apellidoMaterno]
+            .filter(Boolean)
+            .join(' ')
+            .trim() || 'Nombre no disponible';
+        
+        // Calcular edad (usar diferentes posibles fuentes)
+        let edad = 'No especificada';
+        if (persona.edad) {
+            edad = persona.edad;
+        } else if (persona.fechaNacimiento) {
+            const edadCalculada = calcularEdad(persona.fechaNacimiento);
+            if (edadCalculada) {
+                edad = edadCalculada;
+            }
+        } else if (paciente.edad) {
+            edad = paciente.edad;
+        }
+        
+        // Formatear fecha de consulta
+        let fechaConsulta = 'Fecha no disponible';
+        if (consulta.fecha) {
+            try {
+                fechaConsulta = new Date(consulta.fecha).toLocaleDateString('es-ES');
+            } catch (e) {
+                fechaConsulta = consulta.fecha;
+            }
+        }
+        
+        // Actualizar la información en la UI
+        document.getElementById('pacienteNombre').textContent = nombreCompleto;
+        document.getElementById('edadPaciente').textContent = edad + ' años';
+        document.getElementById('fechaConsulta').textContent = fechaConsulta;
+        
+        // Llenar campos del formulario
+        document.getElementById('nombrePaciente').textContent = nombreCompleto;
+        document.getElementById('edadPacienteForm').textContent = edad + ' años';
+        document.getElementById('nombreRevocatorio').textContent = nombreCompleto;
+        
+        // Establecer fecha actual
+        const hoy = new Date();
+        document.getElementById('fechaRevocatorio').textContent = hoy.toLocaleDateString('es-ES');
+    }
+
+    // Función auxiliar para calcular edad si es necesario
+    function calcularEdad(fechaNacimiento) {
+        if (!fechaNacimiento) return null;
+        
+        try {
+            const nacimiento = new Date(fechaNacimiento);
+            const hoy = new Date();
+            
+            // Validar que la fecha sea válida
+            if (isNaN(nacimiento.getTime())) {
+                return null;
+            }
+            
+            let edad = hoy.getFullYear() - nacimiento.getFullYear();
+            const mes = hoy.getMonth() - nacimiento.getMonth();
+            
+            if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+                edad--;
+            }
+            
+            return edad;
+        } catch (error) {
+            console.error('Error calculando edad:', error);
+            return null;
+        }
+    }
+
+    function mostrarFormularioCompleto() {
+        document.getElementById('formularioConsentimiento').style.display = 'block';
+        document.getElementById('seccionProcedimiento').style.display = 'block';
+        document.getElementById('seccionDoctor').style.display = 'block';
+        document.getElementById('seccionDecision').style.display = 'block';
+    }
+
+    // Manejo de selección de docente
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.doctor-option')) {
+            const opcion = e.target.closest('.doctor-option');
+            document.querySelectorAll('.doctor-option').forEach(o => o.classList.remove('selected'));
+            opcion.classList.add('selected');
+            docenteSeleccionado = {
+                id: opcion.getAttribute('data-id'),
+                nombre: opcion.getAttribute('data-nombre')
+            };
+            document.getElementById('nombre_doctor').textContent = docenteSeleccionado.nombre;
+            document.getElementById('doctorRevocatorio').textContent = docenteSeleccionado.nombre;
+        }
+    });
+
+    // Manejo de decisión
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.decision-option')) {
+            const opcion = e.target.closest('.decision-option');
+            document.querySelectorAll('.decision-option').forEach(o => o.classList.remove('selected'));
+            opcion.classList.add('selected');
+            decision = opcion.getAttribute('data-decision');
+            
+            if (decision === 'aceptar') {
+                document.getElementById('seccionFirmas').style.display = 'flex';
+                document.getElementById('revocatorio').style.display = 'none';
+            } else {
+                document.getElementById('seccionFirmas').style.display = 'none';
+                document.getElementById('revocatorio').style.display = 'block';
+            }
+        }
+    });
+
+    // Guardar consentimiento
+    document.getElementById('btnGuardar').addEventListener('click', async function() {
+        if (!validarFormulario()) return;
+        
+        const datos = {
+            idConsulta: consultaSeleccionada.idConsulta,
+            idDocente: docenteSeleccionado.id,
+            explicacion: document.getElementById('explicacionProcedimiento').value,
+            decision: decision
+        };
+        
+        console.log("Datos a enviar:", datos); // DEBUG
+        
+        try {
+            const response = await fetch('/consentimientos/crear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(datos)
+            });
+            
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                alert('Consentimiento guardado correctamente');
+                limpiarFormulario();
+            } else {
+                alert('Error: ' + resultado);
+            }
+        } catch (error) {
+            console.error('Error al guardar:', error);
+            alert('Error al guardar el consentimiento: ' + error.message);
+        }
+    });
+
+    function validarFormulario() {
+        if (!consultaSeleccionada) {
+            alert('Por favor, seleccione una consulta primero.');
+            return false;
+        }
+        if (!docenteSeleccionado) {
+            alert('Por favor, seleccione al doctor responsable.');
+            return false;
+        }
+        const explicacion = document.getElementById('explicacionProcedimiento').value.trim();
+        if (!explicacion) {
+            alert('Por favor, ingrese una explicación del procedimiento.');
+            return false;
+        }
+        if (!decision) {
+            alert('Por favor, seleccione si acepta o rechaza el tratamiento.');
+            return false;
+        }
+        return true;
+    }
+
+    function limpiarFormulario() {
+        location.reload();
+    }
+
+    // Establecer fecha actual al cargar
+    document.addEventListener('DOMContentLoaded', function() {
+        const hoy = new Date();
+        document.getElementById('fechaRevocatorio').textContent = hoy.toLocaleDateString('es-ES');
+    });
+  </script>
+</body>
+</html>

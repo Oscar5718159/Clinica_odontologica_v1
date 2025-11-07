@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+
 @Controller
 @RequestMapping("/estudiantes")
 public class RevisionViewController {
@@ -17,5 +18,10 @@ public class RevisionViewController {
     public String mostrarRevision() {
         return "estudiantes/Revision/revision"; // ✅ Ahora coincide con tu estructura
     }    
+    
+    @GetMapping("/consentimiento/consentimiento-vista")
+    public String getMethodConsulta() {
+        return "estudiantes/consentimiento/consentimiento-vista";
+    }
     
 }
