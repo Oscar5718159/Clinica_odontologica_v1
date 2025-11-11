@@ -3,6 +3,8 @@ package com.clinica_odontologica.V1.Model.Entity;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "clinica")
 public class Clinica {
@@ -22,6 +24,7 @@ public class Clinica {
     private Integer capacidadMaxima;
 
     @OneToMany(mappedBy = "clinica")
+    @JsonIgnore
     private List<Docente> docentes;
 
     // Constructores

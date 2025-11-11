@@ -314,6 +314,7 @@
 </head>
 
 <body>
+
   <div class="container">
     <div class="header-image">
       <div class="header-content"></div>
@@ -355,17 +356,15 @@
       </div>
 
       <!-- SELECCIÓN DE DOCTOR -->
-      <div id="seccionDoctor" class="doctor-selection">
-        <h3>Seleccione al doctor responsable del consentimiento</h3>
-        <div class="doctor-options">
-          <div th:each="docente : ${docentes}" 
-               class="doctor-option" 
-               th:attr="data-id=${docente.idDocente}"
-               th:data-nombre="${docente.nombreDocente}">
-            <strong th:text="${docente.nombreDocente}">Nombre Docente</strong><br>
-            <small th:text="${docente.especialidad}">Especialidad</small>
+      <!-- SELECCIÓN DE DOCTOR - TEMPORALMENTE VISIBLE -->
+      <div id="seccionDoctor" class="doctor-selection" style="display: block !important;">
+          <h3>Seleccione al doctor responsable del consentimiento</h3>
+          <div id="opciones_doctors" class="doctor-options">
+              <!-- Los docentes se cargarán dinámicamente desde JavaScript -->
+              <div style="color: #999; padding: 20px; text-align: center;">
+                  Cargando docentes...
+              </div>
           </div>
-        </div>
       </div>
 
       <p>
@@ -450,6 +449,92 @@
     let decision = null;
     let docenteSeleccionado = null;
 
+    // Cargar docentes al iniciar la página
+    document.addEventListener('DOMContentLoaded', async function() {
+        await cargarDocentes();
+        const hoy = new Date();
+        document.getElementById('fechaRevocatorio').textContent = hoy.toLocaleDateString('es-ES');
+    });
+    async function cargarDocentes() {
+        try {
+            console.log("🔍 Iniciando carga de docentes...");
+            
+            const response = await fetch('/consentimientos/obtener-docentes');
+            
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+            }
+            
+            const docentes = await response.json();
+            console.log("✅ Docentes recibidos:", docentes);
+            
+            const contenedorDocentes = document.getElementById('opciones_doctors');
+            if (!contenedorDocentes) {
+                console.error('❌ Elemento opciones_doctors no encontrado');
+                return;
+            }
+            
+            if (docentes && docentes.length > 0) {
+                contenedorDocentes.innerHTML = '';
+                
+                docentes.forEach((docente, index) => {
+                    console.log(`📝 Procesando docente ${index + 1}:`, docente);
+                    
+                    // USAR LA ESTRUCTURA CORRECTA según tu entidad Docente
+                    const nombreCompleto = docente.nombreDocente || `Docente ${index + 1}`;
+                    const especialidad = docente.especialidad || 'Sin especialidad';
+                    
+                    const opcion = document.createElement('div');
+                    opcion.className = 'doctor-option';
+                    opcion.setAttribute('data-id', docente.idDocente || docente.id || index);
+                    opcion.setAttribute('data-nombre', nombreCompleto);
+                    
+                    opcion.innerHTML = `
+                        <strong>${nombreCompleto}</strong><br>
+                        <small>${especialidad}</small>
+                    `;
+                    
+                    // Agregar evento de clic
+                    opcion.addEventListener('click', function() {
+                        document.querySelectorAll('.doctor-option').forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                        docenteSeleccionado = {
+                            id: this.getAttribute('data-id'),
+                            nombre: this.getAttribute('data-nombre')
+                        };
+                        document.getElementById('nombre_doctor').textContent = docenteSeleccionado.nombre;
+                        document.getElementById('doctorRevocatorio').textContent = docenteSeleccionado.nombre;
+                        console.log("✅ Docente seleccionado:", docenteSeleccionado);
+                    });
+                    
+                    contenedorDocentes.appendChild(opcion);
+                });
+                
+                console.log("✅ Docentes cargados correctamente en la interfaz");
+            } else {
+                contenedorDocentes.innerHTML = `
+                    <div style="color: red; padding: 20px; text-align: center;">
+                        <h4>⚠️ No hay docentes disponibles</h4>
+                        <p>La lista de docentes está vacía o no se pudo cargar.</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('❌ Error al cargar docentes:', error);
+            const contenedorDocentes = document.getElementById('opciones_doctors');
+            if (contenedorDocentes) {
+                contenedorDocentes.innerHTML = `
+                    <div style="color: red; padding: 20px; text-align: center;">
+                        <h4>❌ Error al cargar docentes</h4>
+                        <p>${error.message}</p>
+                        <button onclick="cargarDocentes()" style="padding: 10px; margin: 10px; background: #ff4444; color: white; border: none; border-radius: 4px;">
+                            Reintentar
+                        </button>
+                    </div>
+                `;
+            }
+        }
+    }
     // Búsqueda de consultas
     document.getElementById('btnBuscar').addEventListener('click', buscarConsulta);
 
@@ -675,6 +760,10 @@
         const hoy = new Date();
         document.getElementById('fechaRevocatorio').textContent = hoy.toLocaleDateString('es-ES');
     });
+
+
+
+
   </script>
 </body>
 </html>

@@ -4,24 +4,37 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
+/**
+ * Controlador de vistas para la sección de estudiantes y revisión.
+ * Solo maneja la presentación de vistas, sin lógica de negocio.
+ */
 @Controller
 @RequestMapping("/estudiantes")
 public class RevisionViewController {
     
+    /**
+     * Página principal de estudiantes
+     */
     @GetMapping
-    public String paginaRevision() {
-        return "estudiantes/estudiantes_pg"; // ✅ Correcto
+    public String paginaEstudiantes() {
+        return "estudiantes/estudiantes_pg";
     }   
     
+    /**
+     * Página de revisión de consultas
+     */
     @GetMapping("/Revision/revision")
     public String mostrarRevision() {
-        return "estudiantes/Revision/revision"; // ✅ Ahora coincide con tu estructura
+        return "estudiantes/Revision/revision";
     }    
     
+    /**
+     * Vista del formulario de consentimiento
+     * Las funciones de API (cargar docentes, buscar consultas, guardar consentimiento)
+     * están en ConsentimientoController
+     */
     @GetMapping("/consentimiento/consentimiento-vista")
-    public String getMethodConsulta() {
+    public String mostrarConsentimiento() {
         return "estudiantes/consentimiento/consentimiento-vista";
     }
-    
 }

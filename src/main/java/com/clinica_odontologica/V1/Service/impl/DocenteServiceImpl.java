@@ -16,7 +16,33 @@ public class DocenteServiceImpl implements DocenteService {
 
     @Override
     public List<Docente> obtenerTodos() {
-        return docenteRepository.findAll();
+        try {
+            List<Docente> docentes = docenteRepository.findAll();
+            
+            // DEBUG DETALLADO
+            System.out.println("=== DEBUG DocenteService.obtenerTodos() ===");
+            System.out.println("📊 Total de docentes encontrados: " + docentes.size());
+            System.out.println("🔢 Total en BD: " + docenteRepository.countTotalDocentes());
+            System.out.println("✅ Activos en BD: " + docenteRepository.countDocentesActivos());
+            
+            if (docentes.isEmpty()) {
+                System.out.println("⚠️ La lista de docentes está VACÍA");
+            } else {
+                docentes.forEach(d -> {
+                    System.out.println("👤 Docente: ID=" + d.getIdDocente() + 
+                                     ", Nombre=" + d.getNombreDocente() + 
+                                     ", Especialidad=" + d.getEspecialidad() + 
+                                     ", Estado=" + d.getEstado());
+                });
+            }
+            System.out.println("=== FIN DEBUG ===");
+            
+            return docentes;
+        } catch (Exception e) {
+            System.err.println("❌ ERROR en obtenerTodos: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Relanza la excepción para ver el error completo
+        }
     }
 
     @Override
@@ -24,6 +50,7 @@ public class DocenteServiceImpl implements DocenteService {
         return docenteRepository.findByEstadoTrue();
     }
 
+    // ... los demás métodos permanecen igual
     @Override
     public Optional<Docente> obtenerPorId(Long id) {
         return docenteRepository.findById(id);

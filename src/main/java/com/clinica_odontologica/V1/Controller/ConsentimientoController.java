@@ -4,6 +4,7 @@ import com.clinica_odontologica.V1.Model.Entity.Consentimiento;
 import com.clinica_odontologica.V1.Model.Entity.Consulta;
 import com.clinica_odontologica.V1.Model.Entity.Docente;
 import com.clinica_odontologica.V1.Model.Dto.ConsentimientoRequest;
+import com.clinica_odontologica.V1.Model.Dto.DocenteDTO;
 import com.clinica_odontologica.V1.Service.ConsentimientoService;
 import com.clinica_odontologica.V1.Service.ConsultaService;
 import com.clinica_odontologica.V1.Service.DocenteService;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/consentimientos")
@@ -28,16 +30,37 @@ public class ConsentimientoController {
     @Autowired
     private DocenteService docenteService;
 
-    // Vista del formulario de consentimiento
-    @GetMapping("/formulario")
-    public String mostrarFormularioConsentimiento(Model model) {
+
+    @GetMapping("/obtener-docentes")
+    @ResponseBody
+    public ResponseEntity<?> obtenerDocentes() {
         try {
             List<Docente> docentes = docenteService.obtenerTodosActivos();
-            model.addAttribute("docentes", docentes);
-            return "consentimiento/formulario";
+            
+            System.out.println("🎯 Usando obtenerTodosActivos()");
+            System.out.println("📊 Docentes activos encontrados: " + docentes.size());
+            
+            // Convertir a DTO para evitar relaciones circulares
+            List<DocenteDTO> docentesDTO = docentes.stream()
+                .map(d -> new DocenteDTO(
+                    d.getIdDocente(), 
+                    d.getNombreDocente(), 
+                    d.getEspecialidad(),
+                    d.getEstado()
+                ))
+                .collect(Collectors.toList());
+            
+            // DEBUG
+            for (DocenteDTO d : docentesDTO) {
+                System.out.println("✅ DTO - ID: " + d.getIdDocente() + ", Nombre: " + d.getNombreDocente());
+            }
+            
+            return ResponseEntity.ok(docentesDTO);
         } catch (Exception e) {
-            model.addAttribute("error", "Error al cargar el formulario: " + e.getMessage());
-            return "error";
+            System.err.println("❌ Error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                .body("Error al obtener docentes: " + e.getMessage());
         }
     }
 
