@@ -40,14 +40,13 @@
                     <i class="fas fa-file-signature"></i> <!-- Icono apropiado para consentimiento -->
                     <span class="menu-text">Consentimiento</span>
                 </li>
-                <li onclick="loadPage('solicitud_insumos.html', 'Solicitud de Insumos', 'solicitudInsumosFrame')">
+                <li onclick="loadPage('/estudiantes/solicitud/insumos', 'Solicitud de Insumos', 'solicitudInsumosFrame')">
                     <i class="fas fa-box"></i>
                     <span class="menu-text">Solicitud de insumos</span>
                 </li>
-            <li>
+            <li onclick="loadPage('/estudiantes/seguimiento/seguimiento-vista','Seguimiento Tratamiento', 'seguiminetoTratamientoFrame')">
                 <i class="fas fa-edit"></i>
-                <span class="menu-text">Forms</span>
-                <span class="badge">45</span>
+                <span class="menu-text">Seguimiento Tratamiento</span>
             </li>
             <li>
                 <i class="fas fa-table"></i>
@@ -299,6 +298,10 @@
         <div id="consentimientoContent" class="content-area">
             <iframe id="consentimientoFrame" src="about:blank"></iframe>
         </div>
+
+        <div id="seguimientoContent" clasas="content-area">
+            <iframe id="seguiminetoTratamientoFrame" src="about:blank"> </iframe>
+        </div>
     </div>
 
     <script>
@@ -345,7 +348,8 @@
                 document.getElementById('solicitudInsumosContent').classList.add('active');
             } else if (frameId === 'consentimientoFrame') {
                 document.getElementById('consentimientoContent').classList.add('active');
-            }
+            } else if (frameId ==='seguiminetoTratamientoFrame') {
+                document.getElementById('seguimientoContent').classList.add('active');}
             // Activar el item del menú clickeado
             event.currentTarget.classList.add('active');
             
