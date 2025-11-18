@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cubic Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../static/CSS/panel.css">
     <link rel="stylesheet" th:href="@{/CSS/panel.css}">
+    <!-- <link rel="stylesheet" href="../../static/CSS/panel.css">  -->
 </head>
 <body>          
     <!-- Sidebar -->    
@@ -14,7 +14,7 @@
         <div class="logo">
             <div>
                 <h1>PANEL</h1>
-                <h1>ESTUDIANTE</h1>
+                <h1>INSUMOS</h1>
             </div>
             <button class="toggle-btn" id="toggleBtn">
                 <i class="fas fa-bars"></i>
@@ -26,27 +26,28 @@
             <input type="text" placeholder="Search...">
         </div>
         
-            <ul class="menu">
-                <li class="active" onclick="showDashboard()">
-                    <i class="fas fa-th-large"></i>
-                    <span class="menu-text">Dashboard</span>
-                    <span class="badge">3</span>
-                </li>
-                <li onclick="loadPage('/estudiantes/Revision/revision', 'Nuevo Consulta', 'historiaClinicaFrame')">
-            
-                    <span class="menu-text">✚   Nueva Consulta</span>
-                </li>
-                <li onclick="loadPage('/estudiantes/consentimiento/consentimiento-vista', 'Consentimiento', 'consentimientoFrame')">
-                    <i class="fas fa-file-signature"></i> <!-- Icono apropiado para consentimiento -->
-                    <span class="menu-text">Consentimiento</span>
-                </li>
-                <li onclick="loadPage('/estudiantes/solicitud/insumos', 'Solicitud de Insumos', 'solicitudInsumosFrame')">
-                    <i class="fas fa-box"></i>
-                    <span class="menu-text">Solicitud de insumos</span>
-                </li>
-            <li onclick="loadPage('/estudiantes/seguimiento/seguimiento-vista','Seguimiento Tratamiento', 'seguimientoTratamientoFrame')">
+        <ul class="menu">
+            <li class="active" onclick="showDashboard()">
+                <i class="fas fa-th-large"></i>
+                <span class="menu-text">Dashboard</span>
+                <span class="badge">3</span>
+            </li>
+            <li onclick="loadPage('/recepcion/paginas/registro_paciente', 'Nuevo Paciente', 'historiaClinicaFrame', this)">
+                <i class="fas fa-user-injured"></i>
+                <span class="menu-text">Nuevo Paciente</span>
+            </li>
+            <li onclick="loadPage('solicitud_insumos', 'Solicitud de Insumos', 'solicitudInsumosFrame', this)">
+                <i class="fas fa-box"></i>
+                <span class="menu-text">Solicitud de insumos</span>
+            </li>
+            <li onclick="loadPage('/recepcion/paginas/historial_clinico', 'Historial Clínico', 'historiaClinicaFrame', this)">
+                <i class="fas fa-history"></i>
+                <span class="menu-text">Historial Clínico</span>
+            </li>
+            <li>
                 <i class="fas fa-edit"></i>
-                <span class="menu-text">Seguimiento Tratamiento</span>
+                <span class="menu-text">Forms</span>
+                <span class="badge">45</span>
             </li>
             <li>
                 <i class="fas fa-table"></i>
@@ -288,19 +289,10 @@
         <div id="nuevoPacienteContent" class="content-area">
             <iframe id="historiaClinicaFrame" src="about:blank"></iframe>
         </div>
-
+        
         <!-- Contenido de Solicitud de Insumos -->
         <div id="solicitudInsumosContent" class="content-area">
             <iframe id="solicitudInsumosFrame" src="about:blank"></iframe>
-        </div>
-
-        <!-- Contenido de Consentimiento -->
-        <div id="consentimientoContent" class="content-area">
-            <iframe id="consentimientoFrame" src="about:blank"></iframe>
-        </div>
-
-        <div id="seguimientoContent" class="content-area">
-            <iframe id="seguimientoTratamientoFrame" src="about:blank"> </iframe>
         </div>
     </div>
 
@@ -330,7 +322,7 @@
             document.getElementById('pageTitle').textContent = 'Dashboard';
         }
 
-        function loadPage(pageUrl, pageTitle, frameId) {
+        function loadPage(pageUrl, pageTitle, frameId, menuItem) {
             // Ocultar todo el contenido
             document.querySelectorAll('.content-area').forEach(content => {
                 content.classList.remove('active');
@@ -346,12 +338,15 @@
                 document.getElementById('nuevoPacienteContent').classList.add('active');
             } else if (frameId === 'solicitudInsumosFrame') {
                 document.getElementById('solicitudInsumosContent').classList.add('active');
-            } else if (frameId === 'consentimientoFrame') {
-                document.getElementById('consentimientoContent').classList.add('active');
-            } else if (frameId ==='seguimientoTratamientoFrame') {
-                document.getElementById('seguimientoContent').classList.add('active');}
+            }
+            
             // Activar el item del menú clickeado
-            event.currentTarget.classList.add('active');
+            // Preferimos el menuItem pasado desde el onclick (this). Si no existe, intentamos usar event como fallback.
+            if (menuItem && menuItem.classList) {
+                menuItem.classList.add('active');
+            } else if (typeof event !== 'undefined' && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
             
             // Actualizar el título de la página
             document.getElementById('pageTitle').textContent = pageTitle;

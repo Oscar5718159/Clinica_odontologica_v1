@@ -13,70 +13,66 @@
     <link rel="stylesheet" th:href="@{/CSS/login_dise.css}">
     <link rel="stylesheet" href="css/estilos.css">
 </head>
-
 <body>
-
-    <div class="contenedor-formulario contenedor">
-        <div class="imagen-formulario">
-            
+    <div class="login-content">
+        <div class="logo">
+            <h1>Clinica odontologica UAP</h1>
+            <p>Inicia sesión con tu cuenta</p>
         </div>
-
+        
         <form class="formulario">
-            <div class="texto-formulario">
-                <h2>Clinica odontologica UAP</h2>
-                <p>Inicia sesión con tu cuenta</p>
-            </div>
-            <div class="input">
+            <div class="input-group">
                 <label for="usuario">Usuario</label>
-                <input placeholder="Ingresa tu nombre" type="text" id="usuario">
+                <input type="text" id="usuario" placeholder="Ingresa tu nombre">
             </div>
-            <div class="input">
+            
+            <div class="input-group">
                 <label for="contraseña">Contraseña</label>
-                <input placeholder="Ingresa tu contraseña" type="password" id="contraseña">
+                <input type="password" id="contraseña" placeholder="Ingresa tu contraseña">
             </div>
+            
             <div class="password-olvidada">
                 <a href="#">¿Olvidaste tu contraseña?</a>
             </div>
-            <div class="input">
-                <input type="submit" value="Login">
-            </div>
+            
+            <button type="submit" class="signin-btn">INICIAR SESIÓN</button>
         </form>
     </div>
-<script>
-document.querySelector('.formulario').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const usuario = document.getElementById('usuario').value;
-    const contraseña = document.getElementById('contraseña').value;
-    
-    fetch('/login/autenticar', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            usuario: usuario,
-            contraseña: contraseña
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Login exitoso - redirigir o mostrar mensaje
-            alert(`Bienvenido ${data.nombre} ${data.apellidos}`);
-            // Redirigir a otra página
-            window.location.href = '/estudiantes'; // Ajusta esta ruta
-        } else {
-            // Mostrar error
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error en el servidor');
-    });
-});
-</script>
-</body>
 
+    <script>
+        document.querySelector('.formulario').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value;
+            const contraseña = document.getElementById('contraseña').value;
+            
+            fetch('/autenticar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    usuario: usuario,
+                    contraseña: contraseña
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Login exitoso - redirigir o mostrar mensaje
+                    alert(`Bienvenido ${data.nombre} ${data.apellidos}`);
+                    // Redirigir a otra página
+                    window.location.href = '/estudiantes'; // Ajusta esta ruta
+                } else {
+                    // Mostrar error
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error en el servidor');
+            });
+        });
+    </script>
+</body>
 </html>

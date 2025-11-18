@@ -180,6 +180,53 @@
       border-color: #2e8b57;
       background-color: #e8f5e9;
     }
+
+    .tratamiento-section {
+      margin: 15px 0;
+      padding: 15px;
+      background-color: #f0f8ff;
+      border-radius: 5px;
+      border: 1px solid #cce0ff;
+      display: none;
+    }
+
+    .tratamiento-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .tratamiento-option {
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+      background-color: white;
+      text-align: center;
+    }
+
+    .tratamiento-option:hover {
+      background-color: #f0f0f0;
+      transform: translateY(-2px);
+    }
+
+    .tratamiento-option.selected {
+      border-color: #4a6fa5;
+      background-color: #e8f4fd;
+    }
+
+    .tratamiento-option h4 {
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    .tratamiento-option p {
+      font-size: 12px;
+      color: #666;
+      margin: 0;
+    }
   
     .procedimiento-texto {
       width: 100%;
@@ -305,6 +352,7 @@
       .search-form { flex-direction: column; align-items: stretch; }
       .decision-options { flex-direction: column; }
       .doctor-options { flex-direction: column; }
+      .tratamiento-options { grid-template-columns: 1fr; }
     }
 
     @media print {
@@ -349,16 +397,75 @@
     <div id="formularioConsentimiento" class="consentimiento-texto" style="display: none;">
       <h2>Formulario de Consentimiento</h2>
       
+      <!-- SELECCIÓN DE TRATAMIENTO -->
+      <div id="seccionTratamiento" class="tratamiento-section">
+        <h3>Selección de Tratamiento</h3>
+        <p>Seleccione el tipo de tratamiento que se realizará:</p>
+        
+        <div class="tratamiento-options">
+          <!-- Opciones de tratamientos generales -->
+          <div class="tratamiento-option" data-tratamiento="limpieza">
+            <h4>Limpieza Dental</h4>
+            <p>Profilaxis y eliminación de sarro</p>
+          </div>
+          
+          <div class="tratamiento-option" data-tratamiento="restauracion">
+            <h4>Restauración</h4>
+            <p>Obturaciones (calzas/empastes)</p>
+          </div>
+          
+          <div class="tratamiento-option" data-tratamiento="endodoncia">
+            <h4>Endodoncia</h4>
+            <p>Tratamiento de conductos</p>
+          </div>
+          
+          <div class="tratamiento-option" data-tratamiento="extraccion">
+            <h4>Extracción Dental</h4>
+            <p>Exodoncia simple o quirúrgica</p>
+          </div>
+          
+          <div class="tratamiento-option" data-tratamiento="protesis">
+            <h4>Prótesis Dental</h4>
+            <p>Coronas, puentes o dentaduras</p>
+          </div>
+          
+          <div class="tratamiento-option" data-tratamiento="ortodoncia">
+            <h4>Ortodoncia</h4>
+            <p>Tratamiento de alineación dental</p>
+          </div>
+          
+          <div class="tratamiento-option" data-tratamiento="periodoncia">
+            <h4>Periodoncia</h4>
+            <p>Tratamiento de encías</p>
+          </div>
+          
+          <div class="tratamiento-option" data-tratamiento="implante">
+            <h4>Implante Dental</h4>
+            <p>Colocación de implante</p>
+          </div>
+          
+          <div class="tratamiento-option" data-tratamiento="blanqueamiento">
+            <h4>Blanqueamiento Dental</h4>
+            <p>Tratamiento estético</p>
+          </div>
+          
+          <div class="tratamiento-option" data-tratamiento="otro">
+            <h4>Otro Procedimiento</h4>
+            <p>Tratamiento personalizado</p>
+          </div>
+        </div>
+      </div>
+
       <!-- EXPLICACIÓN DEL PROCEDIMIENTO -->
       <div id="seccionProcedimiento" class="procedimiento-section">
-        <h3>Explicación del Procedimiento</h3>
-        <p>Por favor, ingrese una breve explicación del procedimiento que se realizará al paciente:</p>
-        <textarea id="explicacionProcedimiento" class="procedimiento-texto" placeholder="Describa el procedimiento dental que se realizará..."></textarea>
+        <h3>Descripción Detallada del Procedimiento</h3>
+        <p id="tituloProcedimiento">Procedimiento seleccionado: <strong id="nombreTratamientoSeleccionado">-</strong></p>
+        <textarea id="explicacionProcedimiento" class="procedimiento-texto" 
+                  placeholder="Describa en detalle el procedimiento que se realizará, incluyendo materiales, técnicas y cuidados postoperatorios..."></textarea>
       </div>
 
       <!-- SELECCIÓN DE DOCTOR -->
-      <!-- SELECCIÓN DE DOCTOR - TEMPORALMENTE VISIBLE -->
-      <div id="seccionDoctor" class="doctor-selection" style="display: block !important;">
+      <div id="seccionDoctor" class="doctor-selection">
           <h3>Seleccione al doctor responsable del consentimiento</h3>
           <div id="opciones_doctors" class="doctor-options">
               <!-- Los docentes se cargarán dinámicamente desde JavaScript -->
@@ -449,6 +556,7 @@
     let consultaSeleccionada = null;
     let decision = null;
     let docenteSeleccionado = null;
+    let tratamientoSeleccionado = null;
 
     // Cargar docentes al iniciar la página
     document.addEventListener('DOMContentLoaded', async function() {
@@ -456,6 +564,7 @@
         const hoy = new Date();
         document.getElementById('fechaRevocatorio').textContent = hoy.toLocaleDateString('es-ES');
     });
+
     async function cargarDocentes() {
         try {
             console.log("🔍 Iniciando carga de docentes...");
@@ -536,6 +645,7 @@
             }
         }
     }
+
     // Búsqueda de consultas
     document.getElementById('btnBuscar').addEventListener('click', buscarConsulta);
 
@@ -657,10 +767,34 @@
 
     function mostrarFormularioCompleto() {
         document.getElementById('formularioConsentimiento').style.display = 'block';
-        document.getElementById('seccionProcedimiento').style.display = 'block';
-        document.getElementById('seccionDoctor').style.display = 'block';
-        document.getElementById('seccionDecision').style.display = 'block';
+        document.getElementById('seccionTratamiento').style.display = 'block'; // Mostrar primero tratamientos
+        // Ocultar las demás secciones hasta que se seleccione tratamiento
+        document.getElementById('seccionProcedimiento').style.display = 'none';
+        document.getElementById('seccionDoctor').style.display = 'none';
+        document.getElementById('seccionDecision').style.display = 'none';
     }
+
+    // Manejo de selección de tratamientos
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.tratamiento-option')) {
+            const opcion = e.target.closest('.tratamiento-option');
+            document.querySelectorAll('.tratamiento-option').forEach(o => o.classList.remove('selected'));
+            opcion.classList.add('selected');
+            
+            tratamientoSeleccionado = opcion.getAttribute('data-tratamiento');
+            const nombreTratamiento = opcion.querySelector('h4').textContent;
+            
+            // Actualizar la interfaz
+            document.getElementById('nombreTratamientoSeleccionado').textContent = nombreTratamiento;
+            
+            // Mostrar las siguientes secciones
+            document.getElementById('seccionProcedimiento').style.display = 'block';
+            document.getElementById('seccionDoctor').style.display = 'block';
+            document.getElementById('seccionDecision').style.display = 'block';
+            
+            console.log("✅ Tratamiento seleccionado:", tratamientoSeleccionado, nombreTratamiento);
+        }
+    });
 
     // Manejo de selección de docente
     document.addEventListener('click', function(e) {
@@ -674,6 +808,7 @@
             };
             document.getElementById('nombre_doctor').textContent = docenteSeleccionado.nombre;
             document.getElementById('doctorRevocatorio').textContent = docenteSeleccionado.nombre;
+            console.log("✅ Docente seleccionado:", docenteSeleccionado);
         }
     });
 
@@ -702,6 +837,8 @@
         const datos = {
             idConsulta: consultaSeleccionada.idConsulta,
             idDocente: docenteSeleccionado.id,
+            tipoTratamiento: tratamientoSeleccionado,
+            nombreTratamiento: document.getElementById('nombreTratamientoSeleccionado').textContent,
             explicacion: document.getElementById('explicacionProcedimiento').value,
             decision: decision
         };
@@ -736,6 +873,10 @@
             alert('Por favor, seleccione una consulta primero.');
             return false;
         }
+        if (!tratamientoSeleccionado) {
+            alert('Por favor, seleccione un tipo de tratamiento.');
+            return false;
+        }
         if (!docenteSeleccionado) {
             alert('Por favor, seleccione al doctor responsable.');
             return false;
@@ -761,9 +902,6 @@
         const hoy = new Date();
         document.getElementById('fechaRevocatorio').textContent = hoy.toLocaleDateString('es-ES');
     });
-
-
-
 
   </script>
 </body>

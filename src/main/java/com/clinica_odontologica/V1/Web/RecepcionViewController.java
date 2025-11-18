@@ -1,4 +1,4 @@
-package com.clinica_odontologica.V1.Controller;
+package com.clinica_odontologica.V1.Web;
 
 import com.clinica_odontologica.V1.Model.Entity.Persona;
 import com.clinica_odontologica.V1.Model.Entity.Paciente;
