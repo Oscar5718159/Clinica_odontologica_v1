@@ -36,9 +36,9 @@
                 <i class="fas fa-user-injured"></i>
                 <span class="menu-text">Buscar Historial Clinico</span>
             </li>
-            <li onclick="loadPage('solicitud_insumos', 'Solicitud de Insumos', 'solicitudInsumosFrame', this)">
+            <li onclick="loadPage('/doctor/estado_consentimiento/estadoConsentimiento', '', 'ConsentimientoEstadoFrame', this)">
                 <i class="fas fa-box"></i>
-                <span class="menu-text">Solicitud de insumos</span>
+                <span class="menu-text">Consentimiento</span>
             </li>
             <li onclick="loadPage('/recepcion/paginas/historial_clinico', 'Historial Clínico', 'historiaClinicaFrame', this)">
                 <i class="fas fa-history"></i>
@@ -291,8 +291,8 @@
         </div>
         
         <!-- Contenido de Solicitud de Insumos -->
-        <div id="solicitudInsumosContent" class="content-area">
-            <iframe id="solicitudInsumosFrame" src="about:blank"></iframe>
+        <div id="ConsentimientoEstadoContent" class="content-area">
+            <iframe id="ConsentimientoEstadoFrame" src="about:blank"></iframe>
         </div>
     </div>
 
@@ -336,8 +336,8 @@
             // Mostrar el contenido correspondiente
             if (frameId === 'historiaClinicaFrame') {
                 document.getElementById('nuevoPacienteContent').classList.add('active');
-            } else if (frameId === 'solicitudInsumosFrame') {
-                document.getElementById('solicitudInsumosContent').classList.add('active');
+            } else if (frameId === 'ConsentimientoEstadoFrame') {
+                document.getElementById('ConsentimientoEstadoContent').classList.add('active');
             }
             
             // Activar el item del menú clickeado

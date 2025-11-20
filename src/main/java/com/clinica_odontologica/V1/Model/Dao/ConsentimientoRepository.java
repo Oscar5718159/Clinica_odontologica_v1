@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ConsentimientoRepository extends JpaRepository<Consentimiento, Long> {
-    
-    // Buscar consentimientos por consulta
+
     Optional<Consentimiento> findByConsultaIdConsulta(Long idConsulta);
     
     // Buscar consentimientos por paciente (a través de consulta)

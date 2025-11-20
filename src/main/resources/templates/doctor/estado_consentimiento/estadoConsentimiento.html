@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Consentimientos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --gray: #95a5a6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            background-color: var(--light);
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .card-header h2 {
+            font-size: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-body {
+            padding: 0;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.2s;
+        }
+        
+        tbody tr:hover {
+            background-color: #f5f9ff;
+        }
+        
+        td {
+            padding: 15px 12px;
+            font-size: 14px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+        
+        .badge-danger {
+            background-color: #ffebee;
+            color: var(--danger);
+        }
+        
+        .badge-secondary {
+            background-color: #f5f5f5;
+            color: var(--gray);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .text-success {
+            color: var(--success);
+        }
+        
+        .text-danger {
+            color: var(--danger);
+        }
+        
+        .text-primary {
+            color: var(--primary);
+        }
+        
+        .text-warning {
+            color: var(--warning);
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Mensajes de éxito/error -->
+        <div th:if="${param.success}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${param.success}">Operación completada correctamente</span>
+        </div>
+        
+        <div th:if="${param.error}" class="alert alert-error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span th:text="${param.error}">Ha ocurrido un error</span>
+        </div>
+        
+        <div class="header">
+            <h1><i class="fas fa-file-contract"></i> Gestión de Consentimientos</h1>
+            <p>Administre y revise todos los consentimientos informados del sistema</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value text-primary" th:text="${consentimientos.size()}">0</div>
+                <div class="stat-label">Total de Consentimientos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value text-success" th:text="${totalAceptados}">0</div>
+                <div class="stat-label">Aceptados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value text-danger" th:text="${totalRechazados}">0</div>
+                <div class="stat-label">Rechazados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value text-warning" th:text="${totalInactivos}">0</div>
+                <div class="stat-label">Inactivos</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-list"></i> Lista de Consentimientos</h2>
+            </div>
+            
+            <div class="card-body">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Consulta</th>
+                                <th>Docente</th>
+                                <th>Explicación</th>
+                                <th>Fecha</th>
+                                <th>Decisión</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="c : ${consentimientos}">
+                                <td th:text="${c.idConsentimiento}">-</td>
+                                <td>
+                                    <strong th:text="${c.consulta.idConsulta}">-</strong>
+                                </td>
+                                <td>
+                                    <div>ID: <strong th:text="${c.docente.idDocente}">-</strong></div>
+                                    <small style="color: #666;" th:text="${c.docente.nombreDocente}">Nombre docente</small>
+                                </td>
+                                <td>
+                                    <div th:if="${c.explicacion != null and c.explicacion.length() > 50}" 
+                                         th:text="${c.explicacion.substring(0, 50)} + '...'">
+                                        -
+                                    </div>
+                                    <div th:if="${c.explicacion != null and c.explicacion.length() <= 50}" 
+                                         th:text="${c.explicacion}">
+                                        -
+                                    </div>
+                                    <div th:if="${c.explicacion == null}">
+                                        <em>Sin explicación</em>
+                                    </div>
+                                </td>
+                                <td th:text="${c.fecha != null ? #temporals.format(c.fecha, 'dd/MM/yyyy HH:mm') : 'N/A'}">-</td>
+                                <td>
+                                    <span th:if="${c.decision == 'aceptar'}" class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i> Aceptado
+                                    </span>
+                                    <span th:if="${c.decision == 'rechazar'}" class="badge badge-danger">
+                                        <i class="fas fa-times-circle"></i> Rechazado
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:if="${c.estado}" class="badge badge-success">
+                                        <i class="fas fa-check"></i> Activo
+                                    </span>
+                                    <span th:if="${!c.estado}" class="badge badge-secondary">
+                                        <i class="fas fa-ban"></i> Inactivo
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="actions">
+                                        <!-- Botón Editar -->
+                                        <a th:href="@{/consentimientos/editar/{id}(id=${c.idConsentimiento})}" 
+                                           class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        <!-- Botón Ver Detalles -->
+                                        <button class="btn btn-primary btn-sm" 
+                                                th:onclick="'verDetalles(' + ${c.idConsentimiento} + ')'">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para ver detalles
+        function verDetalles(id) {
+            // Redirigir a la página de detalles (puedes crear este endpoint)
+            window.location.href = '/consentimientos/detalles/' + id;
+            
+            // O para un modal (descomenta esto y comenta la línea anterior):
+            // alert('Ver detalles del consentimiento ID: ' + id);
+        }
+        
+        // Auto-ocultar mensajes después de 5 segundos
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transition = 'opacity 0.5s';
+                    setTimeout(() => alert.remove(), 500);
+                }, 5000);
+            });
+        }, 1000);
+        
+        console.log('✅ Tabla cargada correctamente');
+        console.log('Total de filas en la tabla:', document.querySelectorAll('tbody tr').length);
+    </script>
+</body>
+</html>

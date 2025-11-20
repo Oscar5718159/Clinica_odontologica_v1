@@ -163,6 +163,67 @@ public class ConsentimientoController {
     public String listarConsentimientos(Model model) {
         List<Consentimiento> consentimientos = consentimientoService.obtenerTodos();
         model.addAttribute("consentimientos", consentimientos);
-        return "consentimiento/lista";
+        return "doctor/estado_consentimiento/estadoConsentimiento";
+    }
+
+
+    // Mostrar formulario de edición
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEdicion(@PathVariable Long id, Model model) {
+        try {
+            Optional<Consentimiento> consentimiento = consentimientoService.obtenerPorId(id);
+            
+            if (consentimiento.isPresent()) {
+                model.addAttribute("consentimiento", consentimiento.get());
+                
+                // Para cargar docentes en el formulario de edición
+                List<Docente> docentes = docenteService.obtenerTodosActivos();
+                List<DocenteDTO> docentesDTO = docentes.stream()
+                    .map(d -> new DocenteDTO(d.getIdDocente(), d.getNombreDocente(), d.getEspecialidad(), d.getEstado()))
+                    .collect(Collectors.toList());
+                model.addAttribute("docentes", docentesDTO);
+                
+                return "doctor/estado_consentimiento/editarConsentimiento";
+            } else {
+                return "redirect:/consentimientos/lista?error=Consentimiento no encontrado";
+            }
+        } catch (Exception e) {
+            return "redirect:/consentimientos/lista?error=Error al cargar consentimiento";
+        }
+    }
+
+    // Procesar la edición
+    @PostMapping("/editar/{id}")
+    public String procesarEdicion(@PathVariable Long id, 
+                                @RequestParam String explicacion,
+                                @RequestParam String decision,
+                                @RequestParam Long idDocente,
+                                @RequestParam(defaultValue = "true") Boolean estado) {
+        try {
+            Optional<Consentimiento> consentimientoOpt = consentimientoService.obtenerPorId(id);
+            
+            if (consentimientoOpt.isPresent()) {
+                Consentimiento consentimiento = consentimientoOpt.get();
+                
+                // Actualizar campos
+                consentimiento.setExplicacion(explicacion);
+                consentimiento.setDecision(decision);
+                consentimiento.setEstado(estado);
+                
+                // Actualizar docente si es diferente
+                if (!consentimiento.getDocente().getIdDocente().equals(idDocente)) {
+                    Optional<Docente> nuevoDocente = docenteService.obtenerPorId(idDocente);
+                    nuevoDocente.ifPresent(consentimiento::setDocente);
+                }
+                
+                consentimientoService.guardar(consentimiento);
+                
+                return "redirect:/consentimientos/lista?success=Consentimiento actualizado correctamente";
+            } else {
+                return "redirect:/consentimientos/lista?error=Consentimiento no encontrado";
+            }
+        } catch (Exception e) {
+            return "redirect:/consentimientos/lista?error=Error al actualizar consentimiento";
+        }
     }
 }

@@ -17,5 +17,12 @@ public class DoctorViewController {
     public String mostrarDoctor() {
         return "doctor/historial_clinico/historial_clinico_ENPROCESO"; 
     }    
+
+    // Redirige a la URL correcta que sí tiene los datos
+    @GetMapping("/estado_consentimiento/estadoConsentimiento")
+    public String mostrarConsentimientoEstado() {
+        return "redirect:/consentimientos/lista"; 
+    }   
+
     
 }
