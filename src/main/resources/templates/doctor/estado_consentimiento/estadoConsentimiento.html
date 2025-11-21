@@ -275,6 +275,127 @@
                 flex-direction: column;
             }
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            animation: modalOpen 0.3s ease;
+        }
+
+        @keyframes modalOpen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            width: auto;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -376,11 +497,11 @@
                                 </td>
                                 <td>
                                     <div class="actions">
-                                        <!-- Botón Editar -->
-                                        <a th:href="@{/consentimientos/editar/{id}(id=${c.idConsentimiento})}" 
-                                           class="btn btn-warning btn-sm">
+                                        <!-- Botón Editar - Ahora abre el modal -->
+                                        <button class="btn btn-warning btn-sm" 
+                                                th:onclick="'abrirModalEdicion(' + ${c.idConsentimiento} + ')'">
                                             <i class="fas fa-edit"></i> Editar
-                                        </a>
+                                        </button>
                                         <!-- Botón Ver Detalles -->
                                         <button class="btn btn-primary btn-sm" 
                                                 th:onclick="'verDetalles(' + ${c.idConsentimiento} + ')'">
@@ -396,16 +517,176 @@
         </div>
     </div>
 
+    <!-- Modal de Edición -->
+    <div id="modalEdicion" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Editar Consentimiento</h3>
+                <button class="close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formEdicion" method="post">
+                    <input type="hidden" id="editIdConsentimiento" name="idConsentimiento">
+                    
+                    <div class="form-group">
+                        <label for="editDecision">Decisión: <span style="color: red;">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" id="editDecisionAceptar" name="decision" value="aceptar" checked>
+                                <i class="fas fa-check-circle text-success"></i> Aceptar
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" id="editDecisionRechazar" name="decision" value="rechazar">
+                                <i class="fas fa-times-circle text-danger"></i> Rechazar
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editExplicacion">Explicación:</label>
+                        <textarea id="editExplicacion" name="explicacion" 
+                                placeholder="Ingrese la explicación del consentimiento..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editEstado">Estado:</label>
+                        <select id="editEstado" name="estado">
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Actualizar
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelar">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Elementos del modal
+        const modal = document.getElementById('modalEdicion');
+        const closeBtn = document.querySelector('.close');
+        const cancelBtn = document.getElementById('btnCancelar');
+        const form = document.getElementById('formEdicion');
+
+        // Variable para almacenar el ID actual
+        let currentEditId = null;
+
+        function abrirModalEdicion(id, decision, explicacion, estado) {
+            console.log('Abriendo modal con datos REALES para ID:', id);
+            currentEditId = id;
+            
+            // Cargar los datos REALES del consentimiento
+            document.getElementById('editIdConsentimiento').value = id;
+            
+            // Configurar la decisión ACTUAL
+            if (decision === 'aceptar') {
+                document.getElementById('editDecisionAceptar').checked = true;
+                document.getElementById('editDecisionRechazar').checked = false;
+            } else {
+                document.getElementById('editDecisionAceptar').checked = false;
+                document.getElementById('editDecisionRechazar').checked = true;
+            }
+            
+            // Cargar la explicación ACTUAL
+            document.getElementById('editExplicacion').value = explicacion || '';
+            
+            // Configurar el estado ACTUAL
+            document.getElementById('editEstado').value = estado.toString();
+            
+            console.log('Datos cargados:', {
+                decision: decision,
+                explicacion: explicacion,
+                estado: estado
+            });
+            
+            // Mostrar el modal
+            modal.style.display = 'block';
+        }
+
+        // Cerrar modal al hacer clic en la X
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+            currentEditId = null;
+        }
+
+        // Cerrar modal al hacer clic en Cancelar
+        cancelBtn.onclick = function() {
+            modal.style.display = 'none';
+            currentEditId = null;
+        }
+
+        // Cerrar modal al hacer clic fuera del contenido
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+                currentEditId = null;
+            }
+        }
+
+        // Manejar envío del formulario - VERSIÓN MEJORADA
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            
+            if (!currentEditId) {
+                alert('Error: No hay ID de consentimiento seleccionado');
+                return;
+            }
+            
+            // Obtener los valores del formulario de manera explícita
+            const formData = new FormData();
+            formData.append('idConsentimiento', document.getElementById('editIdConsentimiento').value);
+            
+            // Obtener la decisión seleccionada
+            const decision = document.querySelector('input[name="decision"]:checked');
+            if (!decision) {
+                alert('Por favor seleccione una decisión');
+                return;
+            }
+            formData.append('decision', decision.value);
+            
+            formData.append('explicacion', document.getElementById('editExplicacion').value);
+            formData.append('estado', document.getElementById('editEstado').value);
+            
+            console.log('Enviando datos para ID:', currentEditId);
+            console.log('Decisión:', decision.value);
+            console.log('Explicación:', document.getElementById('editExplicacion').value);
+            console.log('Estado:', document.getElementById('editEstado').value);
+            
+            // Usar el endpoint CORRECTO
+            fetch('/consentimientos/editar/' + currentEditId, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.redirected) {
+                    // Si Spring redirige, seguir la redirección
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    // Recargar la página para ver los cambios
+                    window.location.reload();
+                } else {
+                    throw new Error('Error en la respuesta del servidor: ' + response.status);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al actualizar el consentimiento: ' + error.message);
+            });
+        };
+
         // Función para ver detalles
         function verDetalles(id) {
-            // Redirigir a la página de detalles (puedes crear este endpoint)
             window.location.href = '/consentimientos/detalles/' + id;
-            
-            // O para un modal (descomenta esto y comenta la línea anterior):
-            // alert('Ver detalles del consentimiento ID: ' + id);
         }
-        
+
         // Auto-ocultar mensajes después de 5 segundos
         setTimeout(() => {
             const alerts = document.querySelectorAll('.alert');
@@ -417,9 +698,6 @@
                 }, 5000);
             });
         }, 1000);
-        
-        console.log('✅ Tabla cargada correctamente');
-        console.log('Total de filas en la tabla:', document.querySelectorAll('tbody tr').length);
     </script>
 </body>
 </html>

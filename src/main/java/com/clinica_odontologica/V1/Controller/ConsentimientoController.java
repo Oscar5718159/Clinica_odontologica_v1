@@ -226,4 +226,6 @@ public class ConsentimientoController {
             return "redirect:/consentimientos/lista?error=Error al actualizar consentimiento";
         }
     }
+
+
 }
