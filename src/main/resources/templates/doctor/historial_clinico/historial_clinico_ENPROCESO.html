@@ -789,50 +789,84 @@
             historialSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Cargar historial del paciente
-        async function cargarHistorial() {
-            const idPaciente = document.getElementById('numExpediente').value;
-            const tipo = tipoHistorial.value;
-            
-            if (!idPaciente) {
-                alert('Debe seleccionar un paciente primero');
-                return;
-            }
+            // Cargar historial del paciente
+            async function cargarHistorial() {
+                try {
+                    // Obtener el ID del paciente del campo de formulario
+                    const idPacienteInput = document.getElementById('numExpediente');
+                    const idPaciente = idPacienteInput ? idPacienteInput.value.trim() : '';
+                    const tipo = tipoHistorial.value;
+                    
+                    console.log('🔍 ID Paciente obtenido:', idPaciente); // DEBUG
+                    console.log('🔍 Tipo de historial:', tipo); // DEBUG
+                    
+                    // Validaciones más robustas
+                    if (!idPaciente) {
+                        alert('❌ Debe seleccionar un paciente primero');
+                        return;
+                    }
 
-            loadingHistorial.style.display = 'block';
-            contenidoHistorial.innerHTML = '';
+                    // Validar que sea un número válido
+                    if (isNaN(idPaciente) || idPaciente <= 0) {
+                        alert('❌ ID de paciente inválido');
+                        return;
+                    }
 
-            try {
-                let url;
-                switch(tipo) {
-                    case 'consultas':
-                        url = `http://localhost:8080/api/consultas/paciente/${idPaciente}`;
-                        break;
-                    case 'tratamientos':
-                        url = `http://localhost:8080/api/tratamientos/paciente/${idPaciente}`;
-                        break;
-                    case 'completo':
-                        url = `http://localhost:8080/api/historial/completo/${idPaciente}`;
-                        break;
-                    default:
-                        url = `http://localhost:8080/api/consultas/paciente/${idPaciente}`;
+                    loadingHistorial.style.display = 'block';
+                    contenidoHistorial.innerHTML = '';
+
+                    let url;
+                    switch(tipo) {
+                        case 'consultas':
+                            url = `http://localhost:8080/api/consultas/paciente/${idPaciente}/completo`;
+                            break;
+                        case 'tratamientos':
+                            url = `http://localhost:8080/api/tratamientos/paciente/${idPaciente}`;
+                            break;
+                        case 'completo':
+                            url = `http://localhost:8080/api/historial/completo/${idPaciente}`;
+                            break;
+                        default:
+                            url = `http://localhost:8080/api/consultas/paciente/${idPaciente}/completo`;
+                    }
+
+                    console.log('🌐 URL de consulta:', url); // DEBUG
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            throw new Error('No se encontraron consultas para este paciente');
+                        } else if (response.status === 500) {
+                            throw new Error('Error interno del servidor');
+                        } else {
+                            throw new Error(`Error ${response.status}: ${response.statusText}`);
+                        }
+                    }
+
+                    const historial = await response.json();
+                    console.log('📊 Historial recibido:', historial);
+                    
+                    if (!historial || historial.length === 0) {
+                        contenidoHistorial.innerHTML = '<div class="no-results">No se encontraron registros en el historial</div>';
+                        return;
+                    }
+                    
+                    mostrarHistorial(historial, tipo);
+
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    contenidoHistorial.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error al cargar el historial: ${error.message}</p>
+                            <p>Verifique que el paciente tenga consultas registradas.</p>
+                        </div>
+                    `;
+                } finally {
+                    loadingHistorial.style.display = 'none';
                 }
-
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Error al cargar el historial');
-                }
-
-                const historial = await response.json();
-                mostrarHistorial(historial, tipo);
-
-            } catch (error) {
-                console.error('Error:', error);
-                contenidoHistorial.innerHTML = '<div class="no-results">Error al cargar el historial</div>';
-            } finally {
-                loadingHistorial.style.display = 'none';
             }
-        }
 
         // Mostrar historial en la interfaz
         function mostrarHistorial(historial, tipo) {
@@ -852,8 +886,9 @@
             }
         }
 
-        // Mostrar consultas
         function mostrarConsultas(consultas) {
+            console.log('Consultas DTO recibidas:', consultas);
+            
             consultas.forEach((consulta, index) => {
                 const consultaItem = document.createElement('div');
                 consultaItem.className = 'consulta-item';
@@ -874,8 +909,8 @@
                             <span>${consulta.alergias ? 'Sí' : 'No'} ${consulta.especifiqueAlergia ? `- ${consulta.especifiqueAlergia}` : ''}</span>
                         </div>
                         <div class="detalle-item">
-                            <span class="detalle-label">Embarazo:</span>
-                            <span>${consulta.embarazo ? 'Sí' : 'No'} ${consulta.semanaEmbarazo ? `- ${consulta.semanaEmbarazo} semanas` : ''}</span>
+                            <span class="detalle-label">Patología:</span>
+                            <span>${consulta.nombrePatologia || 'Ninguna'}</span>
                         </div>
                         <div class="detalle-item">
                             <span class="detalle-label">Higiene Bucal:</span>
@@ -974,58 +1009,125 @@
             });
         }
 
-        // Mostrar detalle completo de consulta en modal
         function mostrarDetalleConsulta(consulta) {
+            console.log('Consulta DTO completa recibida:', consulta);
+            
+            // Función auxiliar MEJORADA para valores seguros
+            const getValor = (valor, defecto = 'No especificado') => {
+                if (valor === null || valor === undefined || valor === '') {
+                    return defecto;
+                }
+                return valor;
+            };
+            
+            // Función MEJORADA para valores booleanos
+            const getBooleano = (valor) => {
+                if (valor === null || valor === undefined) {
+                    return 'No especificado';
+                }
+                return valor ? 'Sí' : 'No';
+            };
+
+            // Función para valores numéricos
+            const getNumero = (valor, defecto = 'No especificado') => {
+                if (valor === null || valor === undefined) {
+                    return defecto;
+                }
+                return valor.toString();
+            };
+
             detalleConsultaContent.innerHTML = `
                 <div class="detalle-completo">
                     <h4>Consulta del ${formatearFecha(consulta.fecha)}</h4>
                     
                     <div class="seccion-detalle">
                         <h5>Datos Generales</h5>
-                        <p><strong>Observaciones:</strong> ${consulta.observaciones || 'Sin observaciones'}</p>
-                        <p><strong>Fecha de Revisión:</strong> ${formatearFecha(consulta.fechaRevision) || 'No especificada'}</p>
+                        <p><strong>Observaciones:</strong> ${getValor(consulta.observaciones, 'Sin observaciones')}</p>
+                        <p><strong>Fecha de Revisión:</strong> ${formatearFecha(consulta.fechaRevision)}</p>
+                        <p><strong>Patología Personal:</strong> ${getValor(consulta.nombrePatologia, 'Ninguna')}</p>
                     </div>
                     
                     <div class="seccion-detalle">
                         <h5>Antecedentes Patológicos</h5>
-                        <p><strong>Enfermedades:</strong> ${consulta.nombrePatologia || 'Ninguna'}</p>
-                        <p><strong>Alergias:</strong> ${consulta.alergias ? 'Sí - ' + consulta.especifiqueAlergia : 'No'}</p>
-                        <p><strong>Embarazo:</strong> ${consulta.embarazo ? `Sí - ${consulta.semanaEmbarazo} semanas` : 'No'}</p>
-                        <p><strong>Tratamiento Médico:</strong> ${consulta.tratamientoMedico ? 'Sí - ' + consulta.tratamientoMedicoDetalle : 'No'}</p>
-                        <p><strong>Medicamentos:</strong> ${consulta.recibeAlgunMedicamento ? 'Sí - ' + consulta.medicamentoActual : 'No'}</p>
-                        <p><strong>Hemorragia Dental:</strong> ${consulta.tuvoHemorragiaDental ? 'Sí - ' + consulta.especifiqueHemorragia : 'No'}</p>
+                        <p><strong>Alergias:</strong> ${getBooleano(consulta.alergias)} 
+                        ${consulta.especifiqueAlergia ? `- ${getValor(consulta.especifiqueAlergia)}` : ''}</p>
+                        
+                        <p><strong>Embarazo:</strong> ${getBooleano(consulta.embarazo)} 
+                        ${consulta.semanaEmbarazo ? `- ${getNumero(consulta.semanaEmbarazo)} semanas` : ''}</p>
+                        
+                        <p><strong>Tratamiento Médico:</strong> ${getBooleano(consulta.tratamientoMedico)} 
+                        ${consulta.tratamientoMedicoDetalle ? `- ${getValor(consulta.tratamientoMedicoDetalle)}` : ''}</p>
+                        
+                        <p><strong>Medicamentos:</strong> ${getBooleano(consulta.recibeAlgunMedicamento)} 
+                        ${consulta.medicamentoActual ? `- ${getValor(consulta.medicamentoActual)}` : ''}</p>
+                        
+                        <p><strong>Hemorragia Dental:</strong> ${getBooleano(consulta.tuvoHemorragiaDental)} 
+                        ${consulta.especifiqueHemorragia ? `- ${getValor(consulta.especifiqueHemorragia)}` : ''}</p>
                     </div>
                     
                     <div class="seccion-detalle">
-                        <h5>Examen Clínico</h5>
-                        <p><strong>ATM:</strong> ${consulta.atm || 'No especificado'}</p>
-                        <p><strong>Ganglios Linfáticos:</strong> ${consulta.gangliosLinfaticos || 'No especificado'}</p>
-                        <p><strong>Respirador:</strong> ${consulta.respirador || 'No especificado'}</p>
-                        <p><strong>Labios:</strong> ${consulta.labios || 'No especificado'}</p>
-                        <p><strong>Lengua:</strong> ${consulta.lengua || 'No especificado'}</p>
-                        <p><strong>Paladar:</strong> ${consulta.paladar || 'No especificado'}</p>
-                        <p><strong>Encías:</strong> ${consulta.encias || 'No especificado'}</p>
+                        <h5>Examen Extra Oral</h5>
+                        <p><strong>ATM:</strong> ${getValor(consulta.atm)}</p>
+                        <p><strong>Ganglios Linfáticos:</strong> ${getValor(consulta.gangliosLinfaticos)}</p>
+                        <p><strong>Respirador:</strong> ${getValor(consulta.respirador)}</p>
+                        <p><strong>Otros (Respiratorio):</strong> ${getValor(consulta.otrosRespiratorio)}</p>
+                    </div>
+                    
+                    <div class="seccion-detalle">
+                        <h5>Examen Intra Oral</h5>
+                        <p><strong>Labios:</strong> ${getValor(consulta.labios)}</p>
+                        <p><strong>Lengua:</strong> ${getValor(consulta.lengua)}</p>
+                        <p><strong>Paladar:</strong> ${getValor(consulta.paladar)}</p>
+                        <p><strong>Piso de la Boca:</strong> ${getValor(consulta.pisoDeLaBoca)}</p>
+                        <p><strong>Mucosa Yugal:</strong> ${getValor(consulta.mucosaYugal)}</p>
+                        <p><strong>Encías:</strong> ${getValor(consulta.encias)}</p>
                     </div>
                     
                     <div class="seccion-detalle">
                         <h5>Prótesis Dental</h5>
-                        <p><strong>Utiliza Prótesis:</strong> ${consulta.utilizaProtesisDental ? 'Sí' : 'No'}</p>
+                        <p><strong>Utiliza Prótesis:</strong> ${getBooleano(consulta.utilizaProtesisDental)}</p>
                         ${consulta.utilizaProtesisDental ? `
-                            <p><strong>Tipo:</strong> ${consulta.tipoProtesis}</p>
-                            <p><strong>Tiempo de Uso:</strong> ${consulta.tiempoProtesis}</p>
+                            <p><strong>Tipo:</strong> ${getValor(consulta.tipoProtesis)}</p>
+                            <p><strong>Tiempo de Uso:</strong> ${getValor(consulta.tiempoProtesis)}</p>
                         ` : ''}
                     </div>
                     
                     <div class="seccion-detalle">
-                        <h5>Higiene Oral</h5>
-                        <p><strong>Cepillo Dental:</strong> ${consulta.utilizaCepilloDental ? 'Sí' : 'No'}</p>
-                        <p><strong>Hilo Dental:</strong> ${consulta.utilizaHiloDental ? 'Sí' : 'No'}</p>
-                        <p><strong>Enjuague Bucal:</strong> ${consulta.utilizaEnjuagueBucal ? 'Sí' : 'No'}</p>
-                        <p><strong>Frecuencia de Cepillado:</strong> ${consulta.frecuenciaCepillo || 'No especificado'}</p>
-                        <p><strong>Sangrado de Encías:</strong> ${consulta.sangradoEncias ? 'Sí' : 'No'}</p>
-                        <p><strong>Higiene Bucal:</strong> ${consulta.higieneBucal || 'No especificado'}</p>
-                        <p><strong>Observaciones:</strong> ${consulta.observacionesHigiene || 'Sin observaciones'}</p>
+                        <h5>Antecedentes y Hábitos</h5>
+                        <p><strong>Hábito de Fumar:</strong> ${getBooleano(consulta.habitoFuma)}</p>
+                        <p><strong>Hábito de Beber:</strong> ${getBooleano(consulta.habitoBebe)}</p>
+                        <p><strong>Otros Hábitos:</strong> ${getValor(consulta.otrosHabitos)}</p>
                     </div>
+                    
+                    <div class="seccion-detalle">
+                        <h5>Higiene Oral</h5>
+                        <p><strong>Cepillo Dental:</strong> ${getBooleano(consulta.utilizaCepilloDental)}</p>
+                        <p><strong>Hilo Dental:</strong> ${getBooleano(consulta.utilizaHiloDental)}</p>
+                        <p><strong>Enjuague Bucal:</strong> ${getBooleano(consulta.utilizaEnjuagueBucal)}</p>
+                        <p><strong>Frecuencia de Cepillado:</strong> ${getValor(consulta.frecuenciaCepillo)}</p>
+                        <p><strong>Sangrado de Encías:</strong> ${getBooleano(consulta.sangradoEncias)}</p>
+                        <p><strong>Higiene Bucal:</strong> ${getValor(consulta.higieneBucal)}</p>
+                        <p><strong>Observaciones de Higiene:</strong> ${getValor(consulta.observacionesHigiene, 'Sin observaciones')}</p>
+                    </div>
+                    
+                    <div class="seccion-detalle">
+                        <h5>Informante</h5>
+                        <p><strong>Nombres:</strong> ${getValor(consulta.informanteNombres)}</p>
+                        <p><strong>Apellidos:</strong> ${getValor(consulta.informanteApellidoPaterno)} ${getValor(consulta.informanteApellidoMaterno)}</p>
+                        <p><strong>Dirección:</strong> ${getValor(consulta.informanteDireccion)}</p>
+                        <p><strong>Teléfono:</strong> ${getValor(consulta.informanteTelefono)}</p>
+                    </div>
+
+                    <!-- DEBUG: Mostrar estructura real -->
+                    <!--<div class="seccion-detalle" style="background: #e9ecef; border-left: 4px solid #6c757d;">
+                        <h5>🔍 Datos Recibidos del Backend</h5>
+                        <div style="font-size: 12px;">
+                            <p><strong>nombrePatologia:</strong> ${JSON.stringify(consulta.nombrePatologia)}</p>
+                            <p><strong>alergias:</strong> ${JSON.stringify(consulta.alergias)}</p>
+                            <p><strong>embarazo:</strong> ${JSON.stringify(consulta.embarazo)}</p>
+                            <p><strong>tratamientoMedico:</strong> ${JSON.stringify(consulta.tratamientoMedico)}</p>
+                        </div>
+                    </div> -->
                 </div>
             `;
             
@@ -1059,9 +1161,6 @@
             }
 
             try {
-                // En una implementación real, aquí llamarías a tu backend para generar el PDF
-                // Por ahora, usaremos una solución simple con window.print()
-                
                 // Crear una ventana de impresión con el contenido del historial
                 const ventanaImpresion = window.open('', '_blank');
                 const nombrePaciente = document.getElementById('personaInformacion').value;
@@ -1086,8 +1185,8 @@
                             <h2>Universidad Amazónica de Pando</h2>
                             <h3>Paciente: ${nombrePaciente}</h3>
                             <p>Expediente: ${document.getElementById('numExpediente').value} | 
-                               Historia Clínica: ${document.getElementById('numHistoriaClinica').value} | 
-                               CI: ${document.getElementById('ciPaciente').value}</p>
+                            Historia Clínica: ${document.getElementById('numHistoriaClinica').value} | 
+                            CI: ${document.getElementById('ciPaciente').value}</p>
                             <p>Fecha de generación: ${new Date().toLocaleDateString()}</p>
                         </div>
                         <div id="contenido">

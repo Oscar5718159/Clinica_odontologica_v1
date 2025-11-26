@@ -8,17 +8,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const ningunaEnfermedad = document.getElementById('ningunaEnfermedad');
     const enfermedadesCheckboxes = document.querySelectorAll('.enfermedad-checkbox');
     const otrosEnfermedades = document.getElementById('otrosEnfermedades');
-    const ningunoValidation = document.getElementById('ningunoValidation');
+    const otrosValidation = document.getElementById('otrosValidation');
 
     function actualizarValidacionEnfermedades() {
         const algunaEnfermedadSeleccionada = Array.from(enfermedadesCheckboxes).some(cb => cb.checked) || otrosEnfermedades.value.trim() !== '';
         
         if (algunaEnfermedadSeleccionada && ningunaEnfermedad.checked) {
-            ningunoValidation.style.display = 'block';
+            otrosValidation.style.display = 'block';
             ningunaEnfermedad.classList.add('error-border');
         } else {
-            ningunoValidation.style.display = 'none';
+            otrosValidation.style.display = 'none';
             ningunaEnfermedad.classList.remove('error-border');
+        }
+
+        // Actualizar también el estado de los campos basado en "Ninguno"
+        if (ningunaEnfermedad.checked) {
+            enfermedadesCheckboxes.forEach(checkbox => {
+                checkbox.disabled = true;
+            });
+            otrosEnfermedades.disabled = true;
+        } else {
+            enfermedadesCheckboxes.forEach(checkbox => {
+                checkbox.disabled = false;
+            });
+            otrosEnfermedades.disabled = false;
         }
     }
 
@@ -27,20 +40,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Deshabilitar todas las otras opciones
             enfermedadesCheckboxes.forEach(checkbox => {
                 checkbox.checked = false;
-                checkbox.classList.add('checkbox-disabled');
-                checkbox.classList.remove('error-border');
+                checkbox.disabled = true;
             });
             otrosEnfermedades.value = '';
             otrosEnfermedades.disabled = true;
-            otrosEnfermedades.classList.add('input-disabled');
-            otrosEnfermedades.classList.remove('error-border');
         } else {
             // Habilitar todas las otras opciones
             enfermedadesCheckboxes.forEach(checkbox => {
-                checkbox.classList.remove('checkbox-disabled');
+                checkbox.disabled = false;
             });
             otrosEnfermedades.disabled = false;
-            otrosEnfermedades.classList.remove('input-disabled');
         }
         actualizarValidacionEnfermedades();
     });
@@ -49,9 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
         checkbox.addEventListener('change', function() {
             if (this.checked) {
                 ningunaEnfermedad.checked = false;
-                ningunaEnfermedad.classList.remove('checkbox-disabled');
-                otrosEnfermedades.disabled = false;
-                otrosEnfermedades.classList.remove('input-disabled');
             }
             actualizarValidacionEnfermedades();
         });
@@ -82,15 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     alergiaSi.addEventListener('change', function() {
         especifiqueAlergia.disabled = false;
-        especifiqueAlergia.classList.remove('input-disabled');
         actualizarValidacionAlergias();
     });
 
     alergiaNo.addEventListener('change', function() {
         especifiqueAlergia.disabled = true;
         especifiqueAlergia.value = '';
-        especifiqueAlergia.classList.add('input-disabled');
-        especifiqueAlergia.classList.remove('error-border');
         alergiaValidation.style.display = 'none';
     });
 
@@ -114,15 +117,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     embarazoSi.addEventListener('change', function() {
         semanasEmbarazo.disabled = false;
-        semanasEmbarazo.classList.remove('input-disabled');
         actualizarValidacionEmbarazo();
     });
 
     embarazoNo.addEventListener('change', function() {
         semanasEmbarazo.disabled = true;
         semanasEmbarazo.value = '';
-        semanasEmbarazo.classList.add('input-disabled');
-        semanasEmbarazo.classList.remove('error-border');
         embarazoValidation.style.display = 'none';
     });
 
@@ -146,15 +146,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     hemorragiaSi.addEventListener('change', function() {
         especifiqueHemorragia.disabled = false;
-        especifiqueHemorragia.classList.remove('input-disabled');
         actualizarValidacionHemorragia();
     });
 
     hemorragiaNo.addEventListener('change', function() {
         especifiqueHemorragia.disabled = true;
         especifiqueHemorragia.value = '';
-        especifiqueHemorragia.classList.add('input-disabled');
-        especifiqueHemorragia.classList.remove('error-border');
         hemorragiaValidation.style.display = 'none';
     });
 
@@ -180,8 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
     protesisSi.addEventListener('change', function() {
         tipoProtesis.disabled = false;
         tiempoProtesis.disabled = false;
-        tipoProtesis.classList.remove('input-disabled');
-        tiempoProtesis.classList.remove('input-disabled');
         actualizarValidacionProtesis();
     });
 
@@ -190,9 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
         tiempoProtesis.disabled = true;
         tipoProtesis.value = '';
         tiempoProtesis.value = '';
-        tipoProtesis.classList.add('input-disabled');
-        tiempoProtesis.classList.add('input-disabled');
-        tipoProtesis.classList.remove('error-border');
         protesisValidation.style.display = 'none';
     });
 
@@ -217,6 +209,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkbox.checked = false;
             });
         }
+    });
+
+    // ===== MANEJO DEL CAMPO "OTROS" EN RESPIRADOR =====
+    const otrosRespiratorio = document.getElementById('otrosRespiratorio');
+    
+    document.querySelectorAll('input[name="respirador"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Si se selecciona cualquier opción de respirador, limpiar el campo "Otros"
+            otrosRespiratorio.value = '';
+        });
+    });
+
+    otrosRespiratorio.addEventListener('focus', function() {
+        // Deseleccionar cualquier opción de respirador cuando el usuario escriba en "Otros"
+        document.querySelectorAll('input[name="respirador"]').forEach(radio => {
+            radio.checked = false;
+        });
     });
 
     // ========== FUNCIONALIDAD DE BÚSQUEDA ==========
@@ -400,6 +409,59 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // ===== FUNCIONES AUXILIARES PARA OBTENER VALORES =====
+    
+    // Función para obtener enfermedades seleccionadas (incluye "Ninguno" y "Otros")
+    function obtenerEnfermedadesSeleccionadas() {
+        // Si está marcado "Ninguno", retornar "Ninguno"
+        if (document.getElementById('ningunaEnfermedad').checked) {
+            return 'Ninguno';
+        }
+        
+        const enfermedades = [];
+        if (document.getElementById('anemia').checked) enfermedades.push('Anemia');
+        if (document.getElementById('cardiopatias').checked) enfermedades.push('Cardiopatías');
+        if (document.getElementById('gastricas').checked) enfermedades.push('Enf. Gástricas');
+        if (document.getElementById('hepatitis').checked) enfermedades.push('Hepatitis');
+        if (document.getElementById('tuberculosis').checked) enfermedades.push('Tuberculosis');
+        if (document.getElementById('asma').checked) enfermedades.push('Asma');
+        if (document.getElementById('diabetes').checked) enfermedades.push('Diabetes Mel.');
+        if (document.getElementById('epilepsia').checked) enfermedades.push('Epilepsia');
+        if (document.getElementById('hipertension').checked) enfermedades.push('Hipertensión');
+        if (document.getElementById('vih').checked) enfermedades.push('VIH');
+        
+        const otros = document.getElementById('otrosEnfermedades').value.trim();
+        if (otros) enfermedades.push(`Otros: ${otros}`);
+        
+        return enfermedades.length > 0 ? enfermedades.join(', ') : 'Ninguno';
+    }
+
+    // Función para obtener respirador seleccionado (incluye "Otros")
+    function obtenerRespiradorSeleccionado() {
+        if (document.getElementById('resp-nasal').checked) return 'Nasal';
+        if (document.getElementById('resp-bucal').checked) return 'Bucal';
+        if (document.getElementById('resp-buco-nasal').checked) return 'Buco nasal';
+        
+        // Si hay texto en "Otros", usarlo
+        const otrosRespiratorio = document.getElementById('otrosRespiratorio').value.trim();
+        if (otrosRespiratorio) return `Otros: ${otrosRespiratorio}`;
+        
+        return '';
+    }
+
+    // Función auxiliar para obtener valores booleanos
+    function obtenerValorBooleano(elementoSi, elementoNo) {
+        return elementoSi.checked;
+    }
+
+    // Función para obtener higiene bucal seleccionada
+    function obtenerHigieneBucalSeleccionada() {
+        if (document.getElementById('higiene-buena').checked) return 'Buena';
+        if (document.getElementById('higiene-regular').checked) return 'Regular';
+        if (document.getElementById('higiene-mala').checked) return 'Mala';
+        return '';
+    }
+
     // ===== VALIDACIÓN GENERAL DEL FORMULARIO =====
     function validarFormularioCompleto() {
         let errores = [];
@@ -462,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Modificar el evento de envío para incluir validaciones
+    // ===== ENVÍO DEL FORMULARIO =====
     document.getElementById('enviarFormulario').addEventListener('click', function() {
         // Primero validar el formulario
         if (!validarFormularioCompleto()) {
@@ -493,88 +555,60 @@ document.addEventListener('DOMContentLoaded', function() {
             informanteDireccion: document.getElementById('direccion_persona').value,
             informanteTelefono: document.getElementById('telefono_persona').value,
             
-            // Datos de PatologiaPersonal
+            // Datos de PatologiaPersonal - CORREGIDOS (usando booleanos)
             nombrePatologia: obtenerEnfermedadesSeleccionadas(),
-            alergias: document.getElementById('alergias-si').checked,
-            especifiqueAlergia: document.getElementById('alergias-si').checked ? document.getElementById('especifiqueAlergia').value : null,
-            embarazo: document.getElementById('embarazo-si').checked,
+            alergias: obtenerValorBooleano(document.getElementById('alergias-si'), document.getElementById('alergias-no')),
+            especifiqueAlergia: document.getElementById('alergias-si').checked ? 
+                               document.getElementById('especifiqueAlergia').value.trim() : null,
+            
+            embarazo: obtenerValorBooleano(document.getElementById('embarazo-si'), document.getElementById('embarazo-no')),
             semanaEmbarazo: document.getElementById('embarazo-si').checked && document.getElementById('semanasEmbarazo').value ? 
                            parseInt(document.getElementById('semanasEmbarazo').value) : null,
             
-            // Datos de TratamientoMedico
+            // Datos de TratamientoMedico - CORREGIDOS (usando booleanos)
             tratamientoMedico: document.getElementById('tratamientoMedico').value !== '',
             tratamientoMedicoDetalle: document.getElementById('tratamientoMedico').value,
             recibeAlgunMedicamento: document.getElementById('medicamentoActual').value !== '',
             medicamentoActual: document.getElementById('medicamentoActual').value,
-            tuvoHemorragiaDental: document.getElementById('hemorragia-si').checked,
-            especifiqueHemorragia: document.getElementById('hemorragia-si').checked ? document.getElementById('especifiqueHemorragia').value : null,
             
-            // Datos de ExamenExtraOral
+            // Hemorragia - CORREGIDO (usando booleanos)
+            tuvoHemorragiaDental: obtenerValorBooleano(document.getElementById('hemorragia-si'), document.getElementById('hemorragia-no')),
+            especifiqueHemorragia: document.getElementById('hemorragia-si').checked ? 
+                                  document.getElementById('especifiqueHemorragia').value.trim() : null,
+            
+            // Datos de ExamenExtraOral - CORREGIDOS
             atm: document.getElementById('atm').value,
             gangliosLinfaticos: document.getElementById('ganglios').value,
             respirador: obtenerRespiradorSeleccionado(),
             otrosRespiratorio: document.getElementById('otrosRespiratorio').value,
             
-            // Datos de ExamenIntraOral
+            // Datos de ExamenIntraOral - CORREGIDOS (usando booleanos)
             labios: document.getElementById('labios').value,
             lengua: document.getElementById('lengua').value,
             paladar: document.getElementById('paladar').value,
             pisoDeLaBoca: document.getElementById('pisoBoca').value,
             mucosaYugal: document.getElementById('mucosaYugal').value,
             encias: document.getElementById('encias').value,
-            utilizaProtesisDental: document.getElementById('protesis-si').checked,
+            utilizaProtesisDental: obtenerValorBooleano(document.getElementById('protesis-si'), document.getElementById('protesis-no')),
             tipoProtesis: document.getElementById('protesis-si').checked ? document.getElementById('tipoProtesis').value : null,
             tiempoProtesis: document.getElementById('protesis-si').checked ? document.getElementById('tiempoProtesis').value : null,
             
-            // Datos de AntecedentesBucodentales
+            // Datos de AntecedentesBucodentales - CORREGIDOS (usando booleanos)
             fechaRevision: document.getElementById('ultimaVisita').value,
             habitoFuma: document.getElementById('fuma').checked,
             habitoBebe: document.getElementById('bebe').checked,
+            habitoCoca: document.getElementById('coca').checked,
             otrosHabitos: document.getElementById('otrosHabitos').value,
             
-            // Datos de AntecedentesHigieneOral
-            utilizaCepilloDental: document.getElementById('cepillo-si').checked,
-            utilizaHiloDental: document.getElementById('hilo-si').checked,
-            utilizaEnjuagueBucal: document.getElementById('enjuague-si').checked,
+            // Datos de AntecedentesHigieneOral - CORREGIDOS (usando booleanos)
+            utilizaCepilloDental: obtenerValorBooleano(document.getElementById('cepillo-si'), document.getElementById('cepillo-no')),
+            utilizaHiloDental: obtenerValorBooleano(document.getElementById('hilo-si'), document.getElementById('hilo-no')),
+            utilizaEnjuagueBucal: obtenerValorBooleano(document.getElementById('enjuague-si'), document.getElementById('enjuague-no')),
             frecuenciaCepillo: document.getElementById('frecuenciaCepillado').value,
-            sangradoEncias: document.getElementById('sangrado-si').checked,
+            sangradoEncias: obtenerValorBooleano(document.getElementById('sangrado-si'), document.getElementById('sangrado-no')),
             higieneBucal: obtenerHigieneBucalSeleccionada(),
             observacionesHigiene: document.getElementById('observacionesHigiene').value
         };
-
-        // Función auxiliar para obtener enfermedades seleccionadas
-        function obtenerEnfermedadesSeleccionadas() {
-            const enfermedades = [];
-            if (document.getElementById('anemia').checked) enfermedades.push('Anemia');
-            if (document.getElementById('cardiopatias').checked) enfermedades.push('Cardiopatías');
-            if (document.getElementById('gastricas').checked) enfermedades.push('Enf. Gástricas');
-            if (document.getElementById('hepatitis').checked) enfermedades.push('Hepatitis');
-            if (document.getElementById('tuberculosis').checked) enfermedades.push('Tuberculosis');
-            if (document.getElementById('asma').checked) enfermedades.push('Asma');
-            if (document.getElementById('diabetes').checked) enfermedades.push('Diabetes Mel.');
-            if (document.getElementById('epilepsia').checked) enfermedades.push('Epilepsia');
-            if (document.getElementById('hipertension').checked) enfermedades.push('Hipertensión');
-            if (document.getElementById('vih').checked) enfermedades.push('VIH');
-            
-            const otros = document.getElementById('otrosEnfermedades').value;
-            if (otros) enfermedades.push(otros);
-            
-            return enfermedades.join(', ');
-        }
-
-        function obtenerRespiradorSeleccionado() {
-            if (document.getElementById('resp-nasal').checked) return 'Nasal';
-            if (document.getElementById('resp-bucal').checked) return 'Bucal';
-            if (document.getElementById('resp-buco-nasal').checked) return 'Buco nasal';
-            return '';
-        }
-
-        function obtenerHigieneBucalSeleccionada() {
-            if (document.getElementById('higiene-buena').checked) return 'Buena';
-            if (document.getElementById('higiene-regular').checked) return 'Regular';
-            if (document.getElementById('higiene-mala').checked) return 'Mala';
-            return '';
-        }
 
         // Enviar datos al backend
         const btnEnviar = document.getElementById('enviarFormulario');
@@ -602,7 +636,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Consulta guardada:', data);
             alert('Historia clínica guardada exitosamente!');
             // Opcional: limpiar formulario o redirigir
-            //window.location.reload();
+            // window.location.reload();
         })
         .catch((error) => {
             console.error('Error al guardar:', error);
@@ -613,4 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
             btnEnviar.textContent = 'Guardar Historia Clínica';
         });
     });
+
+    // Inicializar estado de los campos al cargar la página
+    actualizarValidacionEnfermedades();
 });

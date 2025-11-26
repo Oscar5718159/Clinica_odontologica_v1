@@ -13,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -227,5 +230,26 @@ public class ConsentimientoController {
         }
     }
 
-
+    @GetMapping("/obtener/{id}")
+    @ResponseBody
+    public ResponseEntity<?> obtenerConsentimiento(@PathVariable Long id) {
+        try {
+            Optional<Consentimiento> consentimiento = consentimientoService.obtenerPorId(id);
+            if (consentimiento.isPresent()) {
+                Consentimiento c = consentimiento.get();
+                
+                Map<String, Object> datos = new HashMap<>();
+                datos.put("id", c.getIdConsentimiento());
+                datos.put("decision", c.getDecision());
+                datos.put("explicacion", c.getExplicacion());
+                datos.put("estado", c.getEstado());
+                
+                return ResponseEntity.ok(datos);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 }

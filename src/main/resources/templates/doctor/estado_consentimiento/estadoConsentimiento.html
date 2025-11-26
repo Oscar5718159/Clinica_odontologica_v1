@@ -422,17 +422,14 @@
                 <div class="stat-label">Total de Consentimientos</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value text-success" th:text="${totalAceptados}">0</div>
-                <div class="stat-label">Aceptados</div>
+                <div class="stat-value text-success" th:text="${totalActivo}">0</div>
+                <div class="stat-label">Activos</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value text-danger" th:text="${totalRechazados}">0</div>
-                <div class="stat-label">Rechazados</div>
+                <div class="stat-label">Realizados</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-value text-warning" th:text="${totalInactivos}">0</div>
-                <div class="stat-label">Inactivos</div>
-            </div>
+
         </div>
         
         <div class="card">
@@ -497,7 +494,6 @@
                                 </td>
                                 <td>
                                     <div class="actions">
-                                        <!-- Botón Editar - Ahora abre el modal -->
                                         <button class="btn btn-warning btn-sm" 
                                                 th:onclick="'abrirModalEdicion(' + ${c.idConsentimiento} + ')'">
                                             <i class="fas fa-edit"></i> Editar
@@ -532,7 +528,7 @@
                         <label for="editDecision">Decisión: <span style="color: red;">*</span></label>
                         <div class="radio-group">
                             <label class="radio-option">
-                                <input type="radio" id="editDecisionAceptar" name="decision" value="aceptar" checked>
+                                <input type="radio" id="editDecisionAceptar" name="decision" value="aceptar">
                                 <i class="fas fa-check-circle text-success"></i> Aceptar
                             </label>
                             <label class="radio-option">
@@ -549,16 +545,16 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="editEstado">Estado:</label>
-                        <select id="editEstado" name="estado">
+                        <label for="editEstado">Estado: <span style="color: red;">*</span></label>
+                        <select id="editEstado" name="estado" class="form-control">
                             <option value="true">Activo</option>
                             <option value="false">Inactivo</option>
                         </select>
                     </div>
                     
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Actualizar
+                        <button type="button" class="btn btn-primary" id="btnGuardar">
+                            <i class="fas fa-save"></i> Guardar Cambios
                         </button>
                         <button type="button" class="btn btn-secondary" id="btnCancelar">
                             <i class="fas fa-times"></i> Cancelar
@@ -568,9 +564,7 @@
             </div>
         </div>
     </div>
-
     <script>
-        // Elementos del modal
         const modal = document.getElementById('modalEdicion');
         const closeBtn = document.querySelector('.close');
         const cancelBtn = document.getElementById('btnCancelar');
@@ -579,36 +573,149 @@
         // Variable para almacenar el ID actual
         let currentEditId = null;
 
-        function abrirModalEdicion(id, decision, explicacion, estado) {
-            console.log('Abriendo modal con datos REALES para ID:', id);
+        // Función MEJORADA para abrir modal - solo recibe ID
+        function abrirModalEdicion(id) {
+            console.log('🎯 Cargando datos para ID:', id);
             currentEditId = id;
             
-            // Cargar los datos REALES del consentimiento
-            document.getElementById('editIdConsentimiento').value = id;
+            // Mostrar loading en el modal
+            const modalBody = document.querySelector('.modal-body');
+            const originalContent = modalBody.innerHTML;
+            modalBody.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 30px; color: #3498db;"></i>
+                    <p style="margin-top: 15px;">Cargando datos del consentimiento...</p>
+                </div>
+            `;
             
-            // Configurar la decisión ACTUAL
-            if (decision === 'aceptar') {
-                document.getElementById('editDecisionAceptar').checked = true;
-                document.getElementById('editDecisionRechazar').checked = false;
-            } else {
-                document.getElementById('editDecisionAceptar').checked = false;
-                document.getElementById('editDecisionRechazar').checked = true;
-            }
-            
-            // Cargar la explicación ACTUAL
-            document.getElementById('editExplicacion').value = explicacion || '';
-            
-            // Configurar el estado ACTUAL
-            document.getElementById('editEstado').value = estado.toString();
-            
-            console.log('Datos cargados:', {
-                decision: decision,
-                explicacion: explicacion,
-                estado: estado
-            });
-            
-            // Mostrar el modal
             modal.style.display = 'block';
+
+            // Hacer petición para obtener datos actuales
+            fetch('/consentimientos/obtener/' + id)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al obtener datos: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(datos => {
+                    console.log('✅ Datos recibidos:', datos);
+                    
+                    // Restaurar contenido original del modal
+                    modalBody.innerHTML = originalContent;
+                    
+                    // Llenar el formulario con los datos
+                    document.getElementById('editIdConsentimiento').value = datos.id;
+                    
+                    // Configurar la decisión
+                    if (datos.decision === 'aceptar') {
+                        document.getElementById('editDecisionAceptar').checked = true;
+                        document.getElementById('editDecisionRechazar').checked = false;
+                    } else {
+                        document.getElementById('editDecisionAceptar').checked = false;
+                        document.getElementById('editDecisionRechazar').checked = true;
+                    }
+                    
+                    // Configurar la explicación (manejar null/undefined)
+                    document.getElementById('editExplicacion').value = datos.explicacion || '';
+                    
+                    // Configurar el estado (convertir boolean a string)
+                    const estadoValue = datos.estado === true || datos.estado === 'true' ? 'true' : 'false';
+                    document.getElementById('editEstado').value = estadoValue;
+                    
+                    console.log('✅ Formulario cargado correctamente');
+                    
+                    // ✅ ASIGNAR EL EVENTO AL BOTÓN AQUÍ - CUANDO YA EXISTE EN EL DOM
+                    const btnGuardar = document.getElementById('btnGuardar');
+                    if (btnGuardar) {
+                        // Remover evento anterior si existe
+                        btnGuardar.replaceWith(btnGuardar.cloneNode(true));
+                        // Obtener la nueva referencia
+                        const newBtnGuardar = document.getElementById('btnGuardar');
+                        
+                        newBtnGuardar.onclick = function(e) {
+                            e.preventDefault();
+                            
+                            if (!currentEditId) {
+                                alert('Error: No hay consentimiento seleccionado');
+                                return;
+                            }
+                            
+                            // Validar campos requeridos
+                            const decisionSeleccionada = document.querySelector('input[name="decision"]:checked');
+                            if (!decisionSeleccionada) {
+                                alert('Error: Debe seleccionar una decisión (Aceptar o Rechazar)');
+                                return;
+                            }
+                            
+                            // Mostrar confirmación
+                            if (!confirm('¿Estás seguro de que deseas guardar los cambios?')) {
+                                return;
+                            }
+                            
+                            // Mostrar loading en el botón
+                            const submitBtn = this;
+                            const originalBtnText = submitBtn.innerHTML;
+                            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                            submitBtn.disabled = true;
+                            
+                            console.log('🔄 Enviando datos...', {
+                                id: currentEditId,
+                                decision: decisionSeleccionada.value,
+                                explicacion: document.getElementById('editExplicacion').value,
+                                estado: document.getElementById('editEstado').value
+                            });
+                            
+                            // Enviar datos al servidor
+                            fetch('/consentimientos/editar/' + currentEditId, {
+                                method: 'POST',
+                                body: new URLSearchParams({
+                                    idConsentimiento: currentEditId,
+                                    decision: decisionSeleccionada.value,
+                                    explicacion: document.getElementById('editExplicacion').value,
+                                    estado: document.getElementById('editEstado').value
+                                }),
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                }
+                            })
+                            .then(response => {
+                                // Restaurar botón
+                                submitBtn.innerHTML = originalBtnText;
+                                submitBtn.disabled = false;
+                                
+                                if (response.redirected) {
+                                    // Si hay redirección, seguirla
+                                    window.location.href = response.url;
+                                } else if (response.ok) {
+                                    // Recargar la página para ver los cambios
+                                    window.location.reload();
+                                } else {
+                                    throw new Error('Error del servidor: ' + response.status);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('❌ Error:', error);
+                                // Restaurar botón
+                                submitBtn.innerHTML = originalBtnText;
+                                submitBtn.disabled = false;
+                                
+                                alert('Error al actualizar el consentimiento: ' + error.message);
+                            });
+                        };
+                    } else {
+                        console.error('❌ Error: No se encontró el botón btnGuardar');
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Error:', error);
+                    
+                    // Restaurar contenido y mostrar error
+                    modalBody.innerHTML = originalContent;
+                    modal.style.display = 'none';
+                    
+                    alert('Error al cargar datos del consentimiento: ' + error.message);
+                });
         }
 
         // Cerrar modal al hacer clic en la X
@@ -631,57 +738,6 @@
             }
         }
 
-        // Manejar envío del formulario - VERSIÓN MEJORADA
-        form.onsubmit = function(e) {
-            e.preventDefault();
-            
-            if (!currentEditId) {
-                alert('Error: No hay ID de consentimiento seleccionado');
-                return;
-            }
-            
-            // Obtener los valores del formulario de manera explícita
-            const formData = new FormData();
-            formData.append('idConsentimiento', document.getElementById('editIdConsentimiento').value);
-            
-            // Obtener la decisión seleccionada
-            const decision = document.querySelector('input[name="decision"]:checked');
-            if (!decision) {
-                alert('Por favor seleccione una decisión');
-                return;
-            }
-            formData.append('decision', decision.value);
-            
-            formData.append('explicacion', document.getElementById('editExplicacion').value);
-            formData.append('estado', document.getElementById('editEstado').value);
-            
-            console.log('Enviando datos para ID:', currentEditId);
-            console.log('Decisión:', decision.value);
-            console.log('Explicación:', document.getElementById('editExplicacion').value);
-            console.log('Estado:', document.getElementById('editEstado').value);
-            
-            // Usar el endpoint CORRECTO
-            fetch('/consentimientos/editar/' + currentEditId, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.redirected) {
-                    // Si Spring redirige, seguir la redirección
-                    window.location.href = response.url;
-                } else if (response.ok) {
-                    // Recargar la página para ver los cambios
-                    window.location.reload();
-                } else {
-                    throw new Error('Error en la respuesta del servidor: ' + response.status);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al actualizar el consentimiento: ' + error.message);
-            });
-        };
-
         // Función para ver detalles
         function verDetalles(id) {
             window.location.href = '/consentimientos/detalles/' + id;
@@ -698,6 +754,40 @@
                 }, 5000);
             });
         }, 1000);
+
+        // Función auxiliar para mostrar notificación
+        function mostrarNotificacion(mensaje, tipo = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${tipo}`;
+            notification.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                ${mensaje}
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 10000;
+                min-width: 300px;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-eliminar después de 5 segundos
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => notification.remove(), 500);
+            }, 5000);
+        }
     </script>
+
+    <style>
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    </style>
 </body>
 </html>

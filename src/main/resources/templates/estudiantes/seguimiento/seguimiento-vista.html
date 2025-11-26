@@ -81,14 +81,25 @@
             background-color: white;
             padding: 30px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            display: flex;
+            flex-direction: column;
             gap: 25px;
             min-height: calc(100vh - 180px);
         }
         
+        .top-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        .bottom-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
         .form-section {
-            margin-bottom: 20px;
             padding: 20px;
             border-radius: 8px;
             background: #f8f9fa;
@@ -150,7 +161,6 @@
         }
         
         .signature-area {
-            grid-column: span 3;
             border-top: 2px solid #2196F3;
             margin-top: 20px;
             padding-top: 20px;
@@ -175,7 +185,6 @@
         }
         
         .button-group {
-            grid-column: span 3;
             display: flex;
             justify-content: center;
             gap: 15px;
@@ -215,42 +224,24 @@
             transform: translateY(-2px);
         }
         
-        /* Secciones que ocuparán más espacio */
-        .analysis-section, .plan-section {
-            grid-column: span 2;
-        }
-        
         @media (max-width: 1200px) {
-            .form-container {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .analysis-section, .plan-section {
-                grid-column: span 2;
-            }
-            
-            .signature-area, .button-group {
-                grid-column: span 2;
+            .top-sections, .bottom-sections {
+                grid-template-columns: 1fr;
             }
         }
         
         @media (max-width: 768px) {
             .form-container {
-                grid-template-columns: 1fr;
                 padding: 15px;
-            }
-            
-            .analysis-section, .plan-section {
-                grid-column: span 1;
-            }
-            
-            .signature-area, .button-group {
-                grid-column: span 1;
             }
             
             .form-row {
                 flex-direction: column;
                 gap: 10px;
+            }
+            
+            .button-group {
+                flex-direction: column;
             }
         }
         
@@ -276,83 +267,89 @@
             <p>Sistema de registro de datos médicos del paciente</p>
             
             <div class="search-container">
-                <input type="text" id="search" placeholder="Buscar consulta por nombre, fecha o ID...">
+                <input type="text" id="search" placeholder="Buscar por el consentimiento">
                 <button><i class="fas fa-search"></i> Buscar</button>
             </div>
         </div>
         
         <div class="form-container">
-            <div class="form-section">
-                <h2 class="section-title"><i class="far fa-calendar-alt"></i> Información General</h2>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="fecha">Fecha:</label>
-                        <input type="date" id="fecha" name="fecha">
+            <!-- Secciones superiores centradas -->
+            <div class="top-sections">
+                <div class="form-section">
+                    <h2 class="section-title"><i class="far fa-calendar-alt"></i> Información General</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fecha">Fecha:</label>
+                            <input type="date" id="fecha" name="fecha">
+                        </div>
+                        <div class="form-group">
+                            <label for="hora">Hora:</label>
+                            <input type="time" id="hora" name="hora">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="hora">Hora:</label>
-                        <input type="time" id="hora" name="hora">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="edad">Edad:</label>
-                        <input type="text" id="edad" name="edad">
-                    </div>
-                    <div class="form-group">
-                        <label for="subjetivo">Subjetivo:</label>
-                        <input type="text" id="subjetivo" name="subjetivo">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-heartbeat"></i> Signos Vitales</h2>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="presion">Presión Arterial:</label>
-                        <input type="text" id="presion" name="presion" placeholder="Ej: 120/80 mmHg">
-                    </div>
-                    <div class="form-group">
-                        <label for="objetivo">Objetivo:</label>
-                        <input type="text" id="objetivo" name="objetivo">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edad">Edad:</label>
+                            <input type="text" id="edad" name="edad">
+                        </div>
+                        <div class="form-group">
+                            <label for="subjetivo">Subjetivo:</label>
+                            <input type="text" id="subjetivo" name="subjetivo">
+                        </div>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="frecuencia_cardiaca">Frecuencia Cardíaca:</label>
-                        <input type="text" id="frecuencia_cardiaca" name="frecuencia_cardiaca" placeholder="Ej: 75 lpm">
+                
+                <div class="form-section">
+                    <h2 class="section-title"><i class="fas fa-heartbeat"></i> Signos Vitales</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="presion">Presión Arterial:</label>
+                            <input type="text" id="presion" name="presion" placeholder="Ej: 120/80 mmHg">
+                        </div>
+                        <div class="form-group">
+                            <label for="objetivo">Objetivo:</label>
+                            <input type="text" id="objetivo" name="objetivo">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="frecuencia_respiratoria">Frecuencia Respiratoria:</label>
-                        <input type="text" id="frecuencia_respiratoria" name="frecuencia_respiratoria" placeholder="Ej: 16 rpm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="frecuencia_cardiaca">Frecuencia Cardíaca:</label>
+                            <input type="text" id="frecuencia_cardiaca" name="frecuencia_cardiaca" placeholder="Ej: 75 lpm">
+                        </div>
+                        <div class="form-group">
+                            <label for="frecuencia_respiratoria">Frecuencia Respiratoria:</label>
+                            <input type="text" id="frecuencia_respiratoria" name="frecuencia_respiratoria" placeholder="Ej: 16 rpm">
+                        </div>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="temperatura">Temperatura:</label>
-                        <input type="text" id="temperatura" name="temperatura" placeholder="Ej: 36.5 °C">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="temperatura">Temperatura:</label>
+                            <input type="text" id="temperatura" name="temperatura" placeholder="Ej: 36.5 °C">
+                        </div>
+                        <div class="form-group">
+                            <label for="peso">Peso:</label>
+                            <input type="text" id="peso" name="peso" placeholder="Ej: 70 kg">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="peso">Peso:</label>
-                        <input type="text" id="peso" name="peso" placeholder="Ej: 70 kg">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-section analysis-section">
-                <h2 class="section-title"><i class="fas fa-stethoscope"></i> Análisis</h2>
-                <div class="form-group">
-                    <label for="analisis">Evaluación Médica:</label>
-                    <textarea id="analisis" name="analisis"></textarea>
                 </div>
             </div>
             
-            <div class="form-section plan-section">
-                <h2 class="section-title"><i class="fas fa-tasks"></i> Plan de Acción</h2>
-                <div class="form-group">
-                    <label for="plan_accion">Plan de Tratamiento:</label>
-                    <textarea id="plan_accion" name="plan_accion"></textarea>
+            <!-- Secciones inferiores centradas -->
+            <div class="bottom-sections">
+                <div class="form-section">
+                    <h2 class="section-title"><i class="fas fa-stethoscope"></i> Análisis</h2>
+                    <div class="form-group">
+                        <label for="analisis">Evaluación Médica:</label>
+                        <textarea id="analisis" name="analisis"></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2 class="section-title"><i class="fas fa-tasks"></i> Plan de Acción</h2>
+                    <div class="form-group">
+                        <label for="plan_accion">Plan de Tratamiento:</label>
+                        <textarea id="plan_accion" name="plan_accion"></textarea>
+                    </div>
                 </div>
             </div>
             

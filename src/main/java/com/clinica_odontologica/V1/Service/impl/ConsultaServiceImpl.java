@@ -7,7 +7,9 @@ import com.clinica_odontologica.V1.Service.ConsultaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,6 +160,7 @@ public class ConsultaServiceImpl implements ConsultaService {
     public List<Consulta> obtenerPorRangoFechas(LocalDate fechaInicio, LocalDate fechaFin) {
         return consultaRepository.findByFechaBetween(fechaInicio, fechaFin);
     }
+
     @Override
     public List<Consulta> buscarPorCriterio(String criterio) {
         return consultaRepository.buscarPorCriterio(criterio);
@@ -167,4 +170,115 @@ public class ConsultaServiceImpl implements ConsultaService {
     public Optional<Consulta> obtenerConsultaCompleta(Long idConsulta) {
         return consultaRepository.findById(idConsulta);
     }
-}
+
+    // ✅ NUEVO MÉTODO - Implementación de obtenerConsultasCompletasPorPaciente
+    @Override
+    @Transactional(readOnly = true)
+    public List<ConsultaCompletaDTO> obtenerConsultasCompletasPorPaciente(Long idPaciente) {
+        try {
+            System.out.println("🔍 Buscando consultas completas para paciente: " + idPaciente);
+            
+            // Obtener las consultas con todas las relaciones usando el nuevo método del repository
+            List<Consulta> consultas = consultaRepository.findByPacienteIdPacienteWithRelations(idPaciente);
+            System.out.println("📊 Consultas encontradas: " + consultas.size());
+            
+            // Mapear a DTO manualmente
+            List<ConsultaCompletaDTO> dtos = new ArrayList<>();
+            
+            for (Consulta consulta : consultas) {
+                ConsultaCompletaDTO dto = new ConsultaCompletaDTO();
+                
+                System.out.println("🔄 Mapeando consulta ID: " + consulta.getIdConsulta());
+                
+                // Datos básicos de la consulta
+                dto.setFecha(consulta.getFecha());
+                dto.setObservaciones(consulta.getObservaciones());
+                dto.setIdPaciente(consulta.getPaciente().getIdPaciente());
+                dto.setIdEstudiante(consulta.getEstudiante().getIdEstudiante());
+                
+                // Informante
+                if (consulta.getInformante() != null) {
+                    dto.setInformanteNombres(consulta.getInformante().getNombres());
+                    dto.setInformanteApellidoPaterno(consulta.getInformante().getApellidoPaterno());
+                    dto.setInformanteApellidoMaterno(consulta.getInformante().getApellidoMaterno());
+                    dto.setInformanteDireccion(consulta.getInformante().getDireccion());
+                    dto.setInformanteTelefono(consulta.getInformante().getTelefono());
+                }
+                
+                // PatologiaPersonal - ¡ESTO ES LO QUE BUSCAS!
+                if (consulta.getPatologiaPersonal() != null) {
+                    dto.setNombrePatologia(consulta.getPatologiaPersonal().getNombrePatologia());
+                    dto.setAlergias(consulta.getPatologiaPersonal().getAlergias());
+                    dto.setEmbarazo(consulta.getPatologiaPersonal().getEmbarazo());
+                    dto.setSemanaEmbarazo(consulta.getPatologiaPersonal().getSemanaEmbarazo());
+                    System.out.println("✅ PatologiaPersonal: " + consulta.getPatologiaPersonal().getNombrePatologia());
+                } else {
+                    System.out.println("❌ PatologiaPersonal es null");
+                }
+                
+                // TratamientoMedico
+                if (consulta.getTratamientoMedico() != null) {
+                    dto.setTratamientoMedico(consulta.getTratamientoMedico().getTratamientoMedico());
+                    dto.setRecibeAlgunMedicamento(consulta.getTratamientoMedico().getRecibeAlgunMedicamento());
+                    dto.setTuvoHemorragiaDental(consulta.getTratamientoMedico().getTuvoHemorragiaDental());
+                    dto.setEspecifiqueHemorragia(consulta.getTratamientoMedico().getEspecifique());
+                    System.out.println("✅ TratamientoMedico cargado");
+                } else {
+                    System.out.println("❌ TratamientoMedico es null");
+                }
+                
+                // ExamenExtraOral
+                if (consulta.getExamenExtraOral() != null) {
+                    dto.setAtm(consulta.getExamenExtraOral().getAtm());
+                    dto.setGangliosLinfaticos(consulta.getExamenExtraOral().getGangliosLinfaticos());
+                    dto.setRespirador(consulta.getExamenExtraOral().getRespirador());
+                }
+                
+                // ExamenIntraOral
+                if (consulta.getExamenIntraOral() != null) {
+                    dto.setLabios(consulta.getExamenIntraOral().getLabios());
+                    dto.setLengua(consulta.getExamenIntraOral().getLengua());
+                    dto.setPaladar(consulta.getExamenIntraOral().getPaladar());
+                    dto.setPisoDeLaBoca(consulta.getExamenIntraOral().getPisoDeLaBoca());
+                    dto.setMucosaYugal(consulta.getExamenIntraOral().getMucosaYugal());
+                    dto.setEncias(consulta.getExamenIntraOral().getEncias());
+                    dto.setUtilizaProtesisDental(consulta.getExamenIntraOral().getUtilizaProtesisDental());
+                }
+                
+                // AntecedentesBucodentales
+                if (consulta.getAntecedentesBucodentales() != null) {
+                    dto.setFechaRevision(consulta.getAntecedentesBucodentales().getFechaRevision());
+                    // Parsear hábitos
+                    String habitos = consulta.getAntecedentesBucodentales().getHabitos();
+                    if (habitos != null) {
+                        dto.setHabitoFuma(habitos.contains("Fuma"));
+                        dto.setHabitoBebe(habitos.contains("Bebe"));
+                        dto.setOtrosHabitos(habitos.replace("Fuma, ", "").replace("Bebe, ", ""));
+                    }
+                }
+                
+                // AntecedentesHigieneOral
+                if (consulta.getAntecedentesHigieneOral() != null) {
+                    dto.setUtilizaCepilloDental(consulta.getAntecedentesHigieneOral().getUtilizaCepilloDental());
+                    dto.setUtilizaHiloDental(consulta.getAntecedentesHigieneOral().getUtilizaHiloDental());
+                    dto.setUtilizaEnjuagueBucal(consulta.getAntecedentesHigieneOral().getUtilizaEnjuagueBucal());
+                    dto.setFrecuenciaCepillo(consulta.getAntecedentesHigieneOral().getFrecuenciaCepillo());
+                    dto.setSangradoEncias(consulta.getAntecedentesHigieneOral().getDuranteElCepillado() != null && 
+                                         consulta.getAntecedentesHigieneOral().getDuranteElCepillado().contains("Sangrado"));
+                    dto.setHigieneBucal(consulta.getAntecedentesHigieneOral().getHigieneBucal());
+                } // ✅ CORRECCIÓN: Cerré esta llave que faltaba
+                
+                dtos.add(dto);
+                System.out.println("✅ DTO mapeado correctamente para consulta ID: " + consulta.getIdConsulta());
+            }
+            
+            System.out.println("🎉 Total de DTOs creados: " + dtos.size());
+            return dtos;
+            
+        } catch (Exception e) {
+            System.out.println("❌ Error en obtenerConsultasCompletasPorPaciente: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al obtener consultas completas: " + e.getMessage(), e);
+        }
+    } // ✅ CORRECCIÓN: Cerré esta llave del método
+} // ✅ CORRECCIÓN: Cerré esta llave de la clase

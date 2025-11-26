@@ -6,9 +6,9 @@
         }
 
         :root {
-            --primary: #1E40AF;      /* Azul intenso */
-            --secondary: #DC2626;    /* Rojo intenso */
-            --sidebar-bg: #1E3A8A;   /* Azul oscuro para sidebar */
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --sidebar-bg: #2c2c54;
             --header-bg: #ffffff;
             --card-bg: #ffffff;
             --text-light: #ffffff;
@@ -30,7 +30,7 @@
         /* Sidebar */
         .sidebar {
             width: 250px;
-            background: linear-gradient(to bottom, var(--sidebar-bg), #0F2A5C);
+            background: linear-gradient(to bottom, var(--sidebar-bg), #1e1e3f);
             color: var(--text-light);
             height: 100vh;
             position: fixed;
@@ -56,7 +56,7 @@
         .logo h1 {
             font-size: 24px;
             font-weight: 700;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+            background: linear-gradient(to right, #6a11cb, #2575fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             transition: all 0.3s ease;
@@ -146,7 +146,7 @@
 
         .menu li.active {
             background-color: rgba(255, 255, 255, 0.2);
-            border-left: 4px solid var(--secondary);
+            border-left: 4px solid var(--primary);
         }
 
         .sidebar.collapsed .menu li.active {
@@ -177,7 +177,7 @@
         }
 
         .badge {
-            background-color: var(--secondary);
+            background-color: var(--primary);
             color: white;
             border-radius: 10px;
             padding: 2px 8px;
@@ -212,13 +212,12 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+            background-color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 10px;
             font-weight: bold;
-            color: white;
             transition: margin-right 0.3s ease;
         }
 
@@ -362,7 +361,6 @@
             justify-content: center;
             color: white;
             font-size: 18px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
         }
 
         .card-value {
@@ -428,12 +426,12 @@
 
         .pending-progress {
             width: 55%;
-            background: linear-gradient(to right, var(--warning), var(--secondary));
+            background: linear-gradient(to right, #ff9800, #ff5722);
         }
 
         .bookings-progress {
             width: 50%;
-            background: linear-gradient(to right, var(--success), var(--primary));
+            background: linear-gradient(to right, #4caf50, #8bc34a);
         }
 
         /* Tasks Section */
@@ -480,11 +478,11 @@
         }
 
         .urgent-icon {
-            background: linear-gradient(to right, var(--secondary), #ff5252);
+            background: linear-gradient(to right, #ff5252, #ff1744);
         }
 
         .normal-icon {
-            background: linear-gradient(to right, var(--primary), #03a9f4);
+            background: linear-gradient(to right, #2196f3, #03a9f4);
         }
 
         .task-list {
@@ -514,14 +512,13 @@
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+            background-color: #e0e0e0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 12px;
             font-weight: bold;
             margin-left: 10px;
-            color: white;
         }
 
         /* Responsive */
@@ -562,7 +559,8 @@
             }
         }
 
-        /* Estilos para los contenedores de iframe */
+
+                /* Estilos para los contenedores de iframe */
         .content-area {
             display: none;
             width: 100%;

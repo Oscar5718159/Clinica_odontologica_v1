@@ -76,4 +76,19 @@ public class ConsultaController {
     public List<Consulta> obtenerPorEstudiante(@PathVariable Long idEstudiante) {
         return consultaService.obtenerPorEstudiante(idEstudiante);
     }
+    @GetMapping("/paciente/{idPaciente}/completo")
+    public ResponseEntity<List<ConsultaCompletaDTO>> obtenerConsultasCompletasPorPaciente(@PathVariable Long idPaciente) {
+        try {
+            List<ConsultaCompletaDTO> consultas = consultaService.obtenerConsultasCompletasPorPaciente(idPaciente);
+            System.out.println("✅ Consultas DTO encontradas: " + consultas.size());
+            if (!consultas.isEmpty()) {
+                System.out.println("✅ Primera consulta DTO: " + consultas.get(0));
+            }
+            return ResponseEntity.ok(consultas);
+        } catch (Exception e) {
+            System.out.println("❌ Error al obtener consultas completas: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

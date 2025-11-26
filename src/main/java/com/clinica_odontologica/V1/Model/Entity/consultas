@@ -23,3 +23,7 @@ CREATE TABLE persona (
     edad INT NOT NULL,
     sexo CHAR(1) NOT NULL CHECK (sexo IN ('M', 'F'))
 );
+
+
+
+ALTER TABLE docente MODIFY estado VARCHAR(20);

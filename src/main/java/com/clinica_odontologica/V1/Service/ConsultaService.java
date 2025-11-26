@@ -30,4 +30,5 @@ public interface ConsultaService {
     List<Consulta> buscarPorCriterio(String criterio);
     
     Optional<Consulta> obtenerConsultaCompleta(Long idConsulta);
+    List<ConsultaCompletaDTO> obtenerConsultasCompletasPorPaciente(Long idPaciente);
 }
