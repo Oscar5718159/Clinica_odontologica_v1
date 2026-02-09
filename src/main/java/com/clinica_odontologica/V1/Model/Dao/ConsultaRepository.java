@@ -30,7 +30,7 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
     // ✅ NUEVO MÉTODO - Cargar consultas con todas las relaciones
     @Query("SELECT c FROM Consulta c " +
            "LEFT JOIN FETCH c.informante " +
-           "LEFT JOIN FETCH c.patologiaPersonal " +
+           "LEFT JOIN FETCH c.patologiasPersonales " +
            "LEFT JOIN FETCH c.tratamientoMedico " +
            "LEFT JOIN FETCH c.examenExtraOral " +
            "LEFT JOIN FETCH c.examenIntraOral " +

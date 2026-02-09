@@ -1,6 +1,8 @@
 package com.clinica_odontologica.V1.Model.Dto;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConsultaCompletaDTO {
     
@@ -20,12 +22,8 @@ public class ConsultaCompletaDTO {
     private String informanteTelefono;
     
     // Datos de PatologiaPersonal
-    private String nombrePatologia;
-    private Boolean alergias;
-    private String especifiqueAlergia;
-    private Boolean embarazo;
-    private Integer semanaEmbarazo;
-    
+    private List<PatologiaPersonalDTO> patologiasPersonales = new ArrayList<>();
+
     // Datos de TratamientoMedico
     private Boolean tratamientoMedico;
     private String tratamientoMedicoDetalle;
@@ -94,20 +92,10 @@ public class ConsultaCompletaDTO {
     public String getInformanteTelefono() { return informanteTelefono; }
     public void setInformanteTelefono(String informanteTelefono) { this.informanteTelefono = informanteTelefono; }
     
-    public String getNombrePatologia() { return nombrePatologia; }
-    public void setNombrePatologia(String nombrePatologia) { this.nombrePatologia = nombrePatologia; }
-    
-    public Boolean getAlergias() { return alergias; }
-    public void setAlergias(Boolean alergias) { this.alergias = alergias; }
-    
-    public String getEspecifiqueAlergia() { return especifiqueAlergia; }
-    public void setEspecifiqueAlergia(String especifiqueAlergia) { this.especifiqueAlergia = especifiqueAlergia; }
-    
-    public Boolean getEmbarazo() { return embarazo; }
-    public void setEmbarazo(Boolean embarazo) { this.embarazo = embarazo; }
-    
-    public Integer getSemanaEmbarazo() { return semanaEmbarazo; }
-    public void setSemanaEmbarazo(Integer semanaEmbarazo) { this.semanaEmbarazo = semanaEmbarazo; }
+    public List<PatologiaPersonalDTO> getPatologiasPersonales() { return patologiasPersonales; }
+    public void setPatologiasPersonales(List<PatologiaPersonalDTO> patologiasPersonales) { 
+        this.patologiasPersonales = patologiasPersonales; 
+    }
     
     public Boolean getTratamientoMedico() { return tratamientoMedico; }
     public void setTratamientoMedico(Boolean tratamientoMedico) { this.tratamientoMedico = tratamientoMedico; }

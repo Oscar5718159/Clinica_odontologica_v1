@@ -1,8 +1,12 @@
 package com.clinica_odontologica.V1.Model.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDate;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "antecedentes_bucodentales")
 public class AntecedentesBucodentales {
@@ -16,39 +20,11 @@ public class AntecedentesBucodentales {
     private LocalDate fechaRevision;
 
     @Column(length = 100)
-    private String habitos;
+    private Boolean Fuma;
 
-    // Constructores
-    public AntecedentesBucodentales() {
-    }
+    @Column(length = 100)        
+    private Boolean Bebe;
 
-    public AntecedentesBucodentales(LocalDate fechaRevision, String habitos) {
-        this.fechaRevision = fechaRevision;
-        this.habitos = habitos;
-    }
-
-    // Getters y Setters
-    public Long getIdAntecedentesBucodentales() {
-        return idAntecedentesBucodentales;
-    }
-
-    public void setIdAntecedentesBucodentales(Long idAntecedentesBucodentales) {
-        this.idAntecedentesBucodentales = idAntecedentesBucodentales;
-    }
-
-    public LocalDate getFechaRevision() {
-        return fechaRevision;
-    }
-
-    public void setFechaRevision(LocalDate fechaRevision) {
-        this.fechaRevision = fechaRevision;
-    }
-
-    public String getHabitos() {
-        return habitos;
-    }
-
-    public void setHabitos(String habitos) {
-        this.habitos = habitos;
-    }
+    @Column(length = 100)
+    private String otrosHabitos;
 }

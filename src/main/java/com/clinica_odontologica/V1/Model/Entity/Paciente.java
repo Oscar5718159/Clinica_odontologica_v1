@@ -2,6 +2,11 @@ package com.clinica_odontologica.V1.Model.Entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 
 @Entity
 @Table(name = "paciente")
@@ -49,111 +54,5 @@ public class Paciente {
     @Column(nullable = false)
     private Integer ci;
 
-    // Constructor
-    public Paciente() {
-    }
 
-    // Getters y setters
-    public Long getIdPaciente() {
-        return idPaciente;
-    }
-
-    public void setIdPaciente(Long idPaciente) {
-        this.idPaciente = idPaciente;
-    }
-
-    public String getHistorialClinico() {
-        return historialClinico;
-    }
-
-    public void setHistorialClinico(String historialClinico) {
-        this.historialClinico = historialClinico;
-    }
-
-    public Persona getPersona() {
-        return persona;
-    }
-
-    public void setPersona(Persona persona) {
-        this.persona = persona;
-    }
-
-    public String getLugarNacimiento() {
-        return lugarNacimiento;
-    }
-
-    public void setLugarNacimiento(String lugarNacimiento) {
-        this.lugarNacimiento = lugarNacimiento;
-    }
-
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
-    }
-
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
-
-    public String getOcupacion() {
-        return ocupacion;
-    }
-
-    public void setOcupacion(String ocupacion) {
-        this.ocupacion = ocupacion;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public String getGradoInstruccion() {
-        return gradoInstruccion;
-    }
-
-    public void setGradoInstruccion(String gradoInstruccion) {
-        this.gradoInstruccion = gradoInstruccion;
-    }
-
-    public String getEstadoCivil() {
-        return estadoCivil;
-    }
-
-    public void setEstadoCivil(String estadoCivil) {
-        this.estadoCivil = estadoCivil;
-    }
-
-    public String getNacionesOriginarias() {
-        return nacionesOriginarias;
-    }
-
-    public void setNacionesOriginarias(String nacionesOriginarias) {
-        this.nacionesOriginarias = nacionesOriginarias;
-    }
-
-    public String getIdioma() {
-        return idioma;
-    }
-
-    public void setIdioma(String idioma) {
-        this.idioma = idioma;
-    }
-    public Integer getCi() {
-        return ci;
-    }
-
-    public void setCi(Integer ci) {
-        this.ci = ci;
-    }
 }

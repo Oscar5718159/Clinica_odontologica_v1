@@ -14,7 +14,7 @@ import java.util.Optional;
 @RequestMapping("/api/pacientes")
 @CrossOrigin(origins = "*") // Añade esta anotación para permitir CORS
 public class PacienteController {
-
+    
     @Autowired
     private PacienteService pacienteService;
 

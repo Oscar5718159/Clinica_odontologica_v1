@@ -2,6 +2,15 @@ package com.clinica_odontologica.V1.Model.Entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+
+import lombok.Getter;   
+import lombok.Setter;
+import java.util.List;
+
+@Getter
+@Setter
+
 
 @Entity
 @Table(name = "consulta")
@@ -28,7 +37,7 @@ public class Consulta {
     private Estudiante estudiante;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_informante", nullable = false)
+    @JoinColumn(name = "id_persona", nullable = false)
     private Informante informante;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -38,129 +47,22 @@ public class Consulta {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_examen_intra_oral")
     private ExamenIntraOral examenIntraOral;
+    
+    // Relación OneToMany con PatologiaPersonal
+    @OneToMany(mappedBy = "consulta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PatologiaPersonal> patologiasPersonales = new ArrayList<>();
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_antecedentes_bucodentales")
     private AntecedentesBucodentales antecedentesBucodentales;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_antecedentes_higiene_oral")
-    private AntecedentesHigieneOral antecedentesHigieneOral;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_patologia_personal")
-    private PatologiaPersonal patologiaPersonal;
-
-    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_tratamiento_medico")
     private TratamientoMedico tratamientoMedico;
 
-    // Constructores
-    public Consulta() {
-    }
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_antecedentes_higiene_oral")
+    private AntecedentesHigieneOral antecedentesHigieneOral;
 
-    public Consulta(LocalDate fecha, String observaciones, Paciente paciente, Estudiante estudiante, Informante informante) {
-        this.fecha = fecha;
-        this.observaciones = observaciones;
-        this.paciente = paciente;
-        this.estudiante = estudiante;
-        this.informante = informante;
-    }
 
-    // Getters y Setters
-    public Long getIdConsulta() {
-        return idConsulta;
-    }
-
-    public void setIdConsulta(Long idConsulta) {
-        this.idConsulta = idConsulta;
-    }
-
-    public LocalDate getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
-
-    public String getObservaciones() {
-        return observaciones;
-    }
-
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
-    }
-
-    public Paciente getPaciente() {
-        return paciente;
-    }
-
-    public void setPaciente(Paciente paciente) {
-        this.paciente = paciente;
-    }
-
-    public Estudiante getEstudiante() {
-        return estudiante;
-    }
-
-    public void setEstudiante(Estudiante estudiante) {
-        this.estudiante = estudiante;
-    }
-
-    public Informante getInformante() {
-        return informante;
-    }
-
-    public void setInformante(Informante informante) {
-        this.informante = informante;
-    }
-
-    public ExamenExtraOral getExamenExtraOral() {
-        return examenExtraOral;
-    }
-
-    public void setExamenExtraOral(ExamenExtraOral examenExtraOral) {
-        this.examenExtraOral = examenExtraOral;
-    }
-
-    public ExamenIntraOral getExamenIntraOral() {
-        return examenIntraOral;
-    }
-
-    public void setExamenIntraOral(ExamenIntraOral examenIntraOral) {
-        this.examenIntraOral = examenIntraOral;
-    }
-
-    public AntecedentesBucodentales getAntecedentesBucodentales() {
-        return antecedentesBucodentales;
-    }
-
-    public void setAntecedentesBucodentales(AntecedentesBucodentales antecedentesBucodentales) {
-        this.antecedentesBucodentales = antecedentesBucodentales;
-    }
-
-    public AntecedentesHigieneOral getAntecedentesHigieneOral() {
-        return antecedentesHigieneOral;
-    }
-
-    public void setAntecedentesHigieneOral(AntecedentesHigieneOral antecedentesHigieneOral) {
-        this.antecedentesHigieneOral = antecedentesHigieneOral;
-    }
-
-    public PatologiaPersonal getPatologiaPersonal() {
-        return patologiaPersonal;
-    }
-
-    public void setPatologiaPersonal(PatologiaPersonal patologiaPersonal) {
-        this.patologiaPersonal = patologiaPersonal;
-    }
-
-    public TratamientoMedico getTratamientoMedico() {
-        return tratamientoMedico;
-    }
-
-    public void setTratamientoMedico(TratamientoMedico tratamientoMedico) {
-        this.tratamientoMedico = tratamientoMedico;
-    }
 }

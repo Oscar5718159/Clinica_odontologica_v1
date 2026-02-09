@@ -2,6 +2,7 @@ package com.clinica_odontologica.V1.Service.impl;
 
 import com.clinica_odontologica.V1.Model.Entity.*;
 import com.clinica_odontologica.V1.Model.Dto.ConsultaCompletaDTO;
+import com.clinica_odontologica.V1.Model.Dto.PatologiaPersonalDTO;
 import com.clinica_odontologica.V1.Model.Dao.*;
 import com.clinica_odontologica.V1.Service.ConsultaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,11 +61,7 @@ public class ConsultaServiceImpl implements ConsultaService {
         informante.setTelefono(consultaDTO.getInformanteTelefono());
         
         // 3. Crear y guardar PatologiaPersonal
-        PatologiaPersonal patologiaPersonal = new PatologiaPersonal();
-        patologiaPersonal.setNombrePatologia(consultaDTO.getNombrePatologia());
-        patologiaPersonal.setAlergias(consultaDTO.getAlergias());
-        patologiaPersonal.setEmbarazo(consultaDTO.getEmbarazo());
-        patologiaPersonal.setSemanaEmbarazo(consultaDTO.getSemanaEmbarazo());
+        List<PatologiaPersonal> patologiasPersonales = new ArrayList<>();
 
         // 4. Crear y guardar TratamientoMedico
         TratamientoMedico tratamientoMedico = new TratamientoMedico();
@@ -92,19 +89,10 @@ public class ConsultaServiceImpl implements ConsultaService {
         // 7. Crear y guardar AntecedentesBucodentales
         AntecedentesBucodentales antecedentesBucodentales = new AntecedentesBucodentales();
         antecedentesBucodentales.setFechaRevision(consultaDTO.getFechaRevision());
-        
-        // Construir hábitos como string
-        StringBuilder habitosBuilder = new StringBuilder();
-        if (Boolean.TRUE.equals(consultaDTO.getHabitoFuma())) habitosBuilder.append("Fuma, ");
-        if (Boolean.TRUE.equals(consultaDTO.getHabitoBebe())) habitosBuilder.append("Bebe, ");
-        if (consultaDTO.getOtrosHabitos() != null && !consultaDTO.getOtrosHabitos().isEmpty()) {
-            habitosBuilder.append(consultaDTO.getOtrosHabitos());
-        }
-        String habitos = habitosBuilder.toString();
-        if (habitos.endsWith(", ")) {
-            habitos = habitos.substring(0, habitos.length() - 2);
-        }
-        antecedentesBucodentales.setHabitos(habitos);
+        antecedentesBucodentales.setFuma(consultaDTO.getHabitoFuma());
+        antecedentesBucodentales.setBebe(consultaDTO.getHabitoBebe());
+        antecedentesBucodentales.setOtrosHabitos(consultaDTO.getOtrosHabitos());
+
         
         // 8. Crear y guardar AntecedentesHigieneOral
         AntecedentesHigieneOral antecedentesHigieneOral = new AntecedentesHigieneOral();
@@ -126,7 +114,7 @@ public class ConsultaServiceImpl implements ConsultaService {
         consulta.setPaciente(paciente);
         consulta.setEstudiante(estudiante);
         consulta.setInformante(informante);
-        consulta.setPatologiaPersonal(patologiaPersonal);
+        consulta.setPatologiasPersonales(patologiasPersonales);
         consulta.setTratamientoMedico(tratamientoMedico);
         consulta.setExamenExtraOral(examenExtraOral);
         consulta.setExamenIntraOral(examenIntraOral);
@@ -171,7 +159,6 @@ public class ConsultaServiceImpl implements ConsultaService {
         return consultaRepository.findById(idConsulta);
     }
 
-    // ✅ NUEVO MÉTODO - Implementación de obtenerConsultasCompletasPorPaciente
     @Override
     @Transactional(readOnly = true)
     public List<ConsultaCompletaDTO> obtenerConsultasCompletasPorPaciente(Long idPaciente) {
@@ -206,12 +193,19 @@ public class ConsultaServiceImpl implements ConsultaService {
                 }
                 
                 // PatologiaPersonal - ¡ESTO ES LO QUE BUSCAS!
-                if (consulta.getPatologiaPersonal() != null) {
-                    dto.setNombrePatologia(consulta.getPatologiaPersonal().getNombrePatologia());
-                    dto.setAlergias(consulta.getPatologiaPersonal().getAlergias());
-                    dto.setEmbarazo(consulta.getPatologiaPersonal().getEmbarazo());
-                    dto.setSemanaEmbarazo(consulta.getPatologiaPersonal().getSemanaEmbarazo());
-                    System.out.println("✅ PatologiaPersonal: " + consulta.getPatologiaPersonal().getNombrePatologia());
+                if (consulta.getPatologiasPersonales() != null && !consulta.getPatologiasPersonales().isEmpty()) {
+                    
+                    List<PatologiaPersonalDTO> patologiasDTO = new ArrayList<>();
+                    for (PatologiaPersonal patologia : consulta.getPatologiasPersonales()) {
+                        PatologiaPersonalDTO patologiaDTO = new PatologiaPersonalDTO();
+                        patologiaDTO.setNombrePatologia(patologia.getNombrePatologia());
+                        patologiaDTO.setAlergias(patologia.getAlergias());
+                        patologiaDTO.setEmbarazo(patologia.getEmbarazo());
+                        patologiaDTO.setSemanaEmbarazo(patologia.getSemanaEmbarazo());
+                        patologiasDTO.add(patologiaDTO);
+                    }
+                    dto.setPatologiasPersonales(patologiasDTO);
+                    System.out.println("✅ PatologiaPersonal cargado con " + patologiasDTO.size() + " entradas");
                 } else {
                     System.out.println("❌ PatologiaPersonal es null");
                 }
@@ -248,14 +242,13 @@ public class ConsultaServiceImpl implements ConsultaService {
                 // AntecedentesBucodentales
                 if (consulta.getAntecedentesBucodentales() != null) {
                     dto.setFechaRevision(consulta.getAntecedentesBucodentales().getFechaRevision());
-                    // Parsear hábitos
-                    String habitos = consulta.getAntecedentesBucodentales().getHabitos();
-                    if (habitos != null) {
-                        dto.setHabitoFuma(habitos.contains("Fuma"));
-                        dto.setHabitoBebe(habitos.contains("Bebe"));
-                        dto.setOtrosHabitos(habitos.replace("Fuma, ", "").replace("Bebe, ", ""));
-                    }
+                    dto.setHabitoFuma(consulta.getAntecedentesBucodentales().getFuma());
+                    dto.setHabitoBebe(consulta.getAntecedentesBucodentales().getBebe());
+                    dto.setOtrosHabitos(consulta.getAntecedentesBucodentales().getOtrosHabitos());
+                    
                 }
+
+
                 
                 // AntecedentesHigieneOral
                 if (consulta.getAntecedentesHigieneOral() != null) {
@@ -280,5 +273,5 @@ public class ConsultaServiceImpl implements ConsultaService {
             e.printStackTrace();
             throw new RuntimeException("Error al obtener consultas completas: " + e.getMessage(), e);
         }
-    } // ✅ CORRECCIÓN: Cerré esta llave del método
-} // ✅ CORRECCIÓN: Cerré esta llave de la clase
+    } 
+}

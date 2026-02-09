@@ -6,7 +6,6 @@
     <title>Cubic Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/CSS/panel.css}">
-    <!-- <link rel="stylesheet" href="../../static/CSS/panel.css">  -->
 </head>
 <body>          
     <!-- Sidebar -->    
@@ -14,7 +13,7 @@
         <div class="logo">
             <div>
                 <h1>PANEL</h1>
-                <h1>DOCENTE</h1>
+                <h1>ARCHIVOS</h1>
             </div>
             <button class="toggle-btn" id="toggleBtn">
                 <i class="fas fa-bars"></i>
@@ -32,13 +31,13 @@
                 <span class="menu-text">Dashboard</span>
                 <span class="badge">3</span>
             </li>
-            <li onclick="loadPage('/doctor/historial_clinico/historial_clinico_ENPROCESO', 'Historial Clinico', 'historiaClinicaFrame', this)">
+            <li onclick="loadPage('/archivos/gestion/gestion-vista', 'ARCHIVOS', 'archivosFrame', this)">
                 <i class="fas fa-user-injured"></i>
-                <span class="menu-text">Buscar Historial Clinico</span>
+                <span class="menu-text">ARCHIVOS</span>
             </li>
-            <li onclick="loadPage('/doctor/estado_consentimiento/estadoConsentimiento', '', 'ConsentimientoEstadoFrame', this)">
+            <li onclick="loadPage('/archivos/prestamo/prestamo-vista', '', 'PrestamoFrame', this)">
                 <i class="fas fa-box"></i>
-                <span class="menu-text">Consentimiento</span>
+                <span class="menu-text">Prestamo</span>
             </li>
             <li onclick="loadPage('/recepcion/paginas/historial_clinico', 'Historial Clínico', 'historiaClinicaFrame', this)">
                 <i class="fas fa-history"></i>
@@ -286,13 +285,13 @@
         </div>
         
         <!-- Contenido de Nuevo Paciente -->
-        <div id="nuevoPacienteContent" class="content-area">
-            <iframe id="historiaClinicaFrame" src="about:blank"></iframe>
+        <div id="gestionArchivosContent" class="content-area">
+            <iframe id="archivosFrame" src="about:blank"></iframe>
         </div>
         
         <!-- Contenido de Solicitud de Insumos -->
-        <div id="ConsentimientoEstadoContent" class="content-area">
-            <iframe id="ConsentimientoEstadoFrame" src="about:blank"></iframe>
+        <div id="PrestamoContent" class="content-area">
+            <iframe id="PrestamoFrame" src="about:blank"></iframe>
         </div>
     </div>
 
@@ -334,10 +333,10 @@
             });
             
             // Mostrar el contenido correspondiente
-            if (frameId === 'historiaClinicaFrame') {
-                document.getElementById('nuevoPacienteContent').classList.add('active');
-            } else if (frameId === 'ConsentimientoEstadoFrame') {
-                document.getElementById('ConsentimientoEstadoContent').classList.add('active');
+            if (frameId === 'archivosFrame') {
+                document.getElementById('gestionArchivosContent').classList.add('active');
+            } else if (frameId === 'PrestamoFrame') {
+                document.getElementById('PrestamoContent').classList.add('active');
             }
             
             // Activar el item del menú clickeado

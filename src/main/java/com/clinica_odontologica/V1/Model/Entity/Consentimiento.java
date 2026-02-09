@@ -2,6 +2,12 @@ package com.clinica_odontologica.V1.Model.Entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+
 
 @Entity
 @Table(name = "consentimiento")
@@ -31,75 +37,4 @@ public class Consentimiento {
 
     @Column(name = "estado")
     private Boolean estado = true;
-
-    // Constructores
-    public Consentimiento() {
-        this.fecha = LocalDateTime.now();
-    }
-
-    public Consentimiento(Consulta consulta, Docente docente, String explicacion, String decision) {
-        this.consulta = consulta;
-        this.docente = docente;
-        this.explicacion = explicacion;
-        this.decision = decision;
-        this.fecha = LocalDateTime.now();
-        this.estado = true;
-    }
-
-    // Getters y Setters
-    public Long getIdConsentimiento() {
-        return idConsentimiento;
-    }
-
-    public void setIdConsentimiento(Long idConsentimiento) {
-        this.idConsentimiento = idConsentimiento;
-    }
-
-    public Consulta getConsulta() {
-        return consulta;
-    }
-
-    public void setConsulta(Consulta consulta) {
-        this.consulta = consulta;
-    }
-
-    public Docente getDocente() {
-        return docente;
-    }
-
-    public void setDocente(Docente docente) {
-        this.docente = docente;
-    }
-
-    public String getExplicacion() {
-        return explicacion;
-    }
-
-    public void setExplicacion(String explicacion) {
-        this.explicacion = explicacion;
-    }
-
-    public LocalDateTime getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(LocalDateTime fecha) {
-        this.fecha = fecha;
-    }
-
-    public String getDecision() {
-        return decision;
-    }
-
-    public void setDecision(String decision) {
-        this.decision = decision;
-    }
-
-    public Boolean getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Boolean estado) {
-        this.estado = estado;
-    }
 }

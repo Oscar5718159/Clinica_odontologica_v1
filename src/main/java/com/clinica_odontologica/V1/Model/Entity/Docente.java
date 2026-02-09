@@ -2,9 +2,15 @@ package com.clinica_odontologica.V1.Model.Entity;
 
 import jakarta.persistence.*;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Getter
+@Setter
 
 @Entity
-@Table(name = "docente")
+@Table(name = "usuariodocente")
 public class Docente {
     
     @Id
@@ -12,78 +18,25 @@ public class Docente {
     @Column(name = "id_docente")
     private Long idDocente;
 
-    @Column(name = "nombre_docente", length = 100, nullable = false)
-    private String nombreDocente;
+    @ManyToOne
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+
+    @Column(name="codigo_doc",nullable=false)
+    private Integer codigoDocente;
 
     @Column(name = "especialidad", length = 100)
     private String especialidad;
 
-    @Column(name = "estado")
-    private Boolean estado = true;
+    @Column(name = "contrato", length = 100)
+    private String contrato;
 
+    @Column(name = "estado_doc", nullable = false )
+    private    Boolean estado;
     @ManyToOne
     @JoinColumn(name = "id_clinica")
     private Clinica clinica;
 
     @OneToMany(mappedBy = "docente")
     private List<Consentimiento> consentimientos;
-
-    // Constructores
-    public Docente() {}
-
-    public Docente(String nombreDocente, String especialidad, Clinica clinica) {
-        this.nombreDocente = nombreDocente;
-        this.especialidad = especialidad;
-        this.clinica = clinica;
-        this.estado = true;
-    }
-
-    // Getters y Setters
-    public Long getIdDocente() {
-        return idDocente;
-    }
-
-    public void setIdDocente(Long idDocente) {
-        this.idDocente = idDocente;
-    }
-
-    public String getNombreDocente() {
-        return nombreDocente;
-    }
-
-    public void setNombreDocente(String nombreDocente) {
-        this.nombreDocente = nombreDocente;
-    }
-
-    public String getEspecialidad() {
-        return especialidad;
-    }
-
-    public void setEspecialidad(String especialidad) {
-        this.especialidad = especialidad;
-    }
-
-    public Boolean getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Boolean estado) {
-        this.estado = estado;
-    }
-
-    public Clinica getClinica() {
-        return clinica;
-    }
-
-    public void setClinica(Clinica clinica) {
-        this.clinica = clinica;
-    }
-
-    public List<Consentimiento> getConsentimientos() {
-        return consentimientos;
-    }
-
-    public void setConsentimientos(List<Consentimiento> consentimientos) {
-        this.consentimientos = consentimientos;
-    }
 }

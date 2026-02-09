@@ -11,8 +11,6 @@ public interface EstudianteService {
     Optional<Estudiante> obtenerPorId(Long id);
     
     Estudiante guardar(Estudiante estudiante);
-    
-    boolean validarCredenciales(String nombre, String codigoEstudiante);
-    
-    Optional<Estudiante> obtenerPorCodigo(String codigoEstudiante);
+
+    List<Estudiante> buscarPorCodigoEstudiante(Integer codigoEstudiante);
 }

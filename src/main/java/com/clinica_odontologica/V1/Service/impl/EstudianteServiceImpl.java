@@ -30,13 +30,7 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
     @Override
-    public boolean validarCredenciales(String nombre, String codigoEstudiante) {
-        Optional<Estudiante> estudiante = estudianteRepository.findByNombreAndCodigo(nombre, codigoEstudiante);
-        return estudiante.isPresent();
-    }
-
-    @Override
-    public Optional<Estudiante> obtenerPorCodigo(String codigoEstudiante) {
-        return estudianteRepository.findByCodigoEstudiante(codigoEstudiante);
+    public List<Estudiante> buscarPorCodigoEstudiante(Integer codigo) {
+        return estudianteRepository.findAllByCodigoEstudiante(codigo);
     }
 }

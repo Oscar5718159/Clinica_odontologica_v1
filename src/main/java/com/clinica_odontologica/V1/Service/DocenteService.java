@@ -14,13 +14,13 @@ public interface DocenteService {
     
     Docente guardar(Docente docente);
     
-    void eliminar(Long id);
+    // void eliminar(Long id);
     
-    List<Docente> buscarPorEspecialidad(String especialidad);
+    // List<Docente> buscarPorEspecialidad(String especialidad);
     
-    List<Docente> buscarPorNombre(String nombreDocente);
+    // List<Docente> buscarPorNombre(String nombreDocente);
     
-    List<Docente> buscarPorClinica(Long idClinica);
+    // List<Docente> buscarPorClinica(Long idClinica);
     
-    List<Docente> buscarActivosPorCriterio(String criterio);
+    // List<Docente> buscarActivosPorCriterio(String criterio);
 }

@@ -1,5 +1,11 @@
 package com.clinica_odontologica.V1.Model.Entity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Getter
+@Setter
 @Entity
 
 @Table(name = "persona")
@@ -26,60 +32,4 @@ public class Persona {
     @Column(nullable = false, length = 1)
     private Character sexo; // 'M' o 'F'
 
-    // Constructor, getters y setters
-    public Persona() {
-    }
-
-    public Long getId_persona() {
-        return id_persona;
-    }
-
-    public void setId_persona(Long id_persona) {
-        this.id_persona = id_persona;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-
-
-    public String getApellidoPaterno() {
-        return apellidoPaterno;
-    }
-    public void setApellidoPaterno(String apellidoPaterno) {
-        this.apellidoPaterno = apellidoPaterno;
-    }
-    public String getApellidoMaterno() {
-        return apellidoMaterno;
-    }
-    public void setApellidoMaterno(String apellidoMaterno) {
-        this.apellidoMaterno = apellidoMaterno;
-    }
-
-
-
-    public Integer getEdad() {
-        return edad;
-    }
-
-    public void setEdad(Integer edad) {
-        this.edad = edad;
-    }
-
-    public Character getSexo() {
-        return sexo;
-    }
-
-    public void setSexo(Character sexo) {
-        if (sexo != null && (sexo == 'M' || sexo == 'F')) {
-            this.sexo = sexo;
-        } else {
-            throw new IllegalArgumentException("El sexo debe ser 'M' o 'F'");
-        }
-    }
 }
