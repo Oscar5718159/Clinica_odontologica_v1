@@ -17,4 +17,5 @@ public interface ClinicaService {
     List<Clinica> buscarPorNombre(String nombre);
     
     List<Clinica> buscarPorTurno(String turno);
+
 }

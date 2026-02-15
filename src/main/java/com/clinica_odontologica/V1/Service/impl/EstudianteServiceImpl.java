@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.transaction.annotation.Transactional;
 @Service
 public class EstudianteServiceImpl implements EstudianteService {
 
@@ -32,5 +33,36 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     public List<Estudiante> buscarPorCodigoEstudiante(Integer codigo) {
         return estudianteRepository.findAllByCodigoEstudiante(codigo);
+    }
+
+    // ========== NUEVOS MÉTODOS ==========
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Estudiante> buscarPorCodigoExacto(Integer codigoEstudiante) {
+        return estudianteRepository.findByCodigoEstudiante(codigoEstudiante);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Boolean existePorCodigoEstudiante(Integer codigoEstudiante) {
+        return estudianteRepository.existsByCodigoEstudiante(codigoEstudiante);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Estudiante> buscarPorGestion(String gestion) {
+        return estudianteRepository.findByGestion(gestion);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Estudiante> buscarPorBloqueado(Boolean bloqueado) {
+        return estudianteRepository.findByBloqueado(bloqueado);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Estudiante> buscarPorNombreUsuario(String username) {
+        return estudianteRepository.buscarPorNombreUsuario(username);
     }
 }

@@ -1,7 +1,6 @@
 package com.clinica_odontologica.V1.Model.Dao;
 import com.clinica_odontologica.V1.Model.Entity.PrestamoActual;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.*;
 

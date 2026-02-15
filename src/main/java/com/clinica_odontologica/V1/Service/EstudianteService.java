@@ -13,4 +13,15 @@ public interface EstudianteService {
     Estudiante guardar(Estudiante estudiante);
 
     List<Estudiante> buscarPorCodigoEstudiante(Integer codigoEstudiante);
+
+    // ========== NUEVOS MÉTODOS ==========
+    Optional<Estudiante> buscarPorCodigoExacto(Integer codigoEstudiante);
+    
+    Boolean existePorCodigoEstudiante(Integer codigoEstudiante);
+    
+    List<Estudiante> buscarPorGestion(String gestion);
+    
+    List<Estudiante> buscarPorBloqueado(Boolean bloqueado);
+    
+    Optional<Estudiante> buscarPorNombreUsuario(String username);
 }
