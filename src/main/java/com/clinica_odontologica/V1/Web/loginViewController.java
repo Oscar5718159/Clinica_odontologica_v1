@@ -1,55 +1,82 @@
-// package com.clinica_odontologica.V1.Web;
+package com.clinica_odontologica.V1.Web;
 
-// import com.clinica_odontologica.V1.Model.Dto.LoginRequest;
-// import com.clinica_odontologica.V1.Model.Dto.LoginResponse;
-// import com.clinica_odontologica.V1.Model.Entity.Estudiante;
-// import com.clinica_odontologica.V1.Service.EstudianteService;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.stereotype.Controller;
-// import org.springframework.web.bind.annotation.*;
+import com.clinica_odontologica.V1.Model.Dto.LoginRequest;
+import com.clinica_odontologica.V1.Model.Dto.LoginResponse;
+import com.clinica_odontologica.V1.Model.Entity.Estudiante;
+import com.clinica_odontologica.V1.Service.AuthService;
+import com.clinica_odontologica.V1.Service.EstudianteService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpSession;
 
-// import java.util.Optional;
+import java.util.Optional;
 
-// @Controller
-// @RequestMapping("/")
-// public class loginViewController {
+@Controller
+@RequestMapping("/")
+public class loginViewController {
 
-//     @Autowired
-//     private EstudianteService estudianteService;
+    @Autowired
+    private AuthService authService;
 
-//     @GetMapping
-//     public String paginaLogin() {
-//         return "login/login-vista";
-//     }
 
-//     @PostMapping("/autenticar")
-//     @ResponseBody
-//     public ResponseEntity<LoginResponse> autenticarEstudiante(@RequestBody LoginRequest loginRequest) {
+    @Autowired
+    private HttpSession session;
+
+
+    @GetMapping
+    public String paginaLogin() {
+        return "login/login-vista";
+    }
+
+    @PostMapping("/autenticar")
+    @ResponseBody
+    public ResponseEntity<LoginResponse> autenticarEstudiante(@RequestBody LoginRequest loginRequest) {
         
-//         boolean credencialesValidas = estudianteService.validarCredenciales(
-//             loginRequest.getUsuario(), 
-//             loginRequest.getContraseña()
-//         );
+        // Usar el AuthService para autenticar
+        Optional<Estudiante> estudianteOpt = authService.autenticar(
+            loginRequest.getUsuario(), 
+            loginRequest.getContraseña()
+        );
 
-//         if (credencialesValidas) {
-//             // Obtener información del estudiante para la respuesta
-//             Optional<Estudiante> estudianteOpt = estudianteService.obtenerPorCodigo(loginRequest.getContraseña());
+        if (estudianteOpt.isPresent()) {
+            Estudiante estudiante = estudianteOpt.get();
             
-//             if (estudianteOpt.isPresent()) {
-//                 Estudiante estudiante = estudianteOpt.get();
-//                 LoginResponse response = new LoginResponse(
-//                     true, 
-//                     "Login exitoso", 
-//                     estudiante.getNombre(),
-//                     estudiante.getApellidos(),
-//                     estudiante.getSemestre()
-//                 );
-//                 return ResponseEntity.ok(response);
-//             }
-//         }
+            // Verificar si el estudiante no está bloqueado
+            if (!estudiante.getBloqueado()) {
 
-//         LoginResponse response = new LoginResponse(false, "Credenciales incorrectas");
-//         return ResponseEntity.status(401).body(response);
-//     }
-// }
+                session.setAttribute("idEstudiante", estudiante.getIdEstudiante());
+                session.setAttribute("codigoEstudiante", estudiante.getCodigoEstudiante());
+                
+                // También puedes guardar otros datos si los necesitas
+                session.setAttribute("nombreEstudiante", estudiante.getUsuario().getPersona().getNombre());
+                
+                System.out.println("✅ SESIÓN GUARDADA - ID Estudiante: " + estudiante.getIdEstudiante());
+
+
+                // Obtener información de la persona asociada al usuario
+                String nombre = estudiante.getUsuario().getPersona().getNombre();
+                String apellidoPaterno = estudiante.getUsuario().getPersona().getApellidoPaterno();
+                String apellidoMaterno = estudiante.getUsuario().getPersona().getApellidoMaterno();
+                String apellidos = apellidoPaterno + " " + apellidoMaterno;
+                
+                LoginResponse response = new LoginResponse(
+                    true, 
+                    "Login exitoso", 
+                    nombre,
+                    apellidos,
+                    estudiante.getGestion(), // Asumiendo que gestión es el semestre/año
+                    estudiante.getIdEstudiante() // INCLUIMOS EL ID DEL ESTUDIANTE
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                LoginResponse response = new LoginResponse(false, "Estudiante bloqueado");
+                return ResponseEntity.status(401).body(response);
+            }
+        }
+
+        LoginResponse response = new LoginResponse(false, "Credenciales incorrectas");
+        return ResponseEntity.status(401).body(response);
+    }
+}

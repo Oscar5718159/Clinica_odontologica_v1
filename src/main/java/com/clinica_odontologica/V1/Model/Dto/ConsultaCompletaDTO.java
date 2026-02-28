@@ -1,8 +1,6 @@
 package com.clinica_odontologica.V1.Model.Dto;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConsultaCompletaDTO {
     
@@ -22,13 +20,24 @@ public class ConsultaCompletaDTO {
     private String informanteTelefono;
     
     // Datos de PatologiaPersonal
-    private List<PatologiaPersonalDTO> patologiasPersonales = new ArrayList<>();
+    private Boolean anemia;
+    private Boolean cardiopatias;
+    private Boolean enfGastricos;
+    private Boolean hepatitis;
+    private Boolean tuberculosis;
+    private Boolean asma;
+    private Boolean diabetesMel;
+    private Boolean epilepsia;
+    private Boolean hipertension;
+    private String otros;
+    private Boolean ninguno;
+    private Boolean alergias;
+    private Boolean embarazo;
+    private Integer semanaEmbarazo;
 
     // Datos de TratamientoMedico
     private Boolean tratamientoMedico;
-    private String tratamientoMedicoDetalle;
     private Boolean recibeAlgunMedicamento;
-    private String medicamentoActual;
     private Boolean tuvoHemorragiaDental;
     private String especifiqueHemorragia;
     
@@ -92,22 +101,58 @@ public class ConsultaCompletaDTO {
     public String getInformanteTelefono() { return informanteTelefono; }
     public void setInformanteTelefono(String informanteTelefono) { this.informanteTelefono = informanteTelefono; }
     
-    public List<PatologiaPersonalDTO> getPatologiasPersonales() { return patologiasPersonales; }
-    public void setPatologiasPersonales(List<PatologiaPersonalDTO> patologiasPersonales) { 
-        this.patologiasPersonales = patologiasPersonales; 
-    }
+    //patologiasPersonales
+
+    public Boolean getAnemia() { return anemia; }
+    public void setAnemia(Boolean anemia) { this.anemia = anemia; }
     
+    public Boolean getCardiopatias() { return cardiopatias; }
+    public void setCardiopatias(Boolean cardiopatias) { this.cardiopatias = cardiopatias; }
+    
+    public Boolean getHepatitis() { return hepatitis; }
+    public void setHepatitis(Boolean hepatitis) { this.hepatitis = hepatitis; }
+    
+    public Boolean getEnfGastricos() { return enfGastricos; }
+    public void setEnfGastricos(Boolean enfGastricos) { this.enfGastricos = enfGastricos; }
+    
+    public Boolean getTuberculosis() { return tuberculosis; }
+    public void setTuberculosis(Boolean tuberculosis) { this.tuberculosis = tuberculosis; }
+    
+    public Boolean getAsma() { return asma; }
+    public void setAsma(Boolean asma) { this.asma = asma; }
+    
+    public Boolean getDiabetesMel() { return diabetesMel; }
+    public void setDiabetesMel(Boolean diabetesMel) { this.diabetesMel = diabetesMel; }
+    
+    public Boolean getEpilepsia() { return epilepsia; }
+    public void setEpilepsia(Boolean epilepsia) { this.epilepsia = epilepsia; }
+
+    public Boolean getHipertension() { return hipertension; }
+    public void setHipertension(Boolean hipertension) { this.hipertension = hipertension; }
+
+    public String getOtros() { return otros; }
+    public void setOtros(String otros) { this.otros = otros; }
+
+    public Boolean getNinguno() { return ninguno; }
+    public void setNinguno(Boolean ninguno) { this.ninguno = ninguno; }
+
+
+    public Boolean getAlergias() { return alergias; }
+    public void setAlergias(Boolean alergias) { this.alergias = alergias; }
+
+    public Boolean getEmbarazo() { return embarazo; }
+    public void setEmbarazo(Boolean embarazo) { this.embarazo = embarazo; }
+
+    public Integer getSemanaEmbarazo() { return semanaEmbarazo; }
+    public void setSemanaEmbarazo(Integer semanaEmbarazo) { this.semanaEmbarazo = semanaEmbarazo; }
+
+    
+
     public Boolean getTratamientoMedico() { return tratamientoMedico; }
     public void setTratamientoMedico(Boolean tratamientoMedico) { this.tratamientoMedico = tratamientoMedico; }
-    
-    public String getTratamientoMedicoDetalle() { return tratamientoMedicoDetalle; }
-    public void setTratamientoMedicoDetalle(String tratamientoMedicoDetalle) { this.tratamientoMedicoDetalle = tratamientoMedicoDetalle; }
-    
+
     public Boolean getRecibeAlgunMedicamento() { return recibeAlgunMedicamento; }
     public void setRecibeAlgunMedicamento(Boolean recibeAlgunMedicamento) { this.recibeAlgunMedicamento = recibeAlgunMedicamento; }
-    
-    public String getMedicamentoActual() { return medicamentoActual; }
-    public void setMedicamentoActual(String medicamentoActual) { this.medicamentoActual = medicamentoActual; }
     
     public Boolean getTuvoHemorragiaDental() { return tuvoHemorragiaDental; }
     public void setTuvoHemorragiaDental(Boolean tuvoHemorragiaDental) { this.tuvoHemorragiaDental = tuvoHemorragiaDental; }

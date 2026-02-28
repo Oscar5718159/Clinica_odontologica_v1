@@ -1,0 +1,49 @@
+package com.clinica_odontologica.V1.config;
+
+import com.clinica_odontologica.V1.Interceptor.BloqueoEstudianteInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private BloqueoEstudianteInterceptor bloqueoInterceptor;
+    
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(bloqueoInterceptor)
+                .addPathPatterns(
+                    // 🔥 SOLO APLICAR A RUTAS DE ESTUDIANTES
+                    "/Estudiantes_Static/**",
+                    "/estudiante/**",
+                    "/consulta/**"
+                )
+                .excludePathPatterns(
+                    // ✅ EXCLUIR SIEMPRE RECURSOS ESTÁTICOS
+                    "/css/**",
+                    "/js/**",
+                    "/images/**",
+                    "/img/**",
+                    "/webjars/**",
+                    "/static/**",
+                    
+                    // ✅ EXCLUIR APIs (accesibles para todos)
+                    "/api/**",
+                    
+                    // ✅ EXCLUIR RUTAS PÚBLICAS
+                    "/",
+                    "/login",
+                    "/autenticar",
+                    "/logout",
+                    
+                    // ✅ EXCLUIR RUTAS DE ADMIN/ARCHIVO
+                    "/recepcion/**",
+                    "/archivos/**",
+                    "/estudiantes/**",
+                    "/bloqueado"
+                );
+    }
+}

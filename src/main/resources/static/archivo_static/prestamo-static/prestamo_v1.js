@@ -1,5 +1,5 @@
 // URL para búsqueda de pacientes
-const API_BASE_URL = 'http://localhost:8080/api/pacientes';
+const API_BASE_URL = 'http://localhost:8080/api/pacientes/public';
 
 // URL base para gestión de archivos 
 const API_ARCHIVOS_URL = 'http://localhost:8080/api/archivos';
@@ -644,14 +644,12 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
     
-    // ===== FUNCIÓN DE ENVÍO PARA GUARDAR PRÉSTAMO =====
+    // ===== FUNCIÓN DE ENVÍO PARA GUARDAR PRÉSTAMO (CORREGIDA) =====
     document.getElementById('enviarFormulario').addEventListener('click', async function() {
-        // Primero validar el formulario
         if (!validarFormularioPrestamo()) {
             return;
         }
 
-        // Obtener datos del formulario
         const idPaciente = document.getElementById('numExpediente').value;
         const idEstudiante = document.getElementById('idEstudiante').value;
         const idArchivo = document.getElementById('idArchivo').value;
@@ -661,23 +659,48 @@ document.addEventListener('DOMContentLoaded', function() {
         const motivoPrestamo = document.getElementById('motivoPrestamo') ? document.getElementById('motivoPrestamo').value.trim() : '';
 
         try {
-            // Crear objeto PrestamoActual
+            // ✅ SOLUCIÓN: Usar la fecha actual en formato local YYYY-MM-DD
+            // sin pasar por el objeto Date que causa problemas de zona horaria
+            const fechaActual = new Date();
+            
+            // Obtener la fecha en la zona horaria local del usuario
+            const año = fechaActual.getFullYear();
+            const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+            const dia = String(fechaActual.getDate()).padStart(2, '0');
+            
+            // Formato YYYY-MM-DD que el backend espera
+            const fechaPrestamoFormateada = `${año}-${mes}-${dia}`;
+
+            // IMPORTANTE: Verificar que la fecha límite no sea menor que la fecha actual
+            if (fechaLimitePrestamo < fechaPrestamoFormateada) {
+                showNotification('warning', 
+                    'La fecha límite no puede ser menor que la fecha actual',
+                    'Validación de fechas'
+                );
+                return;
+            }
+
+            // Crear objeto PrestamoActual con fechas correctamente formateadas
             const prestamoData = {
                 idArchivo: parseInt(idArchivo),
                 idEstudiante: parseInt(idEstudiante),
-                fechaLimitePrestamo: fechaLimitePrestamo,
+                fechaLimitePrestamo: fechaLimitePrestamo, // Viene del input date (YYYY-MM-DD)
+                fechaPrestamo: fechaPrestamoFormateada, // ✅ Usar fecha local formateada manualmente
                 tipoPrestamo: tipoPrestamo,
                 encargadoPrestamo: encargadoPrestamo,
-                fechaPrestamo: new Date().toISOString().split('T')[0],
-                motivoPrestamo: motivoPrestamo || null
+                motivoPrestamo: motivoPrestamo || null,
+                estadoPrestamo: 'ACTIVO'
             };
 
-            console.log('Creando préstamo:', prestamoData);
+            console.log('Fechas enviadas:', {
+                fechaLocalActual: fechaPrestamoFormateada,
+                fechaLimite: fechaLimitePrestamo,
+                fechaActualObjeto: fechaActual.toString(),
+                fechaActualISO: fechaActual.toISOString().split('T')[0] // ESTA DARÍA UN DÍA MENOS
+            });
 
-            // URL para guardar préstamo actual
             const url = 'http://localhost:8080/api/prestamos-actuales';
             
-            // Enviar préstamo al backend
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -690,10 +713,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const prestamoGuardado = await response.json();
                 showNotification('success', 
                     `✅ <strong>Préstamo registrado exitosamente</strong><br>
-                     <small>ID del Préstamo: ${prestamoGuardado.idPrestamo || prestamoGuardado.id}</small><br>
-                     <small>Tipo: ${prestamoGuardado.tipoPrestamo}</small><br>
-                     <small>Encargado: ${prestamoGuardado.encargadoPrestamo}</small><br>
-                     <small>Fecha límite: ${prestamoGuardado.fechaLimitePrestamo}</small>`,
+                    <small>ID del Préstamo: ${prestamoGuardado.idPrestamo || prestamoGuardado.id}</small><br>
+                    <small>Fecha préstamo: ${prestamoGuardado.fechaPrestamo}</small><br>
+                    <small>Fecha límite: ${prestamoGuardado.fechaLimitePrestamo}</small>`,
                     'Préstamo registrado'
                 );
                 
@@ -704,7 +726,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error del servidor:', errorText);
                 showNotification('error',
                     `⚠️ <strong>Error al registrar el préstamo</strong><br>
-                     <small>${errorText || 'Error desconocido'}</small>`,
+                    <small>${errorText || 'Error desconocido'}</small>`,
                     'Error en la operación'
                 );
             }   
@@ -712,7 +734,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error en la solicitud:', error);
             showNotification('error',
                 `⚠️ <strong>Error en la solicitud</strong><br>
-                 <small>${error.message}</small>`,
+                <small>${error.message}</small>`,
                 'Error en la operación'
             );
         }

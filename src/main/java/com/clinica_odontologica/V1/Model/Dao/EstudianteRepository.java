@@ -1,6 +1,7 @@
 package com.clinica_odontologica.V1.Model.Dao;
 
 import com.clinica_odontologica.V1.Model.Entity.Estudiante;
+import com.clinica_odontologica.V1.Model.Entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,10 +22,13 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Long> {
     List<Estudiante> findByGestion(String gestion);
     
     List<Estudiante> findByBloqueado(Boolean bloqueado);
+
+    Optional<Estudiante> findByUsuario(Usuario usuario);
     
-    @Query("SELECT e FROM Estudiante e WHERE e.Usuario.nombreUsuario = :username")
+    
+    @Query("SELECT e FROM Estudiante e WHERE e.usuario.nombreUsuario = :username")
     Optional<Estudiante> buscarPorNombreUsuario(@Param("username") String username);
     
-    @Query("SELECT e FROM Estudiante e WHERE e.Usuario.persona.nombre LIKE %:nombre%")
+    @Query("SELECT e FROM Estudiante e WHERE e.usuario.persona.nombre LIKE %:nombre%")
     List<Estudiante> buscarPorNombrePersona(@Param("nombre") String nombre);
 }

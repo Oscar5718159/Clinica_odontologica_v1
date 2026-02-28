@@ -61,14 +61,31 @@ public class ConsultaServiceImpl implements ConsultaService {
         informante.setTelefono(consultaDTO.getInformanteTelefono());
         
         // 3. Crear y guardar PatologiaPersonal
-        List<PatologiaPersonal> patologiasPersonales = new ArrayList<>();
+        PatologiaPersonal patologiaPersonal = new PatologiaPersonal();
+        patologiaPersonal.setAnemia(consultaDTO.getAnemia());
+        patologiaPersonal.setCardiopatias(consultaDTO.getCardiopatias());
+        patologiaPersonal.setEnfGastricos(consultaDTO.getEnfGastricos());
+        patologiaPersonal.setHepatitis(consultaDTO.getHepatitis());
+        patologiaPersonal.setTuberculosis(consultaDTO.getTuberculosis());
+        patologiaPersonal.setAsma(consultaDTO.getAsma());
+        patologiaPersonal.setDiabetesMel(consultaDTO.getDiabetesMel());
+        patologiaPersonal.setEpilepsia(consultaDTO.getEpilepsia());
+        patologiaPersonal.setHipertension(consultaDTO.getHipertension());
+        patologiaPersonal.setOtros(consultaDTO.getOtros());
+        patologiaPersonal.setNinguno(consultaDTO.getNinguno());
+        patologiaPersonal.setAlergias(consultaDTO.getAlergias());
+        patologiaPersonal.setEmbarazo(consultaDTO.getEmbarazo());
+        patologiaPersonal.setSemanaEmbarazo(consultaDTO.getSemanaEmbarazo());
+
+
+
 
         // 4. Crear y guardar TratamientoMedico
         TratamientoMedico tratamientoMedico = new TratamientoMedico();
         tratamientoMedico.setTratamientoMedico(consultaDTO.getTratamientoMedico());
         tratamientoMedico.setRecibeAlgunMedicamento(consultaDTO.getRecibeAlgunMedicamento());
         tratamientoMedico.setTuvoHemorragiaDental(consultaDTO.getTuvoHemorragiaDental());
-        tratamientoMedico.setEspecifique(consultaDTO.getEspecifiqueHemorragia());
+        tratamientoMedico.setEspecifiqueHemorragia(consultaDTO.getEspecifiqueHemorragia());
         
         // 5. Crear y guardar ExamenExtraOral
         ExamenExtraOral examenExtraOral = new ExamenExtraOral();
@@ -114,7 +131,7 @@ public class ConsultaServiceImpl implements ConsultaService {
         consulta.setPaciente(paciente);
         consulta.setEstudiante(estudiante);
         consulta.setInformante(informante);
-        consulta.setPatologiasPersonales(patologiasPersonales);
+        consulta.setPatologiaPersonal(patologiaPersonal);
         consulta.setTratamientoMedico(tratamientoMedico);
         consulta.setExamenExtraOral(examenExtraOral);
         consulta.setExamenIntraOral(examenIntraOral);
@@ -192,30 +209,35 @@ public class ConsultaServiceImpl implements ConsultaService {
                     dto.setInformanteTelefono(consulta.getInformante().getTelefono());
                 }
                 
-                // PatologiaPersonal - ¡ESTO ES LO QUE BUSCAS!
-                if (consulta.getPatologiasPersonales() != null && !consulta.getPatologiasPersonales().isEmpty()) {
-                    
-                    List<PatologiaPersonalDTO> patologiasDTO = new ArrayList<>();
-                    for (PatologiaPersonal patologia : consulta.getPatologiasPersonales()) {
-                        PatologiaPersonalDTO patologiaDTO = new PatologiaPersonalDTO();
-                        patologiaDTO.setNombrePatologia(patologia.getNombrePatologia());
-                        patologiaDTO.setAlergias(patologia.getAlergias());
-                        patologiaDTO.setEmbarazo(patologia.getEmbarazo());
-                        patologiaDTO.setSemanaEmbarazo(patologia.getSemanaEmbarazo());
-                        patologiasDTO.add(patologiaDTO);
-                    }
-                    dto.setPatologiasPersonales(patologiasDTO);
-                    System.out.println("✅ PatologiaPersonal cargado con " + patologiasDTO.size() + " entradas");
+                // PatologiaPersonal 
+                if (consulta.getPatologiaPersonal() != null) {
+                    PatologiaPersonal p = consulta.getPatologiaPersonal();
+                    dto.setAnemia(p.getAnemia());
+                    dto.setCardiopatias(p.getCardiopatias());
+                    dto.setEnfGastricos(p.getEnfGastricos());
+                    dto.setHepatitis(p.getHepatitis());
+                    dto.setTuberculosis(p.getTuberculosis());
+                    dto.setAsma(p.getAsma());
+                    dto.setDiabetesMel(p.getDiabetesMel());
+                    dto.setEpilepsia(p.getEpilepsia());
+                    dto.setHipertension(p.getHipertension());
+                    dto.setOtros(p.getOtros());
+                    dto.setNinguno(p.getNinguno());
+                    dto.setAlergias(p.getAlergias());
+                    dto.setEmbarazo(p.getEmbarazo());
+                    dto.setSemanaEmbarazo(p.getSemanaEmbarazo());
+                    System.out.println("✅ PatologiaPersonal cargado correctamente");
                 } else {
-                    System.out.println("❌ PatologiaPersonal es null");
+                    System.out.println("ℹ️ PatologiaPersonal es null para esta consulta");
                 }
+                
                 
                 // TratamientoMedico
                 if (consulta.getTratamientoMedico() != null) {
                     dto.setTratamientoMedico(consulta.getTratamientoMedico().getTratamientoMedico());
                     dto.setRecibeAlgunMedicamento(consulta.getTratamientoMedico().getRecibeAlgunMedicamento());
                     dto.setTuvoHemorragiaDental(consulta.getTratamientoMedico().getTuvoHemorragiaDental());
-                    dto.setEspecifiqueHemorragia(consulta.getTratamientoMedico().getEspecifique());
+                    dto.setEspecifiqueHemorragia(consulta.getTratamientoMedico().getEspecifiqueHemorragia());
                     System.out.println("✅ TratamientoMedico cargado");
                 } else {
                     System.out.println("❌ TratamientoMedico es null");

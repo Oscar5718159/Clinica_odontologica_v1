@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Bloqueado - Clínica Odontológica UAP</title>
+    <link rel="stylesheet" th:href="@{/CSS/login_dise.css}">
+    <style>
+        .bloqueo-container {
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            text-align: center;
+            border-top: 5px solid #dc3545;
+        }
+        .icono-bloqueo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: #dc3545;
+        }
+        h1 {
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .mensaje {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .info-bloqueo {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .btn-logout {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-logout:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-content">
+        <div class="logo">
+            <h1>Clínica Odontológica UAP</h1>
+        </div>
+        
+        <div class="bloqueo-container">
+            <div class="icono-bloqueo">⛔</div>
+            <h1>ACCESO BLOQUEADO</h1>
+            
+            <div class="mensaje">
+                <strong>Estimado/a <span th:text="${nombreEstudiante}">Estudiante</span></strong>
+            </div>
+            
+            <div class="info-bloqueo">
+                <p><strong>Motivo:</strong> No devolución de archivo a tiempo</p>
+                <p><strong>Fecha de bloqueo:</strong> <span th:text="${fechaBloqueo}">2024-01-15</span></p>
+                <p><strong>Estado:</strong> ⚠️ Bloqueado</p>
+            </div>
+            
+            <p style="margin: 20px 0; color: #666;">
+                Para poder recuperar su acceso, debe acudir a la biblioteca/clínica<br>
+                y devolver el archivo que tiene en préstamo.
+            </p>
+            
+            <a href="/logout" class="btn-logout">CERRAR SESIÓN</a>
+        </div>
+    </div>
+</body>
+</html>

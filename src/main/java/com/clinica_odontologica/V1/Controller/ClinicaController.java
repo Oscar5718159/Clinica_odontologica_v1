@@ -30,13 +30,13 @@ public class ClinicaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // GET /api/clinicas/buscar/nombre?nombre=XXX - Buscar por nombre
+    // GET /api/clinicas/buscar/nombre?
     @GetMapping("/buscar/nombre")
     public ResponseEntity<List<Clinica>> buscarPorNombre(@RequestParam String nombre) {
         return ResponseEntity.ok(clinicaService.buscarPorNombre(nombre));
     }
 
-    // GET /api/clinicas/buscar/turno?turno=XXX - Buscar por turno
+    // GET /api/clinicas/buscar/turno?
     @GetMapping("/buscar/turno")
     public ResponseEntity<List<Clinica>> buscarPorTurno(@RequestParam String turno) {
         return ResponseEntity.ok(clinicaService.buscarPorTurno(turno));

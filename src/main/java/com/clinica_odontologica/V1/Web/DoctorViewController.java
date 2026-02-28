@@ -1,16 +1,34 @@
 package com.clinica_odontologica.V1.Web;
 
+import com.clinica_odontologica.V1.Model.Entity.Estudiante;
+import com.clinica_odontologica.V1.Model.Entity.PrestamoActual;
+import com.clinica_odontologica.V1.Model.Dao.EstudianteRepository;
+import com.clinica_odontologica.V1.Service.PrestamoActualService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/doctor")
 public class DoctorViewController {
 
+    @Autowired
+    private PrestamoActualService prestamoActualService;
+
+    @Autowired
+    private EstudianteRepository estudianteRepository; // ← AGREGAR ESTO
+
     @GetMapping
     public String paginaDoctor() {
-        return "doctor/doctor"; // ✅ Correcto
+        return "doctor/doctor";
     }   
     
     @GetMapping("/historial_clinico/historial_clinico_ENPROCESO")
@@ -18,11 +36,59 @@ public class DoctorViewController {
         return "doctor/historial_clinico/historial_clinico_ENPROCESO"; 
     }    
 
-    // Redirige a la URL correcta que sí tiene los datos
     @GetMapping("/estado_consentimiento/estadoConsentimiento")
     public String mostrarConsentimientoEstado() {
-        return "redirect:/consentimientos/lista"; 
+        return "doctor/estado_consentimiento/estadoConsentimiento"; 
     }   
 
-    
+    @GetMapping("/desbloqueoEstudiante/desbloqueo")
+    public String mostrarDesbloqueoEstudiante(
+            @RequestParam(required = false) Long estudiante,
+            @RequestParam(required = false) Long archivo,
+            @RequestParam(required = false) String estado,
+            Model model) {
+        
+        List<PrestamoActual> prestamos;
+        
+        // Aplicar filtros si existen
+        if (estudiante != null) {
+            prestamos = prestamoActualService.buscarPorIdEstudiante(estudiante);
+        } else if (archivo != null) {
+            prestamos = prestamoActualService.buscarPorIdArchivo(archivo);
+        } else if (estado != null && !estado.isEmpty()) {
+            prestamos = prestamoActualService.buscarPorEstado(estado);
+        } else {
+            prestamos = prestamoActualService.obtenerTodos();
+        }
+        
+        // 🔹 NUEVO: Crear un mapa de estudiantes bloqueados
+        Map<Long, Boolean> estudiantesBloqueados = new HashMap<>();
+        for (PrestamoActual p : prestamos) {
+            if (!estudiantesBloqueados.containsKey(p.getIdEstudiante())) {
+                Optional<Estudiante> estudianteOpt = estudianteRepository.findById(p.getIdEstudiante());
+                estudianteOpt.ifPresent(e -> estudiantesBloqueados.put(p.getIdEstudiante(), e.getBloqueado()));
+            }
+        }
+        
+        // Calcular estadísticas
+        long totalPrestamos = prestamos.size();
+        long prestamosActivos = prestamos.stream()
+                .filter(p -> "ACTIVO".equals(p.getEstadoPrestamo()))
+                .count();
+        long prestamosVencidos = prestamos.stream()
+                .filter(p -> "VENCIDO".equals(p.getEstadoPrestamo()))
+                .count();
+        long prestamosDevueltos = prestamos.stream()
+                .filter(p -> "DEVUELTO".equals(p.getEstadoPrestamo()))
+                .count();
+        
+        model.addAttribute("prestamos", prestamos);
+        model.addAttribute("estudiantesBloqueados", estudiantesBloqueados); // ← AGREGAR ESTO
+        model.addAttribute("totalPrestamos", totalPrestamos);
+        model.addAttribute("prestamosActivos", prestamosActivos);
+        model.addAttribute("prestamosVencidos", prestamosVencidos);
+        model.addAttribute("prestamosDevueltos", prestamosDevueltos);
+        
+        return "doctor/desbloqueoEstudiante/desbloqueo";
+    }
 }

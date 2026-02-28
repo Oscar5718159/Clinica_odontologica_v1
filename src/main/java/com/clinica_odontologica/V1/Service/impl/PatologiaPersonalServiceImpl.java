@@ -34,7 +34,6 @@ public class PatologiaPersonalServiceImpl implements PatologiaPersonalService {
         Optional<PatologiaPersonal> existente = patologiaPersonalRepository.findById(id);
         if (existente.isPresent()) {
             PatologiaPersonal actualizado = existente.get();
-            actualizado.setNombrePatologia(patologiaPersonal.getNombrePatologia());
             actualizado.setAlergias(patologiaPersonal.getAlergias());
             actualizado.setEmbarazo(patologiaPersonal.getEmbarazo());
             actualizado.setSemanaEmbarazo(patologiaPersonal.getSemanaEmbarazo());

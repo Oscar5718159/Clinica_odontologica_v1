@@ -1,5 +1,5 @@
 // URL para búsqueda de pacientes
-const API_BASE_URL = 'http://localhost:8080/api/pacientes';
+const API_BASE_URL = 'http://localhost:8080/api/pacientes/public';
 
 // URL base para gestión de archivos 
 const API_ARCHIVOS_URL = 'http://localhost:8080/api/archivos';

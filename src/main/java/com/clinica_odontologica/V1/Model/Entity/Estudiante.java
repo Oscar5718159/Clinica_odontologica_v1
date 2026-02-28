@@ -19,7 +19,7 @@ public class Estudiante {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)  
-    private Usuario Usuario;
+    private Usuario usuario;
     
 
     @Column(name="gestion",nullable=false,length = 43)

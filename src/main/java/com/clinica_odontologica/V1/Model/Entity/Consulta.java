@@ -2,11 +2,8 @@ package com.clinica_odontologica.V1.Model.Entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-
 import lombok.Getter;   
 import lombok.Setter;
-import java.util.List;
 
 @Getter
 @Setter
@@ -48,9 +45,12 @@ public class Consulta {
     @JoinColumn(name = "id_examen_intra_oral")
     private ExamenIntraOral examenIntraOral;
     
-    // Relación OneToMany con PatologiaPersonal
-    @OneToMany(mappedBy = "consulta", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PatologiaPersonal> patologiasPersonales = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "patologiapersonal")
+    private PatologiaPersonal patologiaPersonal;
+
+
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_antecedentes_bucodentales")
@@ -65,4 +65,13 @@ public class Consulta {
     private AntecedentesHigieneOral antecedentesHigieneOral;
 
 
+    @ManyToOne
+    @JoinColumn(name = "id_prestamo_actual")
+    private PrestamoActual prestamo;
+
+
+
+    public void setPrestamo(PrestamoActual prestamo) {
+    this.prestamo = prestamo;
+    }
 }

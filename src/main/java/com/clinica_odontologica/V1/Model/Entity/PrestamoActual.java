@@ -3,7 +3,7 @@ package com.clinica_odontologica.V1.Model.Entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Setter
 @Entity
@@ -24,18 +24,24 @@ public class PrestamoActual {
     private Long idEstudiante;
 
     @Column(name = "fecha_prestamo", nullable = false)
-    private Date fechaPrestamo;
+    private LocalDate fechaPrestamo;
 
 
     @Column(name = "fecha_limite", nullable = false)
-    private Date fechaLimitePrestamo;
+    private LocalDate fechaLimitePrestamo;
     @Column(name = "tipo_prestamo", nullable = false)
     private String tipoPrestamo;
     @Column(name = "encargado_prestamo", nullable = false)
     private String encargadoPrestamo;
     @Column(name = "fecha_devolucion", nullable = true)
-    private Date fechaDevolucion;
+    private LocalDate fechaDevolucion;
     
     @Column(name="motivo_prestamo", nullable = true )
     private String motivoPrestamo;
+
+    @Column (name="estado_prestamo", nullable = false)
+    private String estadoPrestamo;
+
+    @Column(name="dias_retraso" , nullable = true)
+    private Integer diasRetraso;
 }

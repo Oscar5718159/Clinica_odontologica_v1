@@ -1,10 +1,102 @@
 // URL base de tu API Spring Boot - AJUSTA SEGÚN TU CONFIGURACIÓN
 const API_BASE_URL = 'http://localhost:8080/api/pacientes';
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+
+    const idEstudiante = sessionStorage.getItem('idEstudiante');  
+
+    if (!idEstudiante){
+        alert('debe iniciar sesiòn primero');
+        window.location.href='/';
+        return;
+    }
+
+    await mostrarPacientePrestado();
+
+    async function mostrarPacientePrestado() {
+        try {
+            // 1. Verificar qué tenemos en sessionStorage (frontend)
+            const idEstudianteFront = sessionStorage.getItem('idEstudiante');
+            console.log('🔵 Frontend - ID en sessionStorage:', idEstudianteFront);
+            
+            // 2. Verificar qué tiene el backend en sesión
+            const sesionResponse = await fetch('/api/pacientes/debug/verificar-sesion');
+            const sesionData = await sesionResponse.json();
+            console.log('🟢 Backend - Datos de sesión:', sesionData);
+            
+            // 3. Si el backend no tiene sesión, pero el frontend sí, algo está mal
+            if (!sesionData.tieneSesion && idEstudianteFront) {
+                console.warn('⚠️ El frontend tiene ID pero el backend no. Intentando reparar...');
+            }
+            
+            // 4. Ahora sí, buscar el préstamo
+            const response = await fetch('/api/pacientes/estudiante/paciente-prestado');
+            const data = await response.json();
+            
+            console.log('📦 Datos del préstamo:', data);
+            
+            if (data.tienePrestamo) {
+                const bannerHTML = `
+                    <div style="
+                        background-color: #e3f2fd;
+                        border: 2px solid #2196f3;
+                        border-radius: 8px;
+                        padding: 15px;
+                        margin-bottom: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                    ">
+                        <div>
+                            <strong style="color: #1976d2;">📋 PACIENTE ASIGNADO:</strong>
+                            <span style="margin-left: 10px; font-size: 1.2em; color: #0d47a1;">
+                                ${data.nombreCompleto}
+                            </span>
+                        </div>
+                        <div>
+                            <span style="background-color: #4caf50; color: white; padding: 5px 10px; border-radius: 20px;">
+                                CI: ${data.ci}
+                            </span>
+                            <span style="margin-left: 10px; color: #f57c00;">
+                                ⏰ Límite: ${data.fechaLimite}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                
+                document.querySelector('.form-section').insertAdjacentHTML('afterbegin', bannerHTML);
+                document.getElementById('nombreBusqueda').value = data.nombreCompleto;
+                
+            } else {
+                // Mostrar más información para debug
+                const warningHTML = `
+                    <div style="
+                        background-color: #fff3e0;
+                        border: 2px solid #ff9800;
+                        border-radius: 8px;
+                        padding: 15px;
+                        margin-bottom: 20px;
+                        color: #e65100;
+                    ">
+                        ⚠️ No tienes ningún préstamo activo. Debes solicitar un archivo en la biblioteca.
+                        <br><br>
+                        <small>
+                            Debug: ID Estudiante (Frontend): ${idEstudianteFront}<br>
+                            Debug: ID Estudiante (Backend): ${sesionData.idEstudianteEnSesion}<br>
+                            Debug: ¿Tiene sesión?: ${sesionData.tieneSesion}
+                        </small>
+                    </div>
+                `;
+                document.querySelector('.form-section').insertAdjacentHTML('afterbegin', warningHTML);
+            }
+        } catch (error) {
+            console.error('❌ Error al obtener paciente prestado:', error);
+        }
+    }
+
     // ===== VALIDACIONES ANTECEDENTES PATOLÓGICOS =====
     
-    // Validación: Ninguna enfermedad vs enfermedades específicas
+    // Elementos de enfermedades
     const ningunaEnfermedad = document.getElementById('ningunaEnfermedad');
     const enfermedadesCheckboxes = document.querySelectorAll('.enfermedad-checkbox');
     const otrosEnfermedades = document.getElementById('otrosEnfermedades');
@@ -216,13 +308,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.querySelectorAll('input[name="respirador"]').forEach(radio => {
         radio.addEventListener('change', function() {
-            // Si se selecciona cualquier opción de respirador, limpiar el campo "Otros"
             otrosRespiratorio.value = '';
         });
     });
 
     otrosRespiratorio.addEventListener('focus', function() {
-        // Deseleccionar cualquier opción de respirador cuando el usuario escriba en "Otros"
         document.querySelectorAll('input[name="respirador"]').forEach(radio => {
             radio.checked = false;
         });
@@ -259,13 +349,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const headerExpediente = document.getElementById('headerExpediente');
     const headerHistoria = document.getElementById('headerHistoria');
     const headerCI = document.getElementById('headerCI');
-    
-    // Función para buscar pacientes en el backend
+
+    // Función para buscar pacientes
     async function buscarPacientes() {
         const nombre = nombreBusqueda.value.trim();
         const ci = ciBusqueda.value.trim();
 
-        // Validar que al menos un campo tenga datos
         if (!nombre && !ci) {
             alert('Por favor, ingrese un nombre o CI para buscar.');
             return;
@@ -278,18 +367,64 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             let url;
-            
-            // ✅ BÚSQUEDA SEPARADA: Si hay CI, buscar solo por CI
+                        
             if (ci) {
-                url = `${API_BASE_URL}/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
+                url = `/api/pacientes/estudiante/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
             } else {
-                // Si solo hay nombre, buscar por nombre
-                url = `${API_BASE_URL}/buscar?term=${encodeURIComponent(nombre)}`;
+                url = `/api/pacientes/estudiante/buscar?term=${encodeURIComponent(nombre)}`;
             }
 
             console.log('Buscando pacientes con URL:', url);
 
             const response = await fetch(url);
+
+            if (response.status === 403) {
+                const errorData = await response.json();
+                
+                if (errorData.pacientePermitido) {
+                    const pacientePermitido = errorData.pacientePermitido;
+                    
+                    listaResultados.innerHTML = `
+                        <div style="
+                            background-color: #ffebee;
+                            border-left: 4px solid #f44336;
+                            padding: 20px;
+                            border-radius: 4px;
+                        ">
+                            <h3 style="color: #d32f2f; margin-bottom: 10px;">
+                                ⛔ Paciente Incorrecto
+                            </h3>
+                            <p style="margin-bottom: 10px;">
+                                ${errorData.mensaje || 'No tienes permiso para consultar este paciente.'}
+                            </p>
+                            <div style="background-color: #fff; padding: 15px; border-radius: 4px; margin-top: 10px;">
+                                <strong style="color: #1976d2;">✅ Paciente que DEBES consultar:</strong>
+                                <p style="font-size: 1.1em; margin-top: 5px;">
+                                    ${pacientePermitido.nombreCompleto} (CI: ${pacientePermitido.ci})
+                                </p>
+                            </div>
+                            <button onclick="autoCompletarPacientePermitido()" 
+                                    style="margin-top: 15px; background-color: #2196f3; color: white; 
+                                           border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+                                Buscar paciente permitido
+                            </button>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            if (response.status === 403) {
+                const errorData = await response.json();
+                
+                alert(`⛔ ACCESO BLOQUEADO\n\n` +
+                    `Motivo: No devolvió el archivo a tiempo\n` +
+                    `Fecha de bloqueo: ${errorData.fechaBloqueo || 'Desconocida'}\n\n` +
+                    `Por favor, acuda a la biblioteca para regularizar su situación.`);
+                
+                window.location.href = '/bloqueado';
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error(`Error en la búsqueda: ${response.status}`);
@@ -301,13 +436,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('Error al buscar pacientes:', error);
-            listaResultados.innerHTML = '<div class="no-results">Error al realizar la búsqueda. Verifique la conexión.</div>';
+            
+            if (error.message.includes('403')) {
+                window.location.href = '/bloqueado';
+            } else {
+                listaResultados.innerHTML = '<div class="no-results">Error al realizar la búsqueda. Verifique la conexión.</div>';
+            }
         } finally {
             btnBuscar.disabled = false;
             btnBuscar.textContent = 'BUSCAR';
         }
     }
-    
+
+    // Función para auto-completar con el paciente permitido
+    function autoCompletarPacientePermitido() {
+        fetch('/api/pacientes/estudiante/paciente-prestado')
+            .then(response => response.json())
+            .then(data => {
+                if (data.tienePrestamo) {
+                    nombreBusqueda.value = data.nombreCompleto;
+                    buscarPacientes();
+                }
+            });
+    }
+        
     // Función para mostrar resultados de búsqueda
     function mostrarResultados(pacientes) {
         listaResultados.innerHTML = '';
@@ -319,10 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const item = document.createElement('div');
                 item.className = 'result-item';
 
-                // Formatear nombre completo usando los campos reales
                 const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
-
-                // CI está en la entidad Paciente (campo ci)
                 const ciMostrado = paciente.ci !== null && paciente.ci !== undefined ? paciente.ci : (paciente.persona?.ci || 'N/A');
 
                 item.innerHTML = `
@@ -338,7 +487,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para seleccionar un paciente y llenar el formulario
     function seleccionarPaciente(paciente) {
-        // Llenar campos del formulario con datos del paciente
         numHistoriaClinica.value = paciente.historialClinico || '';
         ciPaciente.value = paciente.ci !== null && paciente.ci !== undefined ? paciente.ci : '';
         numExpediente.value = paciente.idPaciente || paciente.id || '';
@@ -346,7 +494,6 @@ document.addEventListener('DOMContentLoaded', function() {
         personaInformacion.value = nombreCompleto;
         edadPaciente.value = paciente.persona?.edad || '';
 
-        // Llenar datos personales con campos correctos
         apellidoPaterno.value = paciente.persona?.apellidoPaterno || '';
         apellidoMaterno.value = paciente.persona?.apellidoMaterno || '';
         nombres.value = paciente.persona?.nombre || '';
@@ -357,7 +504,6 @@ document.addEventListener('DOMContentLoaded', function() {
         telefono.value = paciente.telefono || '';
         gradoInstruccion.value = paciente.gradoInstruccion || '';
 
-        // Establecer el sexo
         if (paciente.persona?.sexo) {
             const sexo = String(paciente.persona.sexo).toUpperCase();
             if (sexo === 'M') {
@@ -367,26 +513,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Actualizar header
         headerExpediente.textContent = paciente.idPaciente || paciente.id || '-';
         headerHistoria.textContent = paciente.historialClinico || '-';
         headerCI.textContent = paciente.ci !== null && paciente.ci !== undefined ? paciente.ci : '-';
 
-        // Ocultar resultados
         resultadosBusqueda.style.display = 'none';
-
-        // Limpiar campos de búsqueda
         nombreBusqueda.value = '';
         ciBusqueda.value = '';
 
-        // Desplazar al formulario principal
         document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
     }
     
     // Event listeners para búsqueda
     btnBuscar.addEventListener('click', buscarPacientes);
     
-    // Permitir búsqueda con Enter
     nombreBusqueda.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             buscarPacientes();
@@ -399,7 +539,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Ocultar resultados al hacer clic fuera
     document.addEventListener('click', function(e) {
         if (!resultadosBusqueda.contains(e.target) && 
             e.target !== nombreBusqueda && 
@@ -411,38 +550,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== FUNCIONES AUXILIARES PARA OBTENER VALORES =====
     
-    // Función para obtener enfermedades seleccionadas (incluye "Ninguno" y "Otros")
-    function obtenerEnfermedadesSeleccionadas() {
-        // Si está marcado "Ninguno", retornar "Ninguno"
-        if (document.getElementById('ningunaEnfermedad').checked) {
-            return 'Ninguno';
-        }
-        
-        const enfermedades = [];
-        if (document.getElementById('anemia').checked) enfermedades.push('Anemia');
-        if (document.getElementById('cardiopatias').checked) enfermedades.push('Cardiopatías');
-        if (document.getElementById('gastricas').checked) enfermedades.push('Enf. Gástricas');
-        if (document.getElementById('hepatitis').checked) enfermedades.push('Hepatitis');
-        if (document.getElementById('tuberculosis').checked) enfermedades.push('Tuberculosis');
-        if (document.getElementById('asma').checked) enfermedades.push('Asma');
-        if (document.getElementById('diabetes').checked) enfermedades.push('Diabetes Mel.');
-        if (document.getElementById('epilepsia').checked) enfermedades.push('Epilepsia');
-        if (document.getElementById('hipertension').checked) enfermedades.push('Hipertensión');
-        if (document.getElementById('vih').checked) enfermedades.push('VIH');
-        
-        const otros = document.getElementById('otrosEnfermedades').value.trim();
-        if (otros) enfermedades.push(`Otros: ${otros}`);
-        
-        return enfermedades.length > 0 ? enfermedades.join(', ') : 'Ninguno';
-    }
-
     // Función para obtener respirador seleccionado (incluye "Otros")
     function obtenerRespiradorSeleccionado() {
         if (document.getElementById('resp-nasal').checked) return 'Nasal';
         if (document.getElementById('resp-bucal').checked) return 'Bucal';
         if (document.getElementById('resp-buco-nasal').checked) return 'Buco nasal';
         
-        // Si hay texto en "Otros", usarlo
         const otrosRespiratorio = document.getElementById('otrosRespiratorio').value.trim();
         if (otrosRespiratorio) return `Otros: ${otrosRespiratorio}`;
         
@@ -515,7 +628,6 @@ document.addEventListener('DOMContentLoaded', function() {
             errores.push('No puede seleccionar "Ninguno" junto con otras enfermedades');
         }
 
-        // Mostrar errores o enviar formulario
         if (errores.length > 0) {
             alert('Errores encontrados:\n' + errores.join('\n'));
             return false;
@@ -525,64 +637,77 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ===== ENVÍO DEL FORMULARIO =====
-    document.getElementById('enviarFormulario').addEventListener('click', function() {
-        // Primero validar el formulario
+    document.getElementById('enviarFormulario').addEventListener('click', async function() {
         if (!validarFormularioCompleto()) {
             return;
         }
 
-        // Obtener el ID del paciente del campo numExpediente
         const idPaciente = document.getElementById('numExpediente').value;
         if (!idPaciente) {
             alert('Error: Debe seleccionar un paciente primero');
             return;
         }
 
-        // Recolectar todos los datos del formulario
+        console.log('🔍 ID Paciente a verificar:', idPaciente);
+        console.log('🔍 ID Estudiante en sesión:', sessionStorage.getItem('idEstudiante'));
+
+        const permisoResponse = await fetch(`/api/pacientes/estudiante/verificar-permiso?idPaciente=${idPaciente}`);
+        const permisoData = await permisoResponse.json();
+        
+        if (!permisoData.puedeConsultar) {
+            alert('No puedes guardar esta consulta. Solo puedes consultar al paciente que tienes prestado.');
+            return;
+        }
+        
+        // ✅ CONSULTADATA COMPLETO Y CORREGIDO
         const consultaData = {
             // Datos básicos
             fecha: new Date().toISOString().split('T')[0],
             observaciones: document.getElementById('observacionesHigiene').value,
             
-            // IDs del paciente y estudiante
+            // IDs
             idPaciente: parseInt(idPaciente),
-            idEstudiante: parseInt(sessionStorage.getItem('estudianteId') || '1'),
+            idEstudiante: parseInt(sessionStorage.getItem('idEstudiante')),
             
-            // Datos del Informante
+            // Informante
             informanteNombres: document.getElementById('nombres_pesona').value,
             informanteApellidoPaterno: document.getElementById('apellidoPaterno_persona').value,
             informanteApellidoMaterno: document.getElementById('apellidoMaterno_persona').value,
             informanteDireccion: document.getElementById('direccion_persona').value,
             informanteTelefono: document.getElementById('telefono_persona').value,
             
-            // Datos de PatologiaPersonal - CORREGIDOS (usando booleanos)
-            nombrePatologia: obtenerEnfermedadesSeleccionadas(),
+            // ✅ PATOLOGIA PERSONAL - TODOS LOS BOOLEANOS
+            anemia: document.getElementById('anemia').checked,
+            cardiopatias: document.getElementById('cardiopatias').checked,
+            enfGastricos: document.getElementById('gastricas').checked,
+            hepatitis: document.getElementById('hepatitis').checked,
+            tuberculosis: document.getElementById('tuberculosis').checked,
+            asma: document.getElementById('asma').checked,
+            diabetesMel: document.getElementById('diabetes').checked,
+            epilepsia: document.getElementById('epilepsia').checked,
+            hipertension: document.getElementById('hipertension').checked,
+            vih: document.getElementById('vih').checked,
+            otros: document.getElementById('otrosEnfermedades').value,
+            ninguno: document.getElementById('ningunaEnfermedad').checked,
             alergias: obtenerValorBooleano(document.getElementById('alergias-si'), document.getElementById('alergias-no')),
-            especifiqueAlergia: document.getElementById('alergias-si').checked ? 
-                               document.getElementById('especifiqueAlergia').value.trim() : null,
-            
             embarazo: obtenerValorBooleano(document.getElementById('embarazo-si'), document.getElementById('embarazo-no')),
             semanaEmbarazo: document.getElementById('embarazo-si').checked && document.getElementById('semanasEmbarazo').value ? 
                            parseInt(document.getElementById('semanasEmbarazo').value) : null,
             
-            // Datos de TratamientoMedico - CORREGIDOS (usando booleanos)
-            tratamientoMedico: document.getElementById('tratamientoMedico').value !== '',
-            tratamientoMedicoDetalle: document.getElementById('tratamientoMedico').value,
-            recibeAlgunMedicamento: document.getElementById('medicamentoActual').value !== '',
-            medicamentoActual: document.getElementById('medicamentoActual').value,
-            
-            // Hemorragia - CORREGIDO (usando booleanos)
+            // ✅ TRATAMIENTO MEDICO
+            tratamientoMedico: document.getElementById('tratamientoMedico').value.trim() !== '',
+            recibeAlgunMedicamento: document.getElementById('medicamentoActual').value.trim() !== '',
             tuvoHemorragiaDental: obtenerValorBooleano(document.getElementById('hemorragia-si'), document.getElementById('hemorragia-no')),
             especifiqueHemorragia: document.getElementById('hemorragia-si').checked ? 
                                   document.getElementById('especifiqueHemorragia').value.trim() : null,
             
-            // Datos de ExamenExtraOral - CORREGIDOS
+            // ExamenExtraOral
             atm: document.getElementById('atm').value,
             gangliosLinfaticos: document.getElementById('ganglios').value,
             respirador: obtenerRespiradorSeleccionado(),
             otrosRespiratorio: document.getElementById('otrosRespiratorio').value,
             
-            // Datos de ExamenIntraOral - CORREGIDOS (usando booleanos)
+            // ExamenIntraOral
             labios: document.getElementById('labios').value,
             lengua: document.getElementById('lengua').value,
             paladar: document.getElementById('paladar').value,
@@ -593,14 +718,13 @@ document.addEventListener('DOMContentLoaded', function() {
             tipoProtesis: document.getElementById('protesis-si').checked ? document.getElementById('tipoProtesis').value : null,
             tiempoProtesis: document.getElementById('protesis-si').checked ? document.getElementById('tiempoProtesis').value : null,
             
-            // Datos de AntecedentesBucodentales - CORREGIDOS (usando booleanos)
+            // AntecedentesBucodentales
             fechaRevision: document.getElementById('ultimaVisita').value,
             habitoFuma: document.getElementById('fuma').checked,
             habitoBebe: document.getElementById('bebe').checked,
-            habitoCoca: document.getElementById('coca').checked,
             otrosHabitos: document.getElementById('otrosHabitos').value,
             
-            // Datos de AntecedentesHigieneOral - CORREGIDOS (usando booleanos)
+            // AntecedentesHigieneOral
             utilizaCepilloDental: obtenerValorBooleano(document.getElementById('cepillo-si'), document.getElementById('cepillo-no')),
             utilizaHiloDental: obtenerValorBooleano(document.getElementById('hilo-si'), document.getElementById('hilo-no')),
             utilizaEnjuagueBucal: obtenerValorBooleano(document.getElementById('enjuague-si'), document.getElementById('enjuague-no')),
@@ -615,7 +739,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btnEnviar.disabled = true;
         btnEnviar.textContent = 'Guardando...';
 
-        console.log('Enviando datos de consulta:', consultaData);
+        console.log('📤 Enviando datos de consulta:', consultaData);
 
         fetch('/api/consultas/completa', {
             method: 'POST',
@@ -633,18 +757,16 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            console.log('Consulta guardada:', data);
-            alert('Historia clínica guardada exitosamente!');
-            // Opcional: limpiar formulario o redirigir
-            // window.location.reload();
+            console.log('✅ Consulta guardada:', data);
+            alert('¡Historia clínica guardada exitosamente!');
         })
         .catch((error) => {
-            console.error('Error al guardar:', error);
+            console.error('❌ Error al guardar:', error);
             alert('Error al guardar la historia clínica: ' + error.message);
         })
         .finally(() => {
             btnEnviar.disabled = false;
-            btnEnviar.textContent = 'Guardar Historia Clínica';
+            btnEnviar.textContent = 'GUARDAR HISTORIA CLÍNICA COMPLETA';
         });
     });
 

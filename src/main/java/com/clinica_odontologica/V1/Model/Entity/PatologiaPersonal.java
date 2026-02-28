@@ -15,13 +15,36 @@ public class PatologiaPersonal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_patologiapersonal")
     private Long idPatologiaPersonal;
+    
+    @Column(name = "anemia")
+    private Boolean anemia;
 
-    @Column(name = "nombre_patologia", length = 255)
-    private String nombrePatologia;
+    @Column(name = "cardiopatias")
+    private Boolean cardiopatias;
 
-    @ManyToOne
-    @JoinColumn(name = "id_consulta")
-    private Consulta consulta;
+    @Column(name = "enf_gastricos")
+    private Boolean enfGastricos;
+
+    @Column(name = "hepatitis")
+    private Boolean hepatitis;
+
+    @Column(name = "tuberculosis")
+    private Boolean tuberculosis;
+
+    @Column(name = "asma")
+    private Boolean asma;
+
+    @Column(name = "diabetes_mel")
+    private Boolean diabetesMel;
+
+    @Column(name = "epilepsia")
+    private Boolean epilepsia;
+
+    @Column(name = "hipertension")
+    private Boolean hipertension;
+
+    @Column(name = "vih")
+    private Boolean vih;
 
     @Column(name = "alergias")
     private Boolean alergias;
@@ -32,4 +55,10 @@ public class PatologiaPersonal {
     @Column(name = "semana_embarazo")
     private Integer semanaEmbarazo;
 
+
+    @Column(name = "otros")
+    private String otros;
+
+    @Column(name="ninguno")
+    private Boolean ninguno;
 }

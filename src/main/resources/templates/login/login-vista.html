@@ -58,12 +58,18 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Login exitoso - redirigir o mostrar mensaje
+                    // GUARDAR EL ID DEL ESTUDIANTE EN sessionStorage
+                    sessionStorage.setItem('idEstudiante', data.idEstudiante);
+                    sessionStorage.setItem('nombreEstudiante', data.nombre + ' ' + data.apellidos);
+                    sessionStorage.setItem('semestreEstudiante', data.semestre);
+                    
+                    // También guardar para depuración (opcional)
+                    console.log('ID Estudiante guardado:', data.idEstudiante);
+                    
+                    // Login exitoso - redirigir a la página de estudiantes
                     alert(`Bienvenido ${data.nombre} ${data.apellidos}`);
-                    // Redirigir a otra página
-                    window.location.href = '/estudiantes'; // Ajusta esta ruta
+                    window.location.href = '/estudiantes';
                 } else {
-                    // Mostrar error
                     alert('Error: ' + data.message);
                 }
             })

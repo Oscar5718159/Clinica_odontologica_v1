@@ -5,7 +5,8 @@ public class LoginResponse {
     private String message;
     private String nombre;
     private String apellidos;
-    private Integer semestre;
+    private String semestre;
+    private Long idEstudiante; // NUEVO CAMPO
 
     // Constructores
     public LoginResponse() {
@@ -16,12 +17,14 @@ public class LoginResponse {
         this.message = message;
     }
 
-    public LoginResponse(boolean success, String message, String nombre, String apellidos, Integer semestre) {
+    public LoginResponse(boolean success, String message, String nombre, 
+                        String apellidos, String semestre, Long idEstudiante) {
         this.success = success;
         this.message = message;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.semestre = semestre;
+        this.idEstudiante = idEstudiante; // NUEVO
     }
 
     // Getters y Setters
@@ -57,11 +60,19 @@ public class LoginResponse {
         this.apellidos = apellidos;
     }
 
-    public Integer getSemestre() {
+    public String getSemestre() {
         return semestre;
     }
 
-    public void setSemestre(Integer semestre) {
+    public void setSemestre(String semestre) {
         this.semestre = semestre;
+    }
+
+    public Long getIdEstudiante() { // NUEVO GETTER
+        return idEstudiante;
+    }
+
+    public void setIdEstudiante(Long idEstudiante) { // NUEVO SETTER
+        this.idEstudiante = idEstudiante;
     }
 }

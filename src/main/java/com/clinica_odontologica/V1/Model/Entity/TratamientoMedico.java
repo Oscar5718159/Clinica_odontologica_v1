@@ -27,6 +27,6 @@ public class TratamientoMedico {
     private Boolean tuvoHemorragiaDental;
 
     @Column(name = "especifique", length = 50)
-    private String especifique;
+    private String especifiqueHemorragia;
 
 }
