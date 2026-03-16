@@ -72,5 +72,12 @@ public class ArchivoServiceImpl implements ArchivoService {
         return archivoRepository.existsByPacienteId(idPaciente);
     }
     
-    // ... otros métodos si los necesitas ...
+    // 🔹 NUEVA IMPLEMENTACIÓN
+    @Override
+    public Optional<Archivo> findArchivoByPacienteId(Long idPaciente) {
+        // Si un paciente puede tener varios archivos, tomamos el primero
+        return archivoRepository.findByPacienteIdPaciente(idPaciente)
+                                .stream()
+                                .findFirst();
+    }
 }

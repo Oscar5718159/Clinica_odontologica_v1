@@ -38,6 +38,9 @@
         </form>
     </div>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         document.querySelector('.formulario').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -58,17 +61,61 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // GUARDAR EL ID DEL ESTUDIANTE EN sessionStorage
-                    sessionStorage.setItem('idEstudiante', data.idEstudiante);
-                    sessionStorage.setItem('nombreEstudiante', data.nombre + ' ' + data.apellidos);
-                    sessionStorage.setItem('semestreEstudiante', data.semestre);
+                    // Guardar datos comunes en sessionStorage
+                    sessionStorage.setItem('idUsuario', data.idUsuario);
+                    sessionStorage.setItem('nombreUsuario', data.nombre + ' ' + data.apellidos);
+                    sessionStorage.setItem('tipoUsuario', data.tipoUsuario);
                     
-                    // También guardar para depuración (opcional)
-                    console.log('ID Estudiante guardado:', data.idEstudiante);
+                    console.log('✅ Login exitoso - Tipo:', data.tipoUsuario);
                     
-                    // Login exitoso - redirigir a la página de estudiantes
-                    alert(`Bienvenido ${data.nombre} ${data.apellidos}`);
-                    window.location.href = '/estudiantes';
+                    // REDIRECCIÓN SEGÚN EL TIPO DE USUARIO
+                    if (data.tipoUsuario === 'ESTUDIANTE') {
+                        // Guardar datos específicos de estudiante
+                        sessionStorage.setItem('idEstudiante', data.idEspecifico);
+                        sessionStorage.setItem('semestreEstudiante', data.semestre);
+                        
+                        Swal.fire({
+                        title: '¡Bienvenido!',
+                        text: `Estudiante ${data.nombre} ${data.apellidos}`,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        background: '#f0f9ff',
+                        iconColor: '#3b82f6',
+                        titleText: '🎓 Acceso Estudiante'
+                    }).then(() => {
+                        window.location.href = '/estudiantes';
+                    });
+                                        } 
+                    else if (data.tipoUsuario === 'DOCENTE') {
+                    Swal.fire({
+                        title: '👨‍⚕️ Bienvenido Dr(a).',
+                        text: `${data.nombre} ${data.apellidos}`,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        background: '#f0fdf4',
+                        iconColor: '#10b981'
+                    }).then(() => {
+                        window.location.href = '/doctor';
+                    });
+                }
+                    else if (data.tipoUsuario === 'ADMIN') {
+                        Swal.fire({
+                            title: '🔐 Bienvenido Administrador',
+                            text: `${data.nombre} ${data.apellidos}`,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            background: '#fffbeb',
+                            iconColor: '#f59e0b'
+                        }).then(() => {
+                            window.location.href = '/admin';
+                        });
+                    }
                 } else {
                     alert('Error: ' + data.message);
                 }

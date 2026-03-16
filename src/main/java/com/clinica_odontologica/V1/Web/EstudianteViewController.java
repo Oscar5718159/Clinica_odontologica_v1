@@ -5,34 +5,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
-/**
- * 
- */
 @Controller
 @RequestMapping("/estudiantes")
 public class EstudianteViewController {
     
-    /**
-     * Página principal de estudiantes
-     */
+     
     @GetMapping
     public String paginaEstudiantes() {
         return "estudiantes/estudiantes_pg";
     }   
-    
-    /**
-     * Página de revisión de consultas
-     */
+
+
+    @GetMapping("/Registro-paciente/paciente-vista")
+    public String mostrarRegistroPaciente() {
+        return "estudiantes/Registro-paciente/paciente-vista";
+    }
+
     @GetMapping("/Revision/revision")
     public String mostrarRevision() {
         return "estudiantes/Revision/revision";
     }    
     
-    /**
-     * Vista del formulario de consentimiento
-     * Las funciones de API (cargar docentes, buscar consultas, guardar consentimiento)
-     * están en ConsentimientoController
-     */
     @GetMapping("/consentimiento/consentimiento-vista")
     public String mostrarConsentimiento() {
         return "estudiantes/consentimiento/consentimiento-vista";
@@ -50,4 +43,6 @@ public class EstudianteViewController {
         return "estudiantes/seguimiento/seguimiento-vista";
     }
     
+
+  
 }

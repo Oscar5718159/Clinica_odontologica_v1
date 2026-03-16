@@ -1,0 +1,38 @@
+.text-doc {
+    font-size: clamp(12px, 4vw, 14px);
+    margin: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+@page {
+    size: A4 portrait;
+    margin: 8mm;
+}
+
+@media print {
+    .container-principal {
+        max-width: 210mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    iframe {
+        width: 100% !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        page-break-inside: avoid !important;
+        -webkit-print-color-adjust: exact !important;
+    }
+
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+    }
+}
+

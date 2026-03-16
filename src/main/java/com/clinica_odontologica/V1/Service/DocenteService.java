@@ -1,28 +1,37 @@
 package com.clinica_odontologica.V1.Service;
 
 import com.clinica_odontologica.V1.Model.Entity.Docente;
+import com.clinica_odontologica.V1.Model.Dto.DocenteDTO;
 import java.util.List;
 import java.util.Optional;
 
 public interface DocenteService {
     
+    // Métodos básicos CRUD
     List<Docente> obtenerTodos();
-    
     List<Docente> obtenerTodosActivos();
-    
     Optional<Docente> obtenerPorId(Long id);
-    
     Docente guardar(Docente docente);
-    
     void eliminar(Long id);
-    
     boolean existePorCodigoDocente(Integer codigoDocente);
     
-
-    // List<Docente> buscarPorEspecialidad(String especialidad);
+    // Métodos de búsqueda específicos
+    Optional<Docente> obtenerPorCodigoDocente(Integer codigoDocente);
+    Optional<Docente> obtenerPorIdUsuario(Long idUsuario);
+    List<Docente> obtenerPorClinica(Long idClinica);
+    List<Docente> obtenerActivosPorClinica(Long idClinica);
+    List<Docente> buscarPorEspecialidad(String especialidad);
+    List<Docente> buscarPorNombre(String nombre);
+    List<Docente> buscarPorNombreUsuario(String username);
     
-    // List<Docente> buscarPorNombre(String nombreDocente);
+    // Métodos para DTOs
+    List<DocenteDTO> obtenerTodosDTO();
+    List<DocenteDTO> obtenerActivosDTO();
+    Optional<DocenteDTO> obtenerDTOPorId(Long id);
+    DocenteDTO convertirADTO(Docente docente);
+    Docente convertirAEntidad(DocenteDTO docenteDTO);
     
-    
-    // List<Docente> buscarActivosPorCriterio(String criterio);
+    // Métodos de utilidad
+    String getNombreCompletoDocente(Docente docente);
+    boolean existeRelacionConUsuario(Long idUsuario);
 }

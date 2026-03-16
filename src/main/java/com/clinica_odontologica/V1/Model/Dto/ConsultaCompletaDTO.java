@@ -36,8 +36,8 @@ public class ConsultaCompletaDTO {
     private Integer semanaEmbarazo;
 
     // Datos de TratamientoMedico
-    private Boolean tratamientoMedico;
-    private Boolean recibeAlgunMedicamento;
+    private String tratamientoMedico;
+    private String recibeAlgunMedicamento;
     private Boolean tuvoHemorragiaDental;
     private String especifiqueHemorragia;
     
@@ -148,11 +148,11 @@ public class ConsultaCompletaDTO {
 
     
 
-    public Boolean getTratamientoMedico() { return tratamientoMedico; }
-    public void setTratamientoMedico(Boolean tratamientoMedico) { this.tratamientoMedico = tratamientoMedico; }
+    public String getTratamientoMedico() { return tratamientoMedico; }
+    public void setTratamientoMedico(String tratamientoMedico) { this.tratamientoMedico = tratamientoMedico; }
 
-    public Boolean getRecibeAlgunMedicamento() { return recibeAlgunMedicamento; }
-    public void setRecibeAlgunMedicamento(Boolean recibeAlgunMedicamento) { this.recibeAlgunMedicamento = recibeAlgunMedicamento; }
+    public String getRecibeAlgunMedicamento() { return recibeAlgunMedicamento; }
+    public void setRecibeAlgunMedicamento(String recibeAlgunMedicamento) { this.recibeAlgunMedicamento = recibeAlgunMedicamento; }
     
     public Boolean getTuvoHemorragiaDental() { return tuvoHemorragiaDental; }
     public void setTuvoHemorragiaDental(Boolean tuvoHemorragiaDental) { this.tuvoHemorragiaDental = tuvoHemorragiaDental; }

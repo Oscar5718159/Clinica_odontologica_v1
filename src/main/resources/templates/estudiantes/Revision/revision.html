@@ -890,17 +890,46 @@
                     <div class="validation-message" id="embarazoValidation">Debe especificar las semanas de embarazo</div>
                 </div>
             </div>
-            
+
+                        
             <div class="form-row">
                 <div class="form-group">
                     <label><i class="fas fa-prescription-bottle-alt"></i> ¿Está en tratamiento médico?</label>
-                    <input type="text" id="tratamientoMedico" placeholder="Especifique tratamiento">
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="tratamiento-si" name="tratamientoMedico" value="si">
+                            <label for="tratamiento-si">SI</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="tratamiento-no" name="tratamientoMedico" value="no">
+                            <label for="tratamiento-no">NO</label>
+                        </div>
+                    </div>
+                    <input type="text" id="tratamientoMedico" placeholder="Especifique tratamiento" style="margin-top: 10px;">
+                    <div id="tratamientoValidation" class="validation-message" style="display: none; color: red; font-size: 12px;">
+                        Debe especificar el tratamiento médico
+                    </div>
                 </div>
+                
                 <div class="form-group">
                     <label><i class="fas fa-pills"></i> ¿Actualmente recibe algún medicamento?</label>
-                    <input type="text" id="medicamentoActual" placeholder="Especifique medicamentos">
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="medicamento-si" name="medicamentoActual" value="si">
+                            <label for="medicamento-si">SI</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="medicamento-no" name="medicamentoActual" value="no">
+                            <label for="medicamento-no">NO</label>
+                        </div>
+                    </div>
+                    <input type="text" id="medicamentoActual" placeholder="Especifique medicamentos" style="margin-top: 10px;">
+                    <div id="medicamentoValidation" class="validation-message" style="display: none; color: red; font-size: 12px;">
+                        Debe especificar los medicamentos
+                    </div>
                 </div>
             </div>
+
             
             <div class="form-row">
                 <div class="form-group">
@@ -1146,6 +1175,23 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+
+            <!-- Odontograma -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-image"></i> ODONTOGRAMA (FOTOS)</h2>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-camera"></i> Agregar imágenes del odontograma:</label>
+                        <input type="file" id="odontogramaFotos" name="odontogramaFotos" accept="image/*" multiple>
+                        <div class="field-instruction">
+                            <i class="fas fa-info-circle"></i> Puede seleccionar una o varias fotos (formatos: JPG, PNG, GIF).
+                        </div>
+                    </div>
+                </div>
+                <!-- Área para previsualizar las imágenes seleccionadas (opcional) -->
+                <div id="previsualizacionOdontograma" class="form-row" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
             </div>
             
             <div class="form-row">

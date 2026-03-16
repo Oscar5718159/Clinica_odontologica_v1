@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface TratamientoMedicoRepository extends JpaRepository<TratamientoMedico, Long> {
     
-    List<TratamientoMedico> findByTratamientoMedico(Boolean tratamientoMedico);
+    List<TratamientoMedico> findByTratamientoMedico(String tratamientoMedico);
     
-    List<TratamientoMedico> findByRecibeAlgunMedicamento(Boolean recibeAlgunMedicamento);
+    List<TratamientoMedico> findByRecibeAlgunMedicamento(String recibeAlgunMedicamento);
     
     List<TratamientoMedico> findByTuvoHemorragiaDental(Boolean tuvoHemorragiaDental);
 }

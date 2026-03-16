@@ -282,6 +282,74 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     tipoProtesis.addEventListener('input', actualizarValidacionProtesis);
 
+    // ===== VALIDACIÓN TRATAMIENTO MÉDICO =====
+    const tratamientoSi = document.getElementById('tratamiento-si');
+    const tratamientoNo = document.getElementById('tratamiento-no');
+    const tratamientoMedico = document.getElementById('tratamientoMedico');
+    const tratamientoValidation = document.getElementById('tratamientoValidation');
+
+    function actualizarValidacionTratamiento() {
+        if (tratamientoSi && tratamientoSi.checked && tratamientoMedico.value.trim() === '') {
+            tratamientoValidation.style.display = 'block';
+            tratamientoMedico.classList.add('error-border');
+        } else {
+            tratamientoValidation.style.display = 'none';
+            tratamientoMedico.classList.remove('error-border');
+        }
+    }
+
+    if (tratamientoSi && tratamientoNo) {
+        tratamientoSi.addEventListener('change', function() {
+            tratamientoMedico.disabled = false;
+            actualizarValidacionTratamiento();
+        });
+
+        tratamientoNo.addEventListener('change', function() {
+            tratamientoMedico.disabled = true;
+            tratamientoMedico.value = '';
+            tratamientoValidation.style.display = 'none';
+            tratamientoMedico.classList.remove('error-border');
+        });
+    }
+
+    if (tratamientoMedico) {
+        tratamientoMedico.addEventListener('input', actualizarValidacionTratamiento);
+    }
+
+    // ===== VALIDACIÓN MEDICAMENTO ACTUAL =====
+    const medicamentoSi = document.getElementById('medicamento-si');
+    const medicamentoNo = document.getElementById('medicamento-no');
+    const medicamentoActual = document.getElementById('medicamentoActual');
+    const medicamentoValidation = document.getElementById('medicamentoValidation');
+
+    function actualizarValidacionMedicamento() {
+        if (medicamentoSi && medicamentoSi.checked && medicamentoActual.value.trim() === '') {
+            medicamentoValidation.style.display = 'block';
+            medicamentoActual.classList.add('error-border');
+        } else {
+            medicamentoValidation.style.display = 'none';
+            medicamentoActual.classList.remove('error-border');
+        }
+    }
+
+    if (medicamentoSi && medicamentoNo) {
+        medicamentoSi.addEventListener('change', function() {
+            medicamentoActual.disabled = false;
+            actualizarValidacionMedicamento();
+        });
+
+        medicamentoNo.addEventListener('change', function() {
+            medicamentoActual.disabled = true;
+            medicamentoActual.value = '';
+            medicamentoValidation.style.display = 'none';
+            medicamentoActual.classList.remove('error-border');
+        });
+    }
+
+    if (medicamentoActual) {
+        medicamentoActual.addEventListener('input', actualizarValidacionMedicamento);
+    }
+
     // ===== VALIDACIÓN HÁBITOS =====
     const habitoCheckboxes = document.querySelectorAll('.habito-checkbox');
     const otrosHabitos = document.getElementById('otrosHabitos');
@@ -618,6 +686,16 @@ document.addEventListener('DOMContentLoaded', async function() {
             errores.push('Debe especificar el tipo de prótesis');
         }
 
+        // Validar tratamiento médico
+        if (tratamientoSi && tratamientoSi.checked && !tratamientoMedico.value.trim()) {
+            errores.push('Debe especificar el tratamiento médico');
+        }
+
+        // Validar medicamento actual
+        if (medicamentoSi && medicamentoSi.checked && !medicamentoActual.value.trim()) {
+            errores.push('Debe especificar los medicamentos que recibe');
+        }
+
         // Validar conflicto "ninguno" vs enfermedades
         const ningunaEnfermedad = document.getElementById('ningunaEnfermedad');
         const enfermedadesCheckboxes = document.querySelectorAll('.enfermedad-checkbox');
@@ -694,9 +772,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             semanaEmbarazo: document.getElementById('embarazo-si').checked && document.getElementById('semanasEmbarazo').value ? 
                            parseInt(document.getElementById('semanasEmbarazo').value) : null,
             
-            // ✅ TRATAMIENTO MEDICO
-            tratamientoMedico: document.getElementById('tratamientoMedico').value.trim() !== '',
-            recibeAlgunMedicamento: document.getElementById('medicamentoActual').value.trim() !== '',
+            // ✅ TRATAMIENTO MEDICO - AHORA CON LA LÓGICA CORRECTA
+            tratamientoMedico: tratamientoSi && tratamientoSi.checked ? tratamientoMedico.value.trim() : '',
+            recibeAlgunMedicamento: medicamentoSi && medicamentoSi.checked ? medicamentoActual.value.trim() : '',
             tuvoHemorragiaDental: obtenerValorBooleano(document.getElementById('hemorragia-si'), document.getElementById('hemorragia-no')),
             especifiqueHemorragia: document.getElementById('hemorragia-si').checked ? 
                                   document.getElementById('especifiqueHemorragia').value.trim() : null,
@@ -772,4 +850,21 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Inicializar estado de los campos al cargar la página
     actualizarValidacionEnfermedades();
+    
+    // Inicializar estado de tratamiento médico y medicamento
+    if (tratamientoNo) {
+        tratamientoNo.checked = true;
+        if (tratamientoMedico) {
+            tratamientoMedico.disabled = true;
+            tratamientoMedico.value = '';
+        }
+    }
+
+    if (medicamentoNo) {
+        medicamentoNo.checked = true;
+        if (medicamentoActual) {
+            medicamentoActual.disabled = true;
+            medicamentoActual.value = '';
+        }
+    }
 });

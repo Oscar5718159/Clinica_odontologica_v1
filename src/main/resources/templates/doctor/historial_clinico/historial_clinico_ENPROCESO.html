@@ -659,7 +659,7 @@
 
     <script>
         // URL base de tu API Spring Boot - AJUSTA SEGÚN TU CONFIGURACIÓN
-        const API_BASE_URL = 'http://localhost:8080/api/pacientes';
+        const API_BASE_URL = 'http://localhost:8080/api/pacientes/public';
 
         // Elementos de búsqueda
         const nombreBusqueda = document.getElementById('nombreBusqueda');
@@ -774,6 +774,9 @@
             const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
             personaInformacion.value = nombreCompleto;
             edadPaciente.value = paciente.persona?.edad || '';
+
+
+            pacienteActual = paciente;
 
             // Mostrar sección de historial
             historialSection.style.display = 'block';
@@ -1009,131 +1012,152 @@
             });
         }
 
-        function mostrarDetalleConsulta(consulta) {
-            console.log('Consulta DTO completa recibida:', consulta);
-            
-            // Función auxiliar MEJORADA para valores seguros
-            const getValor = (valor, defecto = 'No especificado') => {
-                if (valor === null || valor === undefined || valor === '') {
-                    return defecto;
-                }
-                return valor;
-            };
-            
-            // Función MEJORADA para valores booleanos
-            const getBooleano = (valor) => {
-                if (valor === null || valor === undefined) {
-                    return 'No especificado';
-                }
-                return valor ? 'Sí' : 'No';
-            };
+async function mostrarDetalleConsulta(consulta) {
+    try {
+        console.log('Consulta DTO completa recibida:', consulta);
 
-            // Función para valores numéricos
-            const getNumero = (valor, defecto = 'No especificado') => {
-                if (valor === null || valor === undefined) {
-                    return defecto;
-                }
-                return valor.toString();
-            };
+        const response = await fetch('/Doctor_static/Historial-static/hoja-consulta/detalle-consulta-completo.html');
+        if (!response.ok) throw new Error(`Error al cargar el template: ${response.status}`);
+        const htmlString = await response.text();
 
-            detalleConsultaContent.innerHTML = `
-                <div class="detalle-completo">
-                    <h4>Consulta del ${formatearFecha(consulta.fecha)}</h4>
-                    
-                    <div class="seccion-detalle">
-                        <h5>Datos Generales</h5>
-                        <p><strong>Observaciones:</strong> ${getValor(consulta.observaciones, 'Sin observaciones')}</p>
-                        <p><strong>Fecha de Revisión:</strong> ${formatearFecha(consulta.fechaRevision)}</p>
-                        <p><strong>Patología Personal:</strong> ${getValor(consulta.nombrePatologia, 'Ninguna')}</p>
-                    </div>
-                    
-                    <div class="seccion-detalle">
-                        <h5>Antecedentes Patológicos</h5>
-                        <p><strong>Alergias:</strong> ${getBooleano(consulta.alergias)} 
-                        ${consulta.especifiqueAlergia ? `- ${getValor(consulta.especifiqueAlergia)}` : ''}</p>
-                        
-                        <p><strong>Embarazo:</strong> ${getBooleano(consulta.embarazo)} 
-                        ${consulta.semanaEmbarazo ? `- ${getNumero(consulta.semanaEmbarazo)} semanas` : ''}</p>
-                        
-                        <p><strong>Tratamiento Médico:</strong> ${getBooleano(consulta.tratamientoMedico)} 
-                        ${consulta.tratamientoMedicoDetalle ? `- ${getValor(consulta.tratamientoMedicoDetalle)}` : ''}</p>
-                        
-                        <p><strong>Medicamentos:</strong> ${getBooleano(consulta.recibeAlgunMedicamento)} 
-                        ${consulta.medicamentoActual ? `- ${getValor(consulta.medicamentoActual)}` : ''}</p>
-                        
-                        <p><strong>Hemorragia Dental:</strong> ${getBooleano(consulta.tuvoHemorragiaDental)} 
-                        ${consulta.especifiqueHemorragia ? `- ${getValor(consulta.especifiqueHemorragia)}` : ''}</p>
-                    </div>
-                    
-                    <div class="seccion-detalle">
-                        <h5>Examen Extra Oral</h5>
-                        <p><strong>ATM:</strong> ${getValor(consulta.atm)}</p>
-                        <p><strong>Ganglios Linfáticos:</strong> ${getValor(consulta.gangliosLinfaticos)}</p>
-                        <p><strong>Respirador:</strong> ${getValor(consulta.respirador)}</p>
-                        <p><strong>Otros (Respiratorio):</strong> ${getValor(consulta.otrosRespiratorio)}</p>
-                    </div>
-                    
-                    <div class="seccion-detalle">
-                        <h5>Examen Intra Oral</h5>
-                        <p><strong>Labios:</strong> ${getValor(consulta.labios)}</p>
-                        <p><strong>Lengua:</strong> ${getValor(consulta.lengua)}</p>
-                        <p><strong>Paladar:</strong> ${getValor(consulta.paladar)}</p>
-                        <p><strong>Piso de la Boca:</strong> ${getValor(consulta.pisoDeLaBoca)}</p>
-                        <p><strong>Mucosa Yugal:</strong> ${getValor(consulta.mucosaYugal)}</p>
-                        <p><strong>Encías:</strong> ${getValor(consulta.encias)}</p>
-                    </div>
-                    
-                    <div class="seccion-detalle">
-                        <h5>Prótesis Dental</h5>
-                        <p><strong>Utiliza Prótesis:</strong> ${getBooleano(consulta.utilizaProtesisDental)}</p>
-                        ${consulta.utilizaProtesisDental ? `
-                            <p><strong>Tipo:</strong> ${getValor(consulta.tipoProtesis)}</p>
-                            <p><strong>Tiempo de Uso:</strong> ${getValor(consulta.tiempoProtesis)}</p>
-                        ` : ''}
-                    </div>
-                    
-                    <div class="seccion-detalle">
-                        <h5>Antecedentes y Hábitos</h5>
-                        <p><strong>Hábito de Fumar:</strong> ${getBooleano(consulta.habitoFuma)}</p>
-                        <p><strong>Hábito de Beber:</strong> ${getBooleano(consulta.habitoBebe)}</p>
-                        <p><strong>Otros Hábitos:</strong> ${getValor(consulta.otrosHabitos)}</p>
-                    </div>
-                    
-                    <div class="seccion-detalle">
-                        <h5>Higiene Oral</h5>
-                        <p><strong>Cepillo Dental:</strong> ${getBooleano(consulta.utilizaCepilloDental)}</p>
-                        <p><strong>Hilo Dental:</strong> ${getBooleano(consulta.utilizaHiloDental)}</p>
-                        <p><strong>Enjuague Bucal:</strong> ${getBooleano(consulta.utilizaEnjuagueBucal)}</p>
-                        <p><strong>Frecuencia de Cepillado:</strong> ${getValor(consulta.frecuenciaCepillo)}</p>
-                        <p><strong>Sangrado de Encías:</strong> ${getBooleano(consulta.sangradoEncias)}</p>
-                        <p><strong>Higiene Bucal:</strong> ${getValor(consulta.higieneBucal)}</p>
-                        <p><strong>Observaciones de Higiene:</strong> ${getValor(consulta.observacionesHigiene, 'Sin observaciones')}</p>
-                    </div>
-                    
-                    <div class="seccion-detalle">
-                        <h5>Informante</h5>
-                        <p><strong>Nombres:</strong> ${getValor(consulta.informanteNombres)}</p>
-                        <p><strong>Apellidos:</strong> ${getValor(consulta.informanteApellidoPaterno)} ${getValor(consulta.informanteApellidoMaterno)}</p>
-                        <p><strong>Dirección:</strong> ${getValor(consulta.informanteDireccion)}</p>
-                        <p><strong>Teléfono:</strong> ${getValor(consulta.informanteTelefono)}</p>
-                    </div>
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlString;
 
-                    <!-- DEBUG: Mostrar estructura real -->
-                    <!--<div class="seccion-detalle" style="background: #e9ecef; border-left: 4px solid #6c757d;">
-                        <h5>🔍 Datos Recibidos del Backend</h5>
-                        <div style="font-size: 12px;">
-                            <p><strong>nombrePatologia:</strong> ${JSON.stringify(consulta.nombrePatologia)}</p>
-                            <p><strong>alergias:</strong> ${JSON.stringify(consulta.alergias)}</p>
-                            <p><strong>embarazo:</strong> ${JSON.stringify(consulta.embarazo)}</p>
-                            <p><strong>tratamientoMedico:</strong> ${JSON.stringify(consulta.tratamientoMedico)}</p>
-                        </div>
-                    </div> -->
-                </div>
-            `;
-            
-            modalDetalleConsulta.style.display = 'block';
+        // Funciones auxiliares
+        const getValor = (valor, defecto = 'No especificado') => {
+            return (valor === null || valor === undefined || valor === '') ? defecto : valor;
+        };
+        const getBooleano = (valor) => {
+            if (valor === null || valor === undefined) return 'No especificado';
+            return valor ? 'Sí' : 'No';
+        };
+        const getNumero = (valor, defecto = 'No especificado') => {
+            return (valor === null || valor === undefined) ? defecto : valor.toString();
+        };
+
+    
+        // Función auxiliar para asignar texto de forma segura
+        const setText = (selector, valor) => {
+            const el = tempDiv.querySelector(selector);
+            if (el) el.textContent = (valor !== null && valor !== undefined && valor !== '') ? valor : 'No especificado';
+        };
+
+        // Rellenar datos del paciente usando pacienteActual
+        if (pacienteActual) {
+            const persona = pacienteActual.persona || {};
+
+            setText('#detalle-expediente', pacienteActual.idPaciente || '');
+            setText('#detalle-historia', pacienteActual.historialClinico || '');
+            setText('#detalle-ci', pacienteActual.ci || persona.ci || '');
+
+            const nombreCompleto = [persona.nombre, persona.apellidoPaterno, persona.apellidoMaterno].filter(Boolean).join(' ') || 'No especificado';
+            setText('#detalle-nombre-paciente', nombreCompleto);
+            setText('#detalle-apellido-paterno', persona.apellidoPaterno || 'No especificado');
+            setText('#detalle-apellido-materno', persona.apellidoMaterno || 'No especificado');
+
+            setText('#detalle-edad-sexo', `${persona.edad || '?'} años / ${persona.sexo || 'No especificado'}`);
+            setText('#detalle-lugar-fecha-nacimiento', `${pacienteActual.lugarNacimiento || 'No especificado'}, ${pacienteActual.fechaNacimiento || '?'}`);
+            setText('#detalle-direccion', pacienteActual.direccion || 'No especificada');
+            setText('#detalle-telefono-celular', pacienteActual.telefono || 'No especificado');
+            setText('#detalle-grado-instruccion', pacienteActual.gradoInstruccion || 'No especificado');
+            setText('#detalle-ocupacion', pacienteActual.ocupacion || 'No especificada');
+            setText('#detalle-estado-civil', pacienteActual.estadoCivil || 'No especificado');
+            setText('#detalle-naciones-originarias', pacienteActual.nacionesOriginarias || 'No especificado');
+            setText('#detalle-idioma', persona.idioma || pacienteActual.idioma || 'No especificado');
+        } else {
+            setText('#detalle-nombre-paciente', 'No seleccionado');
+        }
+        setText('#detalle-fecha', formatearFecha(consulta.fecha));
+
+        // Patologías
+        setText('#detalle-anemia', getBooleano(consulta.anemia));
+        setText('#detalle-asma', getBooleano(consulta.asma));
+        setText('#detalle-cardiopatias', getBooleano(consulta.cardiopatias));
+        setText('#detalle-diabetes', getBooleano(consulta.diabetesMel));      
+        setText('#detalle-gastricas', getBooleano(consulta.enfGastricos));   
+        setText('#detalle-epilepsia', getBooleano(consulta.epilepsia));
+        setText('#detalle-hepatitis', getBooleano(consulta.hepatitis));
+        setText('#detalle-hipertension', getBooleano(consulta.hipertension));
+        setText('#detalle-tuberculosis', getBooleano(consulta.tuberculosis));
+        setText('#detalle-vih', getBooleano(consulta.vih));                 
+        setText('#detalle-otros', getValor(consulta.otros));
+        setText('#detalle-ninguno', getBooleano(consulta.ninguno));
+
+
+
+
+        setText('#detalle-observaciones', getValor(consulta.observaciones, 'Sin observaciones'));
+        setText('#detalle-fecha-revision', formatearFecha(consulta.fechaRevision));
+        setText('#detalle-patologia', getValor(consulta.nombrePatologia, 'Ninguna'));
+
+        setText('#detalle-alergias', getBooleano(consulta.alergias));
+        setText('#detalle-alergia-detalle', consulta.especifiqueAlergia ? `- ${getValor(consulta.especifiqueAlergia)}` : '');
+
+        setText('#detalle-embarazo', getBooleano(consulta.embarazo));
+        setText('#detalle-semana-embarazo', consulta.semanaEmbarazo ? `- ${getNumero(consulta.semanaEmbarazo)} semanas` : '');
+
+        setText('#detalle-tratamiento-medico', getBooleano(consulta.tratamientoMedico));
+        setText('#detalle-tratamiento-detalle', consulta.tratamientoMedicoDetalle ? `- ${getValor(consulta.tratamientoMedicoDetalle)}` : '');
+
+        setText('#detalle-medicamentos', getBooleano(consulta.recibeAlgunMedicamento));
+        setText('#detalle-medicamento-actual', consulta.medicamentoActual ? `- ${getValor(consulta.medicamentoActual)}` : '');
+
+        setText('#detalle-hemorragia', getBooleano(consulta.tuvoHemorragiaDental));
+        setText('#detalle-hemorragia-detalle', consulta.especifiqueHemorragia ? `- ${getValor(consulta.especifiqueHemorragia)}` : '');
+
+        setText('#detalle-atm', getValor(consulta.atm));
+        setText('#detalle-ganglios', getValor(consulta.gangliosLinfaticos));
+        setText('#detalle-respirador', getValor(consulta.respirador));
+        setText('#detalle-otros-respiratorio', getValor(consulta.otrosRespiratorio));
+
+        setText('#detalle-labios', getValor(consulta.labios));
+        setText('#detalle-lengua', getValor(consulta.lengua));
+        setText('#detalle-paladar', getValor(consulta.paladar));
+        setText('#detalle-piso-boca', getValor(consulta.pisoDeLaBoca));
+        setText('#detalle-mucosa-yugal', getValor(consulta.mucosaYugal));
+        setText('#detalle-encias', getValor(consulta.encias));
+
+        setText('#detalle-usa-protesis', getBooleano(consulta.utilizaProtesisDental));
+        if (consulta.utilizaProtesisDental) {
+            setText('#detalle-protesis-tipo', `Tipo: ${getValor(consulta.tipoProtesis)}`);
+            setText('#detalle-protesis-tiempo', `Tiempo de uso: ${getValor(consulta.tiempoProtesis)}`);
+        } else {
+            // Opcional: ocultar los elementos si no aplica
+            const tipo = tempDiv.querySelector('#detalle-protesis-tipo');
+            const tiempo = tempDiv.querySelector('#detalle-protesis-tiempo');
+            if (tipo) tipo.style.display = 'none';
+            if (tiempo) tiempo.style.display = 'none';
         }
 
+        setText('#detalle-fuma', getBooleano(consulta.habitoFuma));
+        setText('#detalle-bebe', getBooleano(consulta.habitoBebe));
+        setText('#detalle-otros-habitos', getValor(consulta.otrosHabitos));
+
+        setText('#detalle-cepillo', getBooleano(consulta.utilizaCepilloDental));
+        setText('#detalle-hilo', getBooleano(consulta.utilizaHiloDental));
+        setText('#detalle-enjuague', getBooleano(consulta.utilizaEnjuagueBucal));
+        setText('#detalle-frecuencia-cepillo', getValor(consulta.frecuenciaCepillo));
+        setText('#detalle-sangrado', getBooleano(consulta.sangradoEncias));
+        setText('#detalle-higiene-bucal', getValor(consulta.higieneBucal));
+        setText('#detalle-obs-higiene', getValor(consulta.observacionesHigiene, 'Sin observaciones'));
+
+        setText('#detalle-informante-nombres', getValor(consulta.informanteNombres));
+        setText('#detalle-informante-apellido-paterno', getValor(consulta.informanteApellidoPaterno));
+        setText('#detalle-informante-apellido-materno', getValor(consulta.informanteApellidoMaterno));
+        setText('#detalle-informante-direccion', getValor(consulta.informanteDireccion));
+        setText('#detalle-informante-telefono', getValor(consulta.informanteTelefono));
+
+        // Insertar en el modal
+        detalleConsultaContent.innerHTML = '';
+        detalleConsultaContent.appendChild(tempDiv);
+        modalDetalleConsulta.style.display = 'block';
+
+    } catch (error) {
+        console.error('Error al cargar el detalle:', error);
+        detalleConsultaContent.innerHTML = `<div class="error">Error al cargar el detalle: ${error.message}</div>`;
+        modalDetalleConsulta.style.display = 'block';
+    }
+}
         // Función para formatear fecha
         function formatearFecha(fechaString) {
             if (!fechaString) return 'No especificada';

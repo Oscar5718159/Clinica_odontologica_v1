@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario Médico</title>
+    <title>Formulario de Seguimiento</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Estilos existentes (se mantienen igual) */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
@@ -20,47 +20,35 @@
             padding: 0;
             margin: 0;
         }
-        
         .container {
             width: 100%;
             margin: 0;
             padding: 0;
         }
-        
         .header {
             background: linear-gradient(to right, #2196F3, #0D47A1);
             color: white;
             padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        
         .header h1 {
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
-        .header h1 i {
-            font-size: 1.8rem;
-        }
-        
         .search-container {
             display: flex;
             gap: 10px;
             margin-top: 15px;
         }
-        
         .search-container input {
             flex: 1;
             padding: 12px 15px;
             border: none;
             border-radius: 30px;
             font-size: 16px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        
         .search-container button {
             background: #FF9800;
             color: white;
@@ -69,211 +57,203 @@
             padding: 12px 20px;
             cursor: pointer;
             font-weight: bold;
-            transition: background 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        
         .search-container button:hover {
             background: #F57C00;
         }
-        
         .form-container {
             background-color: white;
             padding: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
             gap: 25px;
-            min-height: calc(100vh - 180px);
         }
-        
-        .top-sections {
+        .top-sections, .bottom-sections {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 25px;
         }
-        
-        .bottom-sections {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-        
         .form-section {
             padding: 20px;
             border-radius: 8px;
             background: #f8f9fa;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        
-        .form-section:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
         .section-title {
             font-size: 1.2rem;
             color: #0D47A1;
             margin-bottom: 15px;
-            padding-bottom: 8px;
             border-bottom: 2px solid #2196F3;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
         .form-row {
             display: flex;
             gap: 20px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
-        
         .form-group {
             flex: 1;
+            min-width: 200px;
         }
-        
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #444;
         }
-        
         input, textarea, select {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 16px;
-            transition: border 0.3s, box-shadow 0.3s;
         }
-        
-        input:focus, textarea:focus, select:focus {
+        input:focus, textarea:focus {
             border-color: #2196F3;
-            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
             outline: none;
         }
-        
         textarea {
             min-height: 120px;
-            resize: vertical;
         }
-        
-        .signature-area {
-            border-top: 2px solid #2196F3;
-            margin-top: 20px;
-            padding-top: 20px;
+        .servicio-item {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
-        
-        .stamp-area {
-            margin-top: 20px;
-            text-align: center;
-            border: 2px dashed #9E9E9E;
-            padding: 20px;
-            min-height: 100px;
-            border-radius: 8px;
-            background: #f5f5f5;
-            color: #666;
+        .servicio-item .form-group {
+            margin-bottom: 0;
         }
-        
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 14px;
         }
-        
+        .btn-danger {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        .btn-secondary {
+            background: #9E9E9E;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover {
+            background: #757575;
+        }
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            background: #0D47A1;
+        }
         .button-group {
             display: flex;
             justify-content: center;
             gap: 15px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
-        
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        input[readonly] {
+            background-color: #e9ecef;
         }
-        
-        .btn-primary {
-            background: #2196F3;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #0D47A1;
-            transform: translateY(-2px);
-        }
-        
-        .btn-secondary {
-            background: #9E9E9E;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #757575;
-            transform: translateY(-2px);
-        }
-        
-        @media (max-width: 1200px) {
+        @media (max-width: 768px) {
             .top-sections, .bottom-sections {
                 grid-template-columns: 1fr;
             }
-        }
-        
-        @media (max-width: 768px) {
-            .form-container {
-                padding: 15px;
-            }
-            
-            .form-row {
+            .servicio-item {
                 flex-direction: column;
-                gap: 10px;
-            }
-            
-            .button-group {
-                flex-direction: column;
+                align-items: stretch;
             }
         }
-        
-        @media print {
-            body {
-                background-color: white;
-            }
-            
-            .form-container {
-                box-shadow: none;
-            }
-            
-            .search-container, .button-group {
-                display: none;
-            }
+        /* Estilos para mensajes */
+        .alert {
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        /* Estilos para la sección de recibos pendientes */
+        #recibos-pendientes-section {
+            margin-top: 20px;
+        }
+        .recibo-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .recibo-item span {
+            font-size: 1rem;
+        }
+        .recibo-item button {
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-file-medical-alt"></i> Formulario Médico - Seguimiento de Tratamiento</h1>
-            <p>Sistema de registro de datos médicos del paciente</p>
-            
+            <h1><i class="fas fa-file-medical-alt"></i> Seguimiento de Tratamiento</h1>
+            <p>Sistema de registro de datos médicos y servicios adicionales</p>
             <div class="search-container">
-                <input type="text" id="search" placeholder="Buscar por el consentimiento">
-                <button><i class="fas fa-search"></i> Buscar</button>
+                <input type="number" id="search" placeholder="ID de consentimiento (ej: 123)" min="1">
+                <button id="btnBuscar"><i class="fas fa-search"></i> Buscar consentimiento</button>
             </div>
         </div>
-        
+
         <div class="form-container">
-            <!-- Secciones superiores centradas -->
+            <!-- Mensajes de alerta -->
+            <div id="alertMessage" class="alert"></div>
+
+            <!-- Secciones superiores -->
             <div class="top-sections">
                 <div class="form-section">
                     <h2 class="section-title"><i class="far fa-calendar-alt"></i> Información General</h2>
@@ -289,22 +269,32 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="edad">Edad:</label>
-                            <input type="text" id="edad" name="edad">
+                            <label for="edad">Edad del paciente:</label>
+                            <input type="text" id="edad" name="edad" readonly>
                         </div>
                         <div class="form-group">
                             <label for="subjetivo">Subjetivo:</label>
                             <input type="text" id="subjetivo" name="subjetivo">
                         </div>
                     </div>
+                    <!-- Nuevos campos: nombre del paciente e ID -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paciente-nombre">Paciente:</label>
+                            <input type="text" id="paciente-nombre" name="pacienteNombre" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="paciente-id">ID Paciente:</label>
+                            <input type="text" id="paciente-id" name="pacienteId" readonly>
+                        </div>
+                    </div>
                 </div>
-                
                 <div class="form-section">
                     <h2 class="section-title"><i class="fas fa-heartbeat"></i> Signos Vitales</h2>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="presion">Presión Arterial:</label>
-                            <input type="text" id="presion" name="presion" placeholder="Ej: 120/80 mmHg">
+                            <input type="text" id="presion" name="presion" placeholder="Ej: 120/80">
                         </div>
                         <div class="form-group">
                             <label for="objetivo">Objetivo:</label>
@@ -313,81 +303,434 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="frecuencia_cardiaca">Frecuencia Cardíaca:</label>
-                            <input type="text" id="frecuencia_cardiaca" name="frecuencia_cardiaca" placeholder="Ej: 75 lpm">
+                            <label for="frecuencia_cardiaca">Frec. Cardíaca:</label>
+                            <input type="text" id="frecuencia_cardiaca" name="frecuencia_cardiaca" placeholder="lpm">
                         </div>
                         <div class="form-group">
-                            <label for="frecuencia_respiratoria">Frecuencia Respiratoria:</label>
-                            <input type="text" id="frecuencia_respiratoria" name="frecuencia_respiratoria" placeholder="Ej: 16 rpm">
+                            <label for="frecuencia_respiratoria">Frec. Respiratoria:</label>
+                            <input type="text" id="frecuencia_respiratoria" name="frecuencia_respiratoria" placeholder="rpm">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="temperatura">Temperatura:</label>
-                            <input type="text" id="temperatura" name="temperatura" placeholder="Ej: 36.5 °C">
+                            <input type="text" id="temperatura" name="temperatura" placeholder="°C">
                         </div>
                         <div class="form-group">
+                            <label for="saturacion_oxigeno">Sat. Oxígeno:</label>
+                            <input type="text" id="saturacion_oxigeno" name="saturacion_oxigeno" placeholder="%">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
                             <label for="peso">Peso:</label>
-                            <input type="text" id="peso" name="peso" placeholder="Ej: 70 kg">
+                            <input type="text" id="peso" name="peso" placeholder="kg">
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Secciones inferiores centradas -->
+
+            <!-- Secciones inferiores -->
             <div class="bottom-sections">
                 <div class="form-section">
                     <h2 class="section-title"><i class="fas fa-stethoscope"></i> Análisis</h2>
-                    <div class="form-group">
-                        <label for="analisis">Evaluación Médica:</label>
-                        <textarea id="analisis" name="analisis"></textarea>
-                    </div>
+                    <textarea id="analisis" name="analisis"></textarea>
                 </div>
-                
                 <div class="form-section">
                     <h2 class="section-title"><i class="fas fa-tasks"></i> Plan de Acción</h2>
-                    <div class="form-group">
-                        <label for="plan_accion">Plan de Tratamiento:</label>
-                        <textarea id="plan_accion" name="plan_accion"></textarea>
-                    </div>
+                    <textarea id="plan_accion" name="plan_accion"></textarea>
                 </div>
             </div>
-            
-            <div class="button-group">
-                <button class="btn btn-primary"><i class="fas fa-save"></i> Guardar Consulta</button>
-                <button class="btn btn-secondary"><i class="fas fa-print"></i> Imprimir</button>
-                <button class="btn btn-secondary"><i class="fas fa-redo"></i> Limpiar Formulario</button>
+
+            <!-- Sección de servicios adicionales (Rayos X) -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-plus-circle"></i> Servicios Adicionales (Rayos X)</h2>
+                <div id="servicios-container">
+                    <!-- Las filas se insertarán dinámicamente -->
+                </div>
+                <button type="button" id="agregar-servicio" class="btn-secondary btn-sm">
+                    <i class="fas fa-plus"></i> Agregar servicio manual
+                </button>
+                <!-- Costo base y total -->
+                <div class="form-row" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="costo-base">Costo base del tratamiento:</label>
+                        <input type="number" id="costo-base" name="costoBase" readonly step="0.01" value="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="total-tratamiento">Total a pagar:</label>
+                        <input type="number" id="total-tratamiento" name="totalTratamiento" readonly step="0.01" value="0.00">
+                    </div>
+                </div>
+                <!-- Selector de rayos X del catálogo -->
+                <div style="margin-top: 15px;">
+                    <label for="selectRayosX">Seleccionar del catálogo:</label>
+                    <select id="selectRayosX" style="width: auto; display: inline-block;">
+                        <option value="">-- Elegir --</option>
+                    </select>
+                    <button type="button" id="btnAgregarSeleccionado" class="btn-secondary btn-sm">
+                        <i class="fas fa-plus"></i> Agregar seleccionado
+                    </button>
+                </div>
             </div>
-            
+
+            <!-- Sección de recibos pendientes (se muestra al cargar un paciente) -->
+            <div class="form-section" id="recibos-pendientes-section" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-receipt"></i> Recibos Pendientes</h2>
+                <div id="recibos-lista"></div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="button-group">
+                <button class="btn-primary" id="btnGuardar"><i class="fas fa-save"></i> Guardar Consulta</button>
+                <button class="btn-secondary" id="btnImprimir"><i class="fas fa-print"></i> Imprimir</button>
+                <button class="btn-secondary" id="btnLimpiar"><i class="fas fa-redo"></i> Limpiar Formulario</button>
+            </div>
         </div>
     </div>
+<script>
+    // ========== CONFIGURACIÓN ==========
+    const API_BASE = ''; // Si el backend está en otro puerto, ej: 'http://localhost:8080'
+    const ENDPOINT_CONSENTIMIENTO = '/consentimientos/obtener/';
+    const ENDPOINT_SEGUIMIENTO_CREAR = '/api/seguimientos/crear';
+    const ENDPOINT_RAYOSX_CATALOGO = '/api/rayosx';
+    const ENDPOINT_RECIBOS_PENDIENTES = '/api/seguimientos/recibos/pendientes/';
+    const ENDPOINT_PAGAR_RECIBO = '/api/seguimientos/recibos/';
 
-    <script>
-        // Establecer la fecha actual por defecto
-        document.getElementById('fecha').valueAsDate = new Date();
-        
-        // Establecer la hora actual por defecto
+    // Variables globales
+    let consentimientoId = null;
+    let servicioIndex = 0;
+    let catalogoRayosX = [];
+    let idPacienteActual = null;
+
+    // ========== ELEMENTOS DEL DOM ==========
+    const alertDiv = document.getElementById('alertMessage');
+    const searchInput = document.getElementById('search');
+    const btnBuscar = document.getElementById('btnBuscar');
+    const btnGuardar = document.getElementById('btnGuardar');
+    const btnLimpiar = document.getElementById('btnLimpiar');
+    const btnImprimir = document.getElementById('btnImprimir');
+    const fechaInput = document.getElementById('fecha');
+    const horaInput = document.getElementById('hora');
+    const edadInput = document.getElementById('edad');
+    const pacienteNombre = document.getElementById('paciente-nombre');
+    const pacienteId = document.getElementById('paciente-id');
+    const subjetivoInput = document.getElementById('subjetivo');
+    const presionInput = document.getElementById('presion');
+    const objetivoInput = document.getElementById('objetivo');
+    const frecuenciaCardiaca = document.getElementById('frecuencia_cardiaca');
+    const frecuenciaRespiratoria = document.getElementById('frecuencia_respiratoria');
+    const temperatura = document.getElementById('temperatura');
+    const saturacionOxigeno = document.getElementById('saturacion_oxigeno');
+    const peso = document.getElementById('peso');
+    const analisis = document.getElementById('analisis');
+    const planAccion = document.getElementById('plan_accion');
+    const costoBaseInput = document.getElementById('costo-base');
+    const totalInput = document.getElementById('total-tratamiento');
+    const serviciosContainer = document.getElementById('servicios-container');
+    const agregarServicioBtn = document.getElementById('agregar-servicio');
+    const selectRayosX = document.getElementById('selectRayosX');
+    const btnAgregarSeleccionado = document.getElementById('btnAgregarSeleccionado');
+    const recibosSection = document.getElementById('recibos-pendientes-section');
+    const recibosLista = document.getElementById('recibos-lista');
+
+    // ========== INICIALIZACIÓN ==========
+    function init() {
         const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        document.getElementById('hora').value = `${hours}:${minutes}`;
-        
-        // Función de búsqueda simulada
-        document.querySelector('.search-container button').addEventListener('click', function() {
-            const searchTerm = document.getElementById('search').value;
-            if (searchTerm.trim() !== '') {
-                alert(`Buscando: "${searchTerm}"\n\n(Esta es una simulación. En una aplicación real, se conectaría a una base de datos)`);
+        fechaInput.valueAsDate = now;
+        horaInput.value = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        cargarCatalogoRayosX();
+        calcularTotal();
+    }
+
+    // ========== CARGA DEL CATÁLOGO DE RAYOS X ==========
+    async function cargarCatalogoRayosX() {
+        try {
+            const response = await fetch(`${API_BASE}${ENDPOINT_RAYOSX_CATALOGO}`);
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log('Catálogo de rayos X cargado:', data);
+            catalogoRayosX = data;
+            llenarSelectRayosX();
+        } catch (error) {
+            console.error('Error al cargar catálogo:', error);
+            mostrarAlerta('No se pudo cargar el catálogo de rayos X. Verifique la conexión con el backend.', 'error');
+        }
+    }
+
+    function llenarSelectRayosX() {
+        selectRayosX.innerHTML = '<option value="">-- Elegir --</option>';
+
+        if (!catalogoRayosX || catalogoRayosX.length === 0) {
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'No hay rayos X disponibles';
+            option.disabled = true;
+            selectRayosX.appendChild(option);
+            return;
+        }
+
+        catalogoRayosX.forEach(rayo => {
+            const option = document.createElement('option');
+            option.value = rayo.idRayosX;
+            const precio = (rayo.precioRayo && !isNaN(rayo.precioRayo)) ? rayo.precioRayo.toFixed(2) : '0.00';
+            option.textContent = `${rayo.nombreRayo} - $${precio}`;
+            option.dataset.precio = rayo.precioRayo || 0;
+            option.dataset.nombre = rayo.nombreRayo;
+            selectRayosX.appendChild(option);
+        });
+    }
+
+    // ========== FUNCIONES PARA SERVICIOS ADICIONALES ==========
+    // Ahora acepta un parámetro idRayo para almacenarlo en data-id
+    function agregarFilaServicio(descripcion = '', costo = 0, idRayo = '') {
+        const div = document.createElement('div');
+        div.className = 'form-row servicio-item';
+        div.dataset.index = servicioIndex;
+        if (idRayo) {
+            div.dataset.idRayo = idRayo;  // Guardamos el ID del rayos X
+        }
+        div.innerHTML = `
+            <div class="form-group" style="flex: 2;">
+                <input type="text" placeholder="Descripción" value="${descripcion.replace(/"/g, '&quot;')}" class="form-control descripcion-servicio">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <input type="number" step="0.01" placeholder="Costo" value="${costo}" class="form-control costo-servicio" oninput="calcularTotal()">
+            </div>
+            <div class="form-group" style="flex: 0 0 auto;">
+                <button type="button" class="btn-danger btn-sm" onclick="eliminarFilaServicio(this)"><i class="fas fa-trash"></i></button>
+            </div>
+        `;
+        serviciosContainer.appendChild(div);
+        servicioIndex++;
+        calcularTotal();
+    }
+
+    window.eliminarFilaServicio = function(btn) {
+        btn.closest('.servicio-item').remove();
+        calcularTotal();
+    };
+
+    function calcularTotal() {
+        const costoBase = parseFloat(costoBaseInput.value) || 0;
+        let suma = 0;
+        document.querySelectorAll('.costo-servicio').forEach(input => {
+            const valor = parseFloat(input.value);
+            if (!isNaN(valor)) {
+                suma += valor;
+            }
+        });
+        totalInput.value = (costoBase + suma).toFixed(2);
+    }
+
+    // ========== BÚSQUEDA DE CONSENTIMIENTO (CORREGIDA) ==========
+    btnBuscar.addEventListener('click', async () => {
+        const id = searchInput.value.trim();
+        if (!id) {
+            mostrarAlerta('Ingrese un ID de consentimiento', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE}${ENDPOINT_CONSENTIMIENTO}${id}`);
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
+            const data = await response.json();
+            console.log('Datos del consentimiento:', data);
+
+            // Asignar valores usando los campos planos del DTO
+            costoBaseInput.value = (data.precioTratamiento || 0).toFixed(2);
+            edadInput.value = data.edadPaciente || '';
+            pacienteNombre.value = data.nombrePaciente || '';
+            pacienteId.value = data.idPaciente || '';
+
+            consentimientoId = id;
+            idPacienteActual = data.idPaciente;
+
+            mostrarAlerta('Consentimiento cargado correctamente', 'success');
+            calcularTotal();
+
+            // Cargar recibos pendientes si hay paciente
+            if (idPacienteActual) {
+                cargarRecibosPendientes(idPacienteActual);
             } else {
-                alert('Por favor, ingrese un término de búsqueda');
+                recibosSection.style.display = 'none';
+            }
+        } catch (error) {
+            mostrarAlerta('Error al cargar consentimiento: ' + error.message, 'error');
+            costoBaseInput.value = '0.00';
+            edadInput.value = '';
+            pacienteNombre.value = '';
+            pacienteId.value = '';
+            idPacienteActual = null;
+            recibosSection.style.display = 'none';
+        }
+    });
+
+    // ========== RECIBOS PENDIENTES ==========
+    async function cargarRecibosPendientes(pacienteId) {
+        if (!pacienteId) return;
+        try {
+            const response = await fetch(`${API_BASE}${ENDPOINT_RECIBOS_PENDIENTES}${pacienteId}`);
+            if (!response.ok) {
+                throw new Error('Error al cargar recibos');
+            }
+            const recibos = await response.json();
+            if (recibos.length > 0) {
+                recibosLista.innerHTML = recibos.map(recibo => `
+                    <div class="recibo-item">
+                        <span>
+                            <strong>Recibo #${recibo.idRecibo}</strong> - 
+                            Monto: $${recibo.montoTotal.toFixed(2)} - 
+                            Fecha: ${new Date(recibo.fechaEmision).toLocaleDateString()}
+                        </span>
+                        <button class="btn-sm btn-primary" onclick="pagarRecibo(${recibo.idRecibo})">
+                            <i class="fas fa-credit-card"></i> Pagar
+                        </button>
+                    </div>
+                `).join('');
+                recibosSection.style.display = 'block';
+            } else {
+                recibosLista.innerHTML = '<p>No hay recibos pendientes.</p>';
+                recibosSection.style.display = 'block';
+            }
+        } catch (error) {
+            console.error(error);
+            mostrarAlerta('Error al cargar recibos pendientes', 'error');
+        }
+    }
+
+    window.pagarRecibo = async function(idRecibo) {
+        try {
+            const response = await fetch(`${API_BASE}${ENDPOINT_PAGAR_RECIBO}${idRecibo}/pagar`, {
+                method: 'PUT'
+            });
+            if (!response.ok) {
+                throw new Error('Error al pagar el recibo');
+            }
+            const reciboActualizado = await response.json();
+            mostrarAlerta(`Recibo #${idRecibo} pagado con éxito`, 'success');
+            if (idPacienteActual) {
+                cargarRecibosPendientes(idPacienteActual);
+            }
+        } catch (error) {
+            mostrarAlerta('Error al pagar: ' + error.message, 'error');
+        }
+    };
+
+    // ========== GUARDAR SEGUIMIENTO (AHORA RECOLECTA IDs) ==========
+    btnGuardar.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        if (!consentimientoId) {
+            mostrarAlerta('Debe buscar un consentimiento primero', 'error');
+            return;
+        }
+
+        // Recolectar IDs de rayos X de las filas que tengan data-id-rayo
+        const idsRayosX = [];
+        document.querySelectorAll('.servicio-item').forEach(item => {
+            const idRayo = item.dataset.idRayo;
+            if (idRayo) {
+                idsRayosX.push(parseInt(idRayo));
             }
         });
-        
-        // Permitir búsqueda con Enter
-        document.getElementById('search').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.querySelector('.search-container button').click();
+
+        const seguimientoDTO = {
+            idConsentimiento: parseInt(consentimientoId),
+            presionArterial: presionInput.value,
+            frecuenciaCardiaca: frecuenciaCardiaca.value,
+            frecuenciaRespiratoria: frecuenciaRespiratoria.value,
+            temperatura: temperatura.value,
+            saturacionOxigeno: saturacionOxigeno.value,
+            peso: peso.value,
+            subjetivo: subjetivoInput.value,
+            objetivo: objetivoInput.value,
+            analisis: analisis.value,
+            planAccion: planAccion.value,
+            idsRayosX: idsRayosX
+        };
+
+        console.log('Enviando DTO:', seguimientoDTO);
+
+        try {
+            const response = await fetch(`${API_BASE}${ENDPOINT_SEGUIMIENTO_CREAR}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(seguimientoDTO)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error ${response.status}: ${errorText}`);
+            }
+
+            const recibo = await response.json();
+            mostrarAlerta(`Seguimiento guardado. Recibo ID: ${recibo.idRecibo} - Total: $${recibo.montoTotal.toFixed(2)}`, 'success');
+            // Opcional: limpiar el formulario
+            // btnLimpiar.click();
+        } catch (error) {
+            mostrarAlerta('Error al guardar: ' + error.message, 'error');
+        }
+    });
+
+    // ========== FUNCIONES AUXILIARES ==========
+    function mostrarAlerta(mensaje, tipo) {
+        alertDiv.textContent = mensaje;
+        alertDiv.className = `alert alert-${tipo}`;
+        alertDiv.style.display = 'block';
+        setTimeout(() => {
+            alertDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    // ========== EVENTOS ADICIONALES ==========
+    agregarServicioBtn.addEventListener('click', () => agregarFilaServicio()); // Servicio manual sin ID
+
+    btnAgregarSeleccionado.addEventListener('click', () => {
+        const selected = selectRayosX.options[selectRayosX.selectedIndex];
+        if (selected.value) {
+            const idRayo = selected.value;
+            const nombre = selected.dataset.nombre || selected.textContent.split(' - ')[0];
+            const precio = parseFloat(selected.dataset.precio) || 0;
+            agregarFilaServicio(nombre, precio, idRayo);  // Pasamos el ID
+        } else {
+            mostrarAlerta('Seleccione un rayos X del catálogo', 'error');
+        }
+    });
+
+    btnLimpiar.addEventListener('click', () => {
+        document.querySelectorAll('input:not([type="date"]):not([type="time"]):not([readonly]), textarea').forEach(input => {
+            if (input.id !== 'fecha' && input.id !== 'hora') {
+                input.value = '';
             }
         });
-    </script>
+        serviciosContainer.innerHTML = '';
+        servicioIndex = 0;
+        const now = new Date();
+        fechaInput.valueAsDate = now;
+        horaInput.value = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        costoBaseInput.value = '0.00';
+        edadInput.value = '';
+        pacienteNombre.value = '';
+        pacienteId.value = '';  
+        idPacienteActual = null;
+        consentimientoId = null;
+        recibosSection.style.display = 'none';
+        calcularTotal();
+    });
+
+    btnImprimir.addEventListener('click', () => window.print());
+
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') btnBuscar.click();
+    });
+
+    // Inicializar
+    init();
+</script>
 </body>
 </html>

@@ -26,6 +26,14 @@ public class Consentimiento {
     @JoinColumn(name = "id_docente", nullable = false)
     private Docente docente;
 
+    @ManyToOne
+    @JoinColumn(name = "id_tratamiento", nullable = false)
+    private Tratamiento tratamiento;
+
+    @ManyToOne
+    @JoinColumn(name = "id_estudiante", nullable = false)
+    private Estudiante estudiante;
+
     @Column(name = "explicacion", columnDefinition = "TEXT")
     private String explicacion;
 

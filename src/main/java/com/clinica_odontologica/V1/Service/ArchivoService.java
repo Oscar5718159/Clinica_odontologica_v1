@@ -18,4 +18,8 @@ public interface ArchivoService {
     
     // ✅ Verificar si paciente tiene archivo
     boolean pacienteTieneArchivo(Long idPaciente);
+
+
+    Optional<Archivo> findArchivoByPacienteId(Long idPaciente);
+
 }

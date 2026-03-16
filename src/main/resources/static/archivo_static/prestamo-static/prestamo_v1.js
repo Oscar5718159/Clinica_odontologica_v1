@@ -43,26 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const headerHistoria = document.getElementById('headerHistoria');
     const headerCI = document.getElementById('headerCI');
     
-    // ===== MODIFICAR INTERFAZ PARA AÑADIR BOTÓN DE ARCHIVOS =====
-    function modificarInterfaz() {
-        const searchForm = document.querySelector('.search-form');
-        
-        const archivoBtn = document.createElement('div');
-        archivoBtn.className = 'form-group';
-        archivoBtn.innerHTML = `
-            <button type="button" class="search-btn secondary" id="btnBuscarArchivos">
-                <i class="fas fa-folder-open"></i> BUSCAR ARCHIVOS EXISTENTES
-            </button>
-        `;
-        
-        searchForm.appendChild(archivoBtn);
-        
-        // Event listener para el nuevo botón
-        document.getElementById('btnBuscarArchivos').addEventListener('click', buscarArchivos);
-    }
-    
-    // Llamar a la función para modificar la interfaz
-    modificarInterfaz();
+
     
     // ===== BÚSQUEDA DE PACIENTES =====
     async function buscarPacientes() {

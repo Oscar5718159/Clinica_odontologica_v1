@@ -192,4 +192,13 @@ public class ArchivoController {
         }
         return response;
     }
+
+
+
+    @GetMapping("/paciente/{idPaciente}")
+    public ResponseEntity<Archivo> getArchivoByPacienteId(@PathVariable Long idPaciente) {
+        Optional<Archivo> archivo = archivoService.findArchivoByPacienteId(idPaciente);
+        return archivo.map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+    }
 }

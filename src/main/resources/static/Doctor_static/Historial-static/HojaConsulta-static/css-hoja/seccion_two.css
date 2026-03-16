@@ -1,0 +1,96 @@
+#section-2{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+}
+
+.container-gen-3{
+    display: grid;
+    grid-template-columns:repeat(4,1fr);
+    border: 1.3px solid black;
+    height: 105px;
+    width: 100%;
+}
+
+.cont-fr{
+    display: grid;
+    grid-template-rows: repeat(3,1fr);
+    height: 100%;
+}
+
+.fr-ins{
+    display: grid;
+    grid-template-rows: repeat(2,1fr);
+}
+
+.div{
+    display: flex;
+    text-align: center;
+    justify-content:center;
+    align-items: center;
+    justify-items: end;
+}
+
+.text-con2{
+    font-weight: 700;
+}
+
+.cont-dat2{
+    height: 110%;
+    width: 85%;
+    border-bottom: 1.2px dashed black;
+    display: flex;
+    justify-content: center;
+
+}
+
+.inf-ext{
+    display: grid;
+    grid-template-rows: repeat(2,1fr);
+    height: 50px;
+
+}
+
+.inf-pers{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    height: 80%;
+}
+
+.inf-cont{
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+}
+
+.dat-inf{
+    width: 100%;
+    text-align: center;
+    display: grid;
+    height: 100%;
+}
+
+.ins-con2{
+    border-bottom: 1.3px solid black;
+    height: 70%;
+    width: 50%;    
+}
+
+.ins-inf2{
+    border-bottom:2px dashed black ;
+    height: 105%;
+    width: 80%;
+}
+.sub-dat{
+    justify-items: center;
+    width: 100%;
+}
+#body-two{
+    margin: 0;
+    border: 0;
+    padding: 0px;
+}
+
+
+.texto-autocompletado {
+    font-size: 10px;
+}

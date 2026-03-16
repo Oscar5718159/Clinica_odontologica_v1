@@ -18,10 +18,10 @@ public class TratamientoMedico {
     private Long idTratamientoMedico;
 
     @Column(name = "tratamiento_medico")
-    private Boolean tratamientoMedico;
+    private String tratamientoMedico;
 
     @Column(name = "recibe_algun_medicamento")
-    private Boolean recibeAlgunMedicamento;
+    private String recibeAlgunMedicamento;
 
     @Column(name = "tuvo_hemorragia_dental")
     private Boolean tuvoHemorragiaDental;

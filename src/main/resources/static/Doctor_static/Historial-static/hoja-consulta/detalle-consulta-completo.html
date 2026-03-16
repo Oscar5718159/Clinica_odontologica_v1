@@ -1,0 +1,329 @@
+<!-- detalle-consulta-completo.html -->
+<div class="detalle-consulta-wrapper">
+
+    <!-- Enlaces a los CSS (rutas absolutas desde la raíz de static) -->
+    <link rel="stylesheet" href="../HojaConsulta-static/css-hoja/seccion_uno.css">
+    <link rel="stylesheet" href="../HojaConsulta-static/css-hoja/seccion_two.css">
+    <link rel="stylesheet" href="../HojaConsulta-static/css-hoja/seccion_tree.css">
+    <link rel="stylesheet" href="../HojaConsulta-static/css-hoja/general_style.css">
+
+
+    <link rel="stylesheet" href="/Doctor_static/Historial-static/HojaConsulta-static/css-hoja/seccion_uno.css">
+    <link rel="stylesheet" href="/Doctor_static/Historial-static/HojaConsulta-static/css-hoja/seccion_two.css">
+    <link rel="stylesheet" href="/Doctor_static/Historial-static/HojaConsulta-static/css-hoja/seccion_tree.css">
+    <link rel="stylesheet" href="/Doctor_static/Historial-static/HojaConsulta-static/css-hoja/general_style.css">
+
+    <!-- SECCIÓN 1 (con IDs agregados) -->
+    <section id="seccion-1">
+        <div class="distribucion_tres">
+            <div class="elem-uno-sec1" id="img-logo1"></div>
+            <div class="elem-uno-sec1" id="col-eus1-2">
+                <div class="sec-tit sec_mat">
+                    <div class="datos-mat dist_datos">
+                        <div class="datos-cont">
+                            nro de Expediente clinico: <span id="detalle-expediente"></span>
+                        </div>
+                        <div class="datos-cont">
+                            nro de Historial clinico: <span id="detalle-historia"></span>
+                        </div>
+                        <div class="datos-cont">
+                            C.I.: <span id="detalle-ci"></span>
+                        </div>
+                    </div>
+                    <div class="datos-mat" id="mat_mat">
+                        <div class="contenedor-matriz">
+                            <!-- Matriz de dientes (estática) -->
+                            <div class="fila">
+                                <div class="celda">1</div><div class="celda">2</div><div class="celda">3</div>
+                                <div class="celda">4</div><div class="celda">5</div><div class="celda">6</div>
+                                <div class="celda">7</div><div class="celda">8</div><div class="celda">9</div>
+                            </div>
+                            <div class="fila">
+                                <div class="celda">10</div><div class="celda">11</div><div class="celda">12</div>
+                                <div class="celda">13</div><div class="celda">14</div><div class="celda">15</div>
+                                <div class="celda">16</div><div class="celda">17</div><div class="celda">18</div>
+                            </div>
+                            <div class="fila">
+                                <div class="celda">19</div><div class="celda">20</div><div class="celda">21</div>
+                                <div class="celda">22</div><div class="celda">23</div><div class="celda">24</div>
+                                <div class="celda">25</div><div class="celda">26</div><div class="celda">27</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sec-tit sec_titulo">
+                    <h1 class="titulo-hist">HISTORIA CLINICA ODONTOLOGICA U.A.P.</h1>
+                </div>
+            </div>
+            <div class="elem-uno-sec1"></div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 2 (datos del paciente y del informante) -->
+    <section id="section-2">
+        <div class="container-gen-3">
+            <!-- Primera columna -->
+            <div class="cont-fr">
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-nombre-paciente"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2">Nombre</p>
+                    </div>
+                </div>
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-lugar-fecha-nacimiento"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2">Lugar y Fecha de Nacimiento</p>
+                    </div>
+                </div>
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-grado-instruccion"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2 texto-autocompletado">Grado de Instrucción .....</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Segunda columna -->
+            <div class="cont-fr">
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-apellido-paterno"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2 texto-autocompletado">Apellido Paterno</p>
+                    </div>
+                </div>
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-ocupacion"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2 texto-autocompletado">Ocupación</p>
+                    </div>
+                </div>
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-estado-civil"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2 texto-autocompletado">Estado Civil</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Tercera columna -->
+            <div class="cont-fr">
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-apellido-materno"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2 texto-autocompletado">Apellido Materno</p>
+                    </div>
+                </div>
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-direccion"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2 texto-autocompletado">Dirección</p>
+                    </div>
+                </div>
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-naciones-originarias"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2 texto-autocompletado">Naciones Originarias</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Cuarta columna -->
+            <div class="cont-fr">
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-edad-sexo"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2 texto-autocompletado">edad sexo</p>
+                    </div>
+                </div>
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-telefono-celular"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2 texto-autocompletado">Telefono Celular</p>
+                    </div>
+                </div>
+                <div class="fr-ins">
+                    <div class="div">
+                        <div class="cont-dat2 texto-autocompletado" id="detalle-idioma"></div>
+                    </div>
+                    <div class="div">
+                        <p class="text-doc text-con2 texto-autocompletado">Idioma o Dialecto</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informante -->
+        <div class="inf-ext">
+            <div class="div-inf inf-pers">
+                <div class="dat-inf">
+                    <p class="text-doc text-con2 texto-autocompletado">persona que brinda la informacion:</p>
+                </div>
+                <div class="dat-inf">
+                    <div class="ins-con2" id="detalle-informante-relacion"></div>
+                </div>
+            </div>
+            <div class="div-inf inf-cont">
+                <div class="dat-inf">
+                    <div class="sub-dat">
+                        <div class="ins-inf2 texto-autocompletado" id="detalle-informante-apellido-paterno"></div>
+                    </div>
+                    <div class="sub-dat">
+                        <p class="text-doc text-con2 texto-autocompletado">Apellido Paterno</p>
+                    </div>
+                </div>
+                <div class="dat-inf">
+                    <div class="sub-dat">
+                        <div class="ins-inf2 texto-autocompletado" id="detalle-informante-apellido-materno"></div>
+                    </div>
+                    <div class="sub-dat">
+                        <p class="text-doc text-con2 texto-autocompletado">Apellido Materno</p>
+                    </div>
+                </div>
+                <div class="dat-inf">
+                    <div class="sub-dat">
+                        <div class="ins-inf2 texto-autocompletado" id="detalle-informante-nombres"></div>
+                    </div>
+                    <div class="sub-dat">
+                        <p class="text-doc text-con2 texto-autocompletado">Nombre</p>
+                    </div>
+                </div>
+                <div class="dat-inf">
+                    <div class="sub-dat">
+                        <div class="ins-inf2 texto-autocompletado" id="detalle-informante-direccion"></div>
+                    </div>
+                    <div class="sub-dat">
+                        <p class="text-doc text-con2 texto-autocompletado">Dirección</p>
+                    </div>
+                </div>
+                <div class="dat-inf">
+                    <div class="sub-dat">
+                        <div class="ins-inf2 texto-autocompletado" id="detalle-informante-telefono"></div>
+                    </div>
+                    <div class="sub-dat">
+                        <p class="text-doc text-con2 texto-autocompletado">Telefono</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 3 (antecedentes patológicos, alergias, etc.) -->
+    <section class="section-tree">
+        <div class="cont-dat3">
+            <div class="pr-dat3">
+                <p class="text-doc text-sec3">Antecedentes Patologicos Familiares:</p>
+            </div>
+            <div class="pr-dat3" id="detalle-antecedentes-familiares"></div>
+        </div>
+        <div class="cont-dat3 cont-dmed3">
+            <div class="prm-dt3">
+                <div class="dat-pfil3">
+                    <p class="text-doc text-sec3">Antecedentes Patologicos Personales:</p>
+                </div>
+                <div class="dat-pfil3 texto-autocompletado" id="detalle-antecedentes-personales"></div>
+            </div>
+            <!-- Checkboxes de patologías (usamos los divs con clase selec-dat3 para mostrar Sí/No) -->
+            <div class="seg-dat3">
+                <!-- Anemia y Asma -->
+                <div class="dat-int3">
+                    <div class="cont-dcont3">
+                        <div class="inf-dat3"><div class="cont-etq"><p class="text-doc text-sec3">Anemia</p></div></div>
+                        <div class="inf-dat3 lad-selec"><div class="selec-dat3 texto-autocompletado" id="detalle-anemia"></div></div>
+                    </div>
+                    <div class="cont-dcont3">
+                        <div class="inf-dat3"><div class="cont-etq"><p class="text-doc text-sec3">Asma</p></div></div>
+                        <div class="inf-dat3 lad-selec"><div class="selec-dat3 texto-autocompletado" id="detalle-asma"></div></div>
+                    </div>
+                </div>
+                <!-- Cardiopatias y Diabetes -->
+                <div class="dat-int3">
+                    <div class="cont-dcont3">
+                        <div class="inf-dat3"><div class="cont-etq"><p class="text-doc text-sec3">Cardiopatias</p></div></div>
+                        <div class="inf-dat3 lad-selec"><div class="selec-dat3 texto-autocompletado" id="detalle-cardiopatias"></div></div>
+                    </div>
+                    <div class="cont-dcont3">
+                        <div class="inf-dat3"><div class="cont-etq"><p class="text-doc text-sec3">Diabetes Mel.</p></div></div>
+                        <div class="inf-dat3 lad-selec"><div class="selec-dat3 texto-autocompletado" id="detalle-diabetes"></div></div>
+                    </div>
+                </div>
+                <!-- Enf.Gastricas y Epilepsia -->
+                <div class="dat-int3">
+                    <div class="cont-dcont3">
+                        <div class="inf-dat3"><div class="cont-etq"><p class="text-doc text-sec3">Enf.Gastricas</p></div></div>
+                        <div class="inf-dat3 lad-selec"><div class="selec-dat3 texto-autocompletado" id="detalle-gastricas"></div></div>
+                    </div>
+                    <div class="cont-dcont3">
+                        <div class="inf-dat3"><div class="cont-etq"><p class="text-doc text-sec3">Epilepsia</p></div></div>
+                        <div class="inf-dat3 lad-selec"><div class="selec-dat3 texto-autocompletado" id="detalle-epilepsia"></div></div>
+                    </div>
+                </div>
+                <!-- Hepatitis e Hipertensión -->
+                <div class="dat-int3">
+                    <div class="cont-dcont3">
+                        <div class="inf-dat3"><div class="cont-etq"><p class="text-doc text-sec3">Hepatitis</p></div></div>
+                        <div class="inf-dat3 lad-selec"><div class="selec-dat3 texto-autocompletado" id="detalle-hepatitis"></div></div>
+                    </div>
+                    <div class="cont-dcont3">
+                        <div class="inf-dat3"><div class="cont-etq"><p class="text-doc text-sec3">Hipertension</p></div></div>
+                        <div class="inf-dat3 lad-selec"><div class="selec-dat3 texto-autocompletado" id="detalle-hipertension"></div></div>
+                    </div>
+                </div>
+                <!-- Tuberculosis y VIH -->
+                <div class="dat-int3">
+                    <div class="cont-dcont3">
+                        <div class="inf-dat3"><div class="cont-etq"><p class="text-doc text-sec3">Tuberculosis</p></div></div>
+                        <div class="inf-dat3 lad-selec"><div class="selec-dat3 texto-autocompletado" id="detalle-tuberculosis"></div></div>
+                    </div>
+                    <div class="cont-dcont3">
+                        <div class="inf-dat3"><div class="cont-etq"><p class="text-doc text-sec3">VIH</p></div></div>
+                        <div class="inf-dat3 lad-selec"><div class="selec-dat3 texto-autocompletado" id="detalle-vih"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parte inferior: Otros, Ninguno, Alergias, Embarazo, Semanas -->
+        <div class="cont-dat3 ult-cont3">
+            <div class="ult-dat3">
+                <div><p class="text-doc text-sec3">Otros:</p></div>
+                <div class="insert-dt3" id="detalle-otros"></div>
+            </div>
+            <div class="ult-dat3">
+                <div><p class="text-doc text-sec3">Ninguno:</p></div>
+                <div class="insert-dt3" id="detalle-ninguno"></div>
+            </div>
+            <div class="ult-dat3">
+                <div><p class="text-doc text-sec3">Alergias:SI().modificar.()NO</p></div>
+                <div class="insert-dt3 texto-autocompletado" id="detalle-alergias"></div>
+            </div>
+            <div class="ult-dat3">
+                <div><p class="text-doc text-sec3">Embarazo:SI ()</p></div>
+                <div class="insert-dt3 texto-autocompletado" id="detalle-embarazo"></div>
+            </div>
+            <div class="ult-dat3">
+                <div><p class="text-doc text-sec3">Semanas:.modificar.</p></div>
+                <div class="insert-dt3 texto-autocompletado" id="detalle-semanas-embarazo"></div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -31,6 +31,15 @@ public class DoctorViewController {
         return "doctor/doctor";
     }   
     
+
+
+    @GetMapping("/prestamo/prestamo-vista")
+    public String mostrarRegistro() {
+        return "doctor/prestamo/prestamo-vista"; 
+    }
+
+
+
     @GetMapping("/historial_clinico/historial_clinico_ENPROCESO")
     public String mostrarDoctor() {
         return "doctor/historial_clinico/historial_clinico_ENPROCESO"; 
@@ -90,5 +99,20 @@ public class DoctorViewController {
         model.addAttribute("prestamosDevueltos", prestamosDevueltos);
         
         return "doctor/desbloqueoEstudiante/desbloqueo";
+    }
+
+
+
+
+
+    @GetMapping("/Registro-Estudiante/estudiante-vista")
+    public String mostrarRegistroEstudiante() {
+        return "doctor/Registro-Estudiante/estudiante-vista";
+    }
+
+
+    @GetMapping("/Archivo/archivo-vista")
+    public String mostrarArchivoVista() {
+        return "doctor/Archivo/archivo-vista";
     }
 }

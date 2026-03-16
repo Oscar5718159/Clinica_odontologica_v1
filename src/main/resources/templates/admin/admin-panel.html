@@ -44,15 +44,13 @@
                 <i class="fas fa-history"></i>
                 <span class="menu-text">Historial Clínico</span>
             </li>
-            <li>
+            <li onclick="loadPage('/admin/tipos-tratamiento/vista-tipo', 'Tipo Tratamiento', 'tipoTratamientoFrame', this)">
                 <i class="fas fa-edit"></i>
-                <span class="menu-text">Forms</span>
-                <span class="badge">45</span>
+                <span class="menu-text">Tipo Tratamiento</span>
             </li>
-            <li>
+            <li onclick="loadPage('/admin/tratamientos/formulario', 'Tratamientos', 'tratamientosFrame', this)">
                 <i class="fas fa-table"></i>
-                <span class="menu-text">Tables</span>
-                <span class="badge">35</span>
+                <span class="menu-text">Tratamientos</span>
             </li>
             <li>
                 <i class="fas fa-chart-bar"></i>
@@ -294,6 +292,18 @@
         <div id="solicitudInsumosContent" class="content-area">
             <iframe id="solicitudInsumosFrame" src="about:blank"></iframe>
         </div>
+
+
+        <!-- Contenido de Tipo Tratamiento -->
+        <div id="tipoTratamientoContent" class="content-area">
+            <iframe id="tipoTratamientoFrame" src="about:blank"></iframe>
+        </div>
+
+        <!-- Contenido de Tratamientos -->
+        <div id="tratamientosContent" class="content-area">
+            <iframe id="tratamientosFrame" src="about:blank"></iframe>
+        </div>
+        
     </div>
 
     <script>
@@ -338,6 +348,10 @@
                 document.getElementById('nuevoPacienteContent').classList.add('active');
             } else if (frameId === 'solicitudInsumosFrame') {
                 document.getElementById('solicitudInsumosContent').classList.add('active');
+            } else if (frameId === 'tipoTratamientoFrame') {
+                document.getElementById('tipoTratamientoContent').classList.add('active');
+            } else if (frameId === 'tratamientosFrame') {
+                document.getElementById('tratamientosContent').classList.add('active');
             }
             
             // Activar el item del menú clickeado
