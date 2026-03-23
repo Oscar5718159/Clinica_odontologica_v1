@@ -8,12 +8,19 @@ import com.clinica_odontologica.V1.Service.ConsultaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import com.clinica_odontologica.V1.Model.Dto.ConsultaConFotosDTO;
 
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 @Service
 public class ConsultaServiceImpl implements ConsultaService {
 
@@ -26,6 +33,8 @@ public class ConsultaServiceImpl implements ConsultaService {
     @Autowired
     private EstudianteRepository estudianteRepository;
 
+    @Autowired
+    private OdontogramaFotoRepository odontogramaFotoRepository;
     @Override
     public List<Consulta> obtenerTodos() {
         return consultaRepository.findAll();
@@ -195,6 +204,8 @@ public class ConsultaServiceImpl implements ConsultaService {
                 System.out.println("🔄 Mapeando consulta ID: " + consulta.getIdConsulta());
                 
                 // Datos básicos de la consulta
+
+                dto.setIdConsulta(consulta.getIdConsulta());
                 dto.setFecha(consulta.getFecha());
                 dto.setObservaciones(consulta.getObservaciones());
                 dto.setIdPaciente(consulta.getPaciente().getIdPaciente());
@@ -296,4 +307,142 @@ public class ConsultaServiceImpl implements ConsultaService {
             throw new RuntimeException("Error al obtener consultas completas: " + e.getMessage(), e);
         }
     } 
+
+
+    @Override
+    public Consulta guardarConsultaConFotos(ConsultaConFotosDTO dto) throws IOException {
+        // 1. Convertir DTO a entidad Consulta (usando la misma lógica de guardarConsultaCompleta)
+        Consulta consulta = convertirDTOaEntidad(dto); // Necesitas implementar este método
+        consulta = consultaRepository.save(consulta);
+
+        // 2. Procesar las fotos
+        MultipartFile[] fotos = dto.getOdontogramaFotos();
+        if (fotos != null) {
+            for (MultipartFile foto : fotos) {
+                if (!foto.isEmpty()) {
+                    // Validar que sea imagen (opcional)
+                    String contentType = foto.getContentType();
+                    if (contentType == null || !contentType.startsWith("image/")) {
+                        throw new IllegalArgumentException("Solo se permiten archivos de imagen");
+                    }
+
+                    // Generar nombre único
+                    String nombreOriginal = foto.getOriginalFilename();
+                    String extension = "";
+                    if (nombreOriginal != null && nombreOriginal.contains(".")) {
+                        extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
+                    }
+                    String nombreArchivo = UUID.randomUUID().toString() + extension;
+
+                    // Definir directorio de destino (ajusta según tu entorno)
+                    Path directorio = Paths.get("uploads/odontograma/");
+                    if (!Files.exists(directorio)) {
+                        Files.createDirectories(directorio);
+                    }
+                    Path rutaCompleta = directorio.resolve(nombreArchivo);
+                    Files.copy(foto.getInputStream(), rutaCompleta, StandardCopyOption.REPLACE_EXISTING);
+
+                    // Crear entidad OdontogramaFoto
+                    OdontogramaFoto fotoEntidad = new OdontogramaFoto();
+                    fotoEntidad.setConsulta(consulta);
+                    fotoEntidad.setRutaArchivo("/uploads/odontograma/" + nombreArchivo); // Ruta pública
+                    fotoEntidad.setNombreOriginal(nombreOriginal);
+                    fotoEntidad.setTipoContenido(contentType);
+                    fotoEntidad.setTamano(foto.getSize());
+
+                    odontogramaFotoRepository.save(fotoEntidad);
+                }
+            }
+        }
+
+        return consulta;
+    }
+    private Consulta convertirDTOaEntidad(ConsultaCompletaDTO dto) {
+        // 1. Obtener Paciente y Estudiante (deben existir previamente)
+        Paciente paciente = pacienteRepository.findById(dto.getIdPaciente())
+            .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        Estudiante estudiante = estudianteRepository.findById(dto.getIdEstudiante())
+            .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+
+        // 2. Crear Informante
+        Informante informante = new Informante();
+        informante.setNombres(dto.getInformanteNombres());
+        informante.setApellidoPaterno(dto.getInformanteApellidoPaterno());
+        informante.setApellidoMaterno(dto.getInformanteApellidoMaterno());
+        informante.setDireccion(dto.getInformanteDireccion());
+        informante.setTelefono(dto.getInformanteTelefono());
+
+        // 3. Crear PatologiaPersonal
+        PatologiaPersonal patologiaPersonal = new PatologiaPersonal();
+        patologiaPersonal.setAnemia(dto.getAnemia());
+        patologiaPersonal.setCardiopatias(dto.getCardiopatias());
+        patologiaPersonal.setEnfGastricos(dto.getEnfGastricos());
+        patologiaPersonal.setHepatitis(dto.getHepatitis());
+        patologiaPersonal.setTuberculosis(dto.getTuberculosis());
+        patologiaPersonal.setAsma(dto.getAsma());
+        patologiaPersonal.setDiabetesMel(dto.getDiabetesMel());
+        patologiaPersonal.setEpilepsia(dto.getEpilepsia());
+        patologiaPersonal.setHipertension(dto.getHipertension());
+        patologiaPersonal.setOtros(dto.getOtros());
+        patologiaPersonal.setNinguno(dto.getNinguno());
+        patologiaPersonal.setAlergias(dto.getAlergias());
+        patologiaPersonal.setEmbarazo(dto.getEmbarazo());
+        patologiaPersonal.setSemanaEmbarazo(dto.getSemanaEmbarazo());
+
+        // 4. Crear TratamientoMedico
+        TratamientoMedico tratamientoMedico = new TratamientoMedico();
+        tratamientoMedico.setTratamientoMedico(dto.getTratamientoMedico());
+        tratamientoMedico.setRecibeAlgunMedicamento(dto.getRecibeAlgunMedicamento());
+        tratamientoMedico.setTuvoHemorragiaDental(dto.getTuvoHemorragiaDental());
+        tratamientoMedico.setEspecifiqueHemorragia(dto.getEspecifiqueHemorragia());
+
+        // 5. Crear ExamenExtraOral
+        ExamenExtraOral examenExtraOral = new ExamenExtraOral();
+        examenExtraOral.setAtm(dto.getAtm());
+        examenExtraOral.setGangliosLinfaticos(dto.getGangliosLinfaticos());
+        examenExtraOral.setRespirador(dto.getRespirador());
+
+        // 6. Crear ExamenIntraOral
+        ExamenIntraOral examenIntraOral = new ExamenIntraOral();
+        examenIntraOral.setLabios(dto.getLabios());
+        examenIntraOral.setLengua(dto.getLengua());
+        examenIntraOral.setPaladar(dto.getPaladar());
+        examenIntraOral.setPisoDeLaBoca(dto.getPisoDeLaBoca());
+        examenIntraOral.setMucosaYugal(dto.getMucosaYugal());
+        examenIntraOral.setEncias(dto.getEncias());
+        examenIntraOral.setUtilizaProtesisDental(dto.getUtilizaProtesisDental());
+
+        // 7. Crear AntecedentesBucodentales
+        AntecedentesBucodentales antecedentesBucodentales = new AntecedentesBucodentales();
+        antecedentesBucodentales.setFechaRevision(dto.getFechaRevision());
+        antecedentesBucodentales.setFuma(dto.getHabitoFuma());
+        antecedentesBucodentales.setBebe(dto.getHabitoBebe());
+        antecedentesBucodentales.setOtrosHabitos(dto.getOtrosHabitos());
+
+        // 8. Crear AntecedentesHigieneOral
+        AntecedentesHigieneOral antecedentesHigieneOral = new AntecedentesHigieneOral();
+        antecedentesHigieneOral.setUtilizaCepilloDental(dto.getUtilizaCepilloDental());
+        antecedentesHigieneOral.setUtilizaHiloDental(dto.getUtilizaHiloDental());
+        antecedentesHigieneOral.setUtilizaEnjuagueBucal(dto.getUtilizaEnjuagueBucal());
+        antecedentesHigieneOral.setFrecuenciaCepillo(dto.getFrecuenciaCepillo());
+        String duranteElCepillado = Boolean.TRUE.equals(dto.getSangradoEncias()) ? "Sangrado de encías" : "Sin sangrado";
+        antecedentesHigieneOral.setDuranteElCepillado(duranteElCepillado);
+        antecedentesHigieneOral.setHigieneBucal(dto.getHigieneBucal());
+
+        // 9. Crear la Consulta principal (sin guardar)
+        Consulta consulta = new Consulta();
+        consulta.setFecha(dto.getFecha());
+        consulta.setObservaciones(dto.getObservaciones());
+        consulta.setPaciente(paciente);
+        consulta.setEstudiante(estudiante);
+        consulta.setInformante(informante);
+        consulta.setPatologiaPersonal(patologiaPersonal);
+        consulta.setTratamientoMedico(tratamientoMedico);
+        consulta.setExamenExtraOral(examenExtraOral);
+        consulta.setExamenIntraOral(examenIntraOral);
+        consulta.setAntecedentesBucodentales(antecedentesBucodentales);
+        consulta.setAntecedentesHigieneOral(antecedentesHigieneOral);
+
+        return consulta;
+    }
 }

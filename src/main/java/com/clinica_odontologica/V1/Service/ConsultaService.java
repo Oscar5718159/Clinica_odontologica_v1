@@ -4,6 +4,8 @@ import com.clinica_odontologica.V1.Model.Entity.Consulta;
 import com.clinica_odontologica.V1.Model.Dto.ConsultaCompletaDTO;
 import java.time.LocalDate;
 import java.util.List;
+import java.io.IOException;
+import com.clinica_odontologica.V1.Model.Dto.ConsultaConFotosDTO;
 import java.util.Optional;
 
 public interface ConsultaService {
@@ -31,4 +33,6 @@ public interface ConsultaService {
     
     Optional<Consulta> obtenerConsultaCompleta(Long idConsulta);
     List<ConsultaCompletaDTO> obtenerConsultasCompletasPorPaciente(Long idPaciente);
+
+    Consulta guardarConsultaConFotos(ConsultaConFotosDTO dto) throws IOException;
 }

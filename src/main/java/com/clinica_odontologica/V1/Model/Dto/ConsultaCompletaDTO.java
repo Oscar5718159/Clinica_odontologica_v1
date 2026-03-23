@@ -5,6 +5,8 @@ import java.time.LocalDate;
 public class ConsultaCompletaDTO {
     
     // Datos básicos de la consulta
+
+    private Long idConsulta; 
     private LocalDate fecha;
     private String observaciones;
     
@@ -73,7 +75,17 @@ public class ConsultaCompletaDTO {
     private String higieneBucal;
     private String observacionesHigiene;
 
+
     // Getters y Setters (generar todos)
+    public Long getIdConsulta() {
+        return idConsulta;
+    }
+
+    public void setIdConsulta(Long idConsulta) {
+        this.idConsulta = idConsulta;
+    }
+
+
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
     

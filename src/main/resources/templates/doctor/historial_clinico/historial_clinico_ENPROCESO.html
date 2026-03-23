@@ -1146,6 +1146,31 @@ async function mostrarDetalleConsulta(consulta) {
         setText('#detalle-informante-apellido-materno', getValor(consulta.informanteApellidoMaterno));
         setText('#detalle-informante-direccion', getValor(consulta.informanteDireccion));
         setText('#detalle-informante-telefono', getValor(consulta.informanteTelefono));
+        const fotosResponse = await fetch(`/api/odontograma-fotos/consulta/${consulta.idConsulta}`);
+        if (fotosResponse.ok) {
+            const fotos = await fotosResponse.json();
+            const contenedorFotos = tempDiv.querySelector('#contenedor-fotos-odontograma');
+            if (contenedorFotos) {
+                contenedorFotos.innerHTML = ''; // Limpiar
+                if (fotos.length === 0) {
+                    contenedorFotos.innerHTML = '<p>No hay fotos en esta consulta.</p>';
+                } else {
+                    fotos.forEach(foto => {
+                        const img = document.createElement('img');
+                        img.src = foto.rutaArchivo; // Ej: "/uploads/odontograma/uuid.jpg"
+                        img.alt = foto.nombreOriginal;
+                        img.style.width = '150px';
+                        img.style.height = '150px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '8px';
+                        img.style.border = '1px solid #ccc';
+                        img.style.cursor = 'pointer';
+                        img.onclick = () => window.open(img.src, '_blank'); // Abrir en nueva pestaña
+                        contenedorFotos.appendChild(img);
+                    });
+                }
+            }
+        }
 
         // Insertar en el modal
         detalleConsultaContent.innerHTML = '';

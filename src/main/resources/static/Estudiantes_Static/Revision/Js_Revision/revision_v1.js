@@ -13,6 +13,34 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     await mostrarPacientePrestado();
 
+    // ===== PREVISUALIZACIÓN DE IMÁGENES DEL ODONTOGRAMA (NUEVO) =====
+    const odontogramaFotos = document.getElementById('odontogramaFotos');
+    const previsualizacion = document.getElementById('previsualizacionOdontograma');
+
+    if (odontogramaFotos) {
+        odontogramaFotos.addEventListener('change', function(e) {
+            previsualizacion.innerHTML = ''; // Limpiar
+            const archivos = Array.from(e.target.files);
+            
+            archivos.forEach(archivo => {
+                if (archivo.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        img.style.width = '100px';
+                        img.style.height = '100px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '5px';
+                        img.style.border = '1px solid #ccc';
+                        previsualizacion.appendChild(img);
+                    };
+                    reader.readAsDataURL(archivo);
+                }
+            });
+        });
+    }
+
     async function mostrarPacientePrestado() {
         try {
             // 1. Verificar qué tenemos en sessionStorage (frontend)
@@ -714,7 +742,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // ===== ENVÍO DEL FORMULARIO =====
+    // ===== ENVÍO DEL FORMULARIO CON FOTOS (MODIFICADO) =====
     document.getElementById('enviarFormulario').addEventListener('click', async function() {
         if (!validarFormularioCompleto()) {
             return;
@@ -737,115 +765,133 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
         
-        // ✅ CONSULTADATA COMPLETO Y CORREGIDO
-        const consultaData = {
-            // Datos básicos
-            fecha: new Date().toISOString().split('T')[0],
-            observaciones: document.getElementById('observacionesHigiene').value,
-            
-            // IDs
-            idPaciente: parseInt(idPaciente),
-            idEstudiante: parseInt(sessionStorage.getItem('idEstudiante')),
-            
-            // Informante
-            informanteNombres: document.getElementById('nombres_pesona').value,
-            informanteApellidoPaterno: document.getElementById('apellidoPaterno_persona').value,
-            informanteApellidoMaterno: document.getElementById('apellidoMaterno_persona').value,
-            informanteDireccion: document.getElementById('direccion_persona').value,
-            informanteTelefono: document.getElementById('telefono_persona').value,
-            
-            // ✅ PATOLOGIA PERSONAL - TODOS LOS BOOLEANOS
-            anemia: document.getElementById('anemia').checked,
-            cardiopatias: document.getElementById('cardiopatias').checked,
-            enfGastricos: document.getElementById('gastricas').checked,
-            hepatitis: document.getElementById('hepatitis').checked,
-            tuberculosis: document.getElementById('tuberculosis').checked,
-            asma: document.getElementById('asma').checked,
-            diabetesMel: document.getElementById('diabetes').checked,
-            epilepsia: document.getElementById('epilepsia').checked,
-            hipertension: document.getElementById('hipertension').checked,
-            vih: document.getElementById('vih').checked,
-            otros: document.getElementById('otrosEnfermedades').value,
-            ninguno: document.getElementById('ningunaEnfermedad').checked,
-            alergias: obtenerValorBooleano(document.getElementById('alergias-si'), document.getElementById('alergias-no')),
-            embarazo: obtenerValorBooleano(document.getElementById('embarazo-si'), document.getElementById('embarazo-no')),
-            semanaEmbarazo: document.getElementById('embarazo-si').checked && document.getElementById('semanasEmbarazo').value ? 
-                           parseInt(document.getElementById('semanasEmbarazo').value) : null,
-            
-            // ✅ TRATAMIENTO MEDICO - AHORA CON LA LÓGICA CORRECTA
-            tratamientoMedico: tratamientoSi && tratamientoSi.checked ? tratamientoMedico.value.trim() : '',
-            recibeAlgunMedicamento: medicamentoSi && medicamentoSi.checked ? medicamentoActual.value.trim() : '',
-            tuvoHemorragiaDental: obtenerValorBooleano(document.getElementById('hemorragia-si'), document.getElementById('hemorragia-no')),
-            especifiqueHemorragia: document.getElementById('hemorragia-si').checked ? 
-                                  document.getElementById('especifiqueHemorragia').value.trim() : null,
-            
-            // ExamenExtraOral
-            atm: document.getElementById('atm').value,
-            gangliosLinfaticos: document.getElementById('ganglios').value,
-            respirador: obtenerRespiradorSeleccionado(),
-            otrosRespiratorio: document.getElementById('otrosRespiratorio').value,
-            
-            // ExamenIntraOral
-            labios: document.getElementById('labios').value,
-            lengua: document.getElementById('lengua').value,
-            paladar: document.getElementById('paladar').value,
-            pisoDeLaBoca: document.getElementById('pisoBoca').value,
-            mucosaYugal: document.getElementById('mucosaYugal').value,
-            encias: document.getElementById('encias').value,
-            utilizaProtesisDental: obtenerValorBooleano(document.getElementById('protesis-si'), document.getElementById('protesis-no')),
-            tipoProtesis: document.getElementById('protesis-si').checked ? document.getElementById('tipoProtesis').value : null,
-            tiempoProtesis: document.getElementById('protesis-si').checked ? document.getElementById('tiempoProtesis').value : null,
-            
-            // AntecedentesBucodentales
-            fechaRevision: document.getElementById('ultimaVisita').value,
-            habitoFuma: document.getElementById('fuma').checked,
-            habitoBebe: document.getElementById('bebe').checked,
-            otrosHabitos: document.getElementById('otrosHabitos').value,
-            
-            // AntecedentesHigieneOral
-            utilizaCepilloDental: obtenerValorBooleano(document.getElementById('cepillo-si'), document.getElementById('cepillo-no')),
-            utilizaHiloDental: obtenerValorBooleano(document.getElementById('hilo-si'), document.getElementById('hilo-no')),
-            utilizaEnjuagueBucal: obtenerValorBooleano(document.getElementById('enjuague-si'), document.getElementById('enjuague-no')),
-            frecuenciaCepillo: document.getElementById('frecuenciaCepillado').value,
-            sangradoEncias: obtenerValorBooleano(document.getElementById('sangrado-si'), document.getElementById('sangrado-no')),
-            higieneBucal: obtenerHigieneBucalSeleccionada(),
-            observacionesHigiene: document.getElementById('observacionesHigiene').value
-        };
+        // Crear FormData en lugar de objeto JSON
+        const formData = new FormData();
+
+        // --- Datos básicos ---
+        formData.append('fecha', new Date().toISOString().split('T')[0]);
+        formData.append('observaciones', document.getElementById('observacionesHigiene').value);
+        formData.append('idPaciente', idPaciente);
+        formData.append('idEstudiante', sessionStorage.getItem('idEstudiante'));
+
+        // --- Informante ---
+        formData.append('informanteNombres', document.getElementById('nombres_pesona').value);
+        formData.append('informanteApellidoPaterno', document.getElementById('apellidoPaterno_persona').value);
+        formData.append('informanteApellidoMaterno', document.getElementById('apellidoMaterno_persona').value);
+        formData.append('informanteDireccion', document.getElementById('direccion_persona').value);
+        formData.append('informanteTelefono', document.getElementById('telefono_persona').value);
+
+        // --- Patologia Personal ---
+        formData.append('anemia', document.getElementById('anemia').checked);
+        formData.append('cardiopatias', document.getElementById('cardiopatias').checked);
+        formData.append('enfGastricos', document.getElementById('gastricas').checked);
+        formData.append('hepatitis', document.getElementById('hepatitis').checked);
+        formData.append('tuberculosis', document.getElementById('tuberculosis').checked);
+        formData.append('asma', document.getElementById('asma').checked);
+        formData.append('diabetesMel', document.getElementById('diabetes').checked);
+        formData.append('epilepsia', document.getElementById('epilepsia').checked);
+        formData.append('hipertension', document.getElementById('hipertension').checked);
+        formData.append('vih', document.getElementById('vih').checked);
+        formData.append('otros', document.getElementById('otrosEnfermedades').value);
+        formData.append('ninguno', document.getElementById('ningunaEnfermedad').checked);
+
+        // Alergias
+        const alergiaSi = document.getElementById('alergias-si').checked;
+        formData.append('alergias', alergiaSi);
+        if (alergiaSi) {
+            formData.append('especifiqueAlergia', document.getElementById('especifiqueAlergia').value);
+        }
+
+        // Embarazo
+        const embarazoSi = document.getElementById('embarazo-si').checked;
+        formData.append('embarazo', embarazoSi);
+        if (embarazoSi) {
+            formData.append('semanaEmbarazo', document.getElementById('semanasEmbarazo').value);
+        }
+
+        // --- Tratamiento médico ---
+        const tratamientoSi = document.getElementById('tratamiento-si').checked;
+        formData.append('tratamientoMedico', tratamientoSi ? document.getElementById('tratamientoMedico').value : '');
+        const medicamentoSi = document.getElementById('medicamento-si').checked;
+        formData.append('recibeAlgunMedicamento', medicamentoSi ? document.getElementById('medicamentoActual').value : '');
+
+        // Hemorragia
+        const hemorragiaSi = document.getElementById('hemorragia-si').checked;
+        formData.append('tuvoHemorragiaDental', hemorragiaSi);
+        if (hemorragiaSi) {
+            formData.append('especifiqueHemorragia', document.getElementById('especifiqueHemorragia').value);
+        }
+
+        // --- ExamenExtraOral ---
+        formData.append('atm', document.getElementById('atm').value);
+        formData.append('gangliosLinfaticos', document.getElementById('ganglios').value);
+        formData.append('respirador', obtenerRespiradorSeleccionado());
+        formData.append('otrosRespiratorio', document.getElementById('otrosRespiratorio').value);
+
+        // --- ExamenIntraOral ---
+        formData.append('labios', document.getElementById('labios').value);
+        formData.append('lengua', document.getElementById('lengua').value);
+        formData.append('paladar', document.getElementById('paladar').value);
+        formData.append('pisoDeLaBoca', document.getElementById('pisoBoca').value);
+        formData.append('mucosaYugal', document.getElementById('mucosaYugal').value);
+        formData.append('encias', document.getElementById('encias').value);
+        const protesisSi = document.getElementById('protesis-si').checked;
+        formData.append('utilizaProtesisDental', protesisSi);
+        if (protesisSi) {
+            formData.append('tipoProtesis', document.getElementById('tipoProtesis').value);
+            formData.append('tiempoProtesis', document.getElementById('tiempoProtesis').value);
+        }
+
+        // --- AntecedentesBucodentales ---
+        formData.append('fechaRevision', document.getElementById('ultimaVisita').value);
+        formData.append('habitoFuma', document.getElementById('fuma').checked);
+        formData.append('habitoBebe', document.getElementById('bebe').checked);
+        formData.append('otrosHabitos', document.getElementById('otrosHabitos').value);
+
+        // --- AntecedentesHigieneOral ---
+        formData.append('utilizaCepilloDental', document.getElementById('cepillo-si').checked);
+        formData.append('utilizaHiloDental', document.getElementById('hilo-si').checked);
+        formData.append('utilizaEnjuagueBucal', document.getElementById('enjuague-si').checked);
+        formData.append('frecuenciaCepillo', document.getElementById('frecuenciaCepillado').value);
+        formData.append('sangradoEncias', document.getElementById('sangrado-si').checked);
+        formData.append('higieneBucal', obtenerHigieneBucalSeleccionada());
+        formData.append('observacionesHigiene', document.getElementById('observacionesHigiene').value);
+
+        // --- FOTOS: agregar archivos ---
+        const fotos = document.getElementById('odontogramaFotos').files;
+        for (let i = 0; i < fotos.length; i++) {
+            formData.append('odontogramaFotos', fotos[i]); // el nombre debe coincidir con el campo del DTO
+        }
 
         // Enviar datos al backend
         const btnEnviar = document.getElementById('enviarFormulario');
         btnEnviar.disabled = true;
         btnEnviar.textContent = 'Guardando...';
+        document.getElementById('loadingMessage').style.display = 'block';
 
-        console.log('📤 Enviando datos de consulta:', consultaData);
+        try {
+            const response = await fetch('/api/consultas/completa-con-fotos', { // NUEVO ENDPOINT
+                method: 'POST',
+                body: formData
+                // No poner 'Content-Type', el navegador lo añade automáticamente
+            });
 
-        fetch('/api/consultas/completa', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(consultaData)
-        })
-        .then(response => {
             if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(text || `Error ${response.status}: ${response.statusText}`);
-                });
+                const errorText = await response.text();
+                throw new Error(errorText || `Error ${response.status}: ${response.statusText}`);
             }
-            return response.json();
-        })
-        .then(data => {
-            console.log('✅ Consulta guardada:', data);
+
+            const data = await response.json();
+            console.log('✅ Consulta guardada con fotos:', data);
             alert('¡Historia clínica guardada exitosamente!');
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('❌ Error al guardar:', error);
             alert('Error al guardar la historia clínica: ' + error.message);
-        })
-        .finally(() => {
+        } finally {
+            document.getElementById('loadingMessage').style.display = 'none';
             btnEnviar.disabled = false;
             btnEnviar.textContent = 'GUARDAR HISTORIA CLÍNICA COMPLETA';
-        });
+        }
     });
 
     // Inicializar estado de los campos al cargar la página

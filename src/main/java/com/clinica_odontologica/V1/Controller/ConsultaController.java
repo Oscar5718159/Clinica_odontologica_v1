@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+import com.clinica_odontologica.V1.Model.Dto.ConsultaConFotosDTO;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,6 +93,22 @@ public class ConsultaController {
             System.out.println("❌ Error al obtener consultas completas: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping(value = "/completa-con-fotos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> crearConsultaCompletaConFotos(@ModelAttribute ConsultaConFotosDTO consultaDTO) {
+        try {
+            Consulta nuevaConsulta = consultaService.guardarConsultaConFotos(consultaDTO);
+            return new ResponseEntity<>(nuevaConsulta, HttpStatus.CREATED);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Error al procesar los archivos: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Error al guardar la consulta con fotos: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
