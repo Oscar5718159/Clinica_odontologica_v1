@@ -9,6 +9,6 @@ public interface TratamientoRepository extends JpaRepository<Tratamiento, Long> 
 
     List<Tratamiento> findByTipoTratamientoIdTipoTratamiento(Long idTipoTratamiento);
     
-    
+
 
 }

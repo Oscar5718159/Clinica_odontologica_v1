@@ -54,6 +54,10 @@
                 <i class="fas fa-folder-open"></i>
                 <span class="menu-text">Buscar Archivos</span>
             </li>
+            <li onclick="loadPage('/doctor/cupo-estudiante/cupo-vista', 'Cupo Estudiante', 'cupoFrame', this)">
+                <i class="fas fa-users"></i>
+                <span class="menu-text">Cupo Estudiante</span>
+            </li>
         </ul>
         
         <button class="buy-btn">
@@ -100,6 +104,11 @@
             <div id="ArchivosContent" class="content-area">
                 <iframe id="ArchivosFrame" src="about:blank"></iframe>
             </div>
+
+                <!-- Contenido de Cupo Estudiante -->
+        <div id="cupoContent" class="content-area">
+            <iframe id="cupoFrame" src="about:blank"></iframe>
+        </div>
     </div>
 
     <script>
@@ -145,6 +154,8 @@
                 contentId = 'registroEstudianteContent';
             } else if (frameId === 'ArchivosFrame') {
                 contentId = 'ArchivosContent';
+            } else if (frameId === 'cupoFrame') {
+                contentId = 'cupoContent';
             }
             
             if (contentId) {

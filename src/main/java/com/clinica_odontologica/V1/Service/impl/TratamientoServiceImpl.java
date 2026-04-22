@@ -14,6 +14,7 @@ public class TratamientoServiceImpl implements TratamientoService {
     @Autowired
     private TratamientoRepository tratamientoRepository;
 
+
     @Override
     public List<Tratamiento> obtenerTodos() {
         return tratamientoRepository.findAll();
@@ -37,5 +38,7 @@ public class TratamientoServiceImpl implements TratamientoService {
 
     public List<Tratamiento> obtenerPorTipoTratamiento(Long idTipoTratamiento) {
     return tratamientoRepository.findByTipoTratamientoIdTipoTratamiento(idTipoTratamiento);
+
+
 }
 }

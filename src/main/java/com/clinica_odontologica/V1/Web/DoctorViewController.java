@@ -115,4 +115,10 @@ public class DoctorViewController {
     public String mostrarArchivoVista() {
         return "doctor/Archivo/archivo-vista";
     }
+
+
+    @GetMapping("cupo-estudiante/cupo-vista")
+    public String mostrarVistaCupo() {
+        return "doctor/cupo-estudiante/cupo-vista";
+    }
 }

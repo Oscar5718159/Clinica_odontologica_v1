@@ -19,4 +19,6 @@ public interface ConsentimientoService {
     boolean existePorConsulta(Long idConsulta);
     
     List<Consentimiento> obtenerPorPaciente(Long idPaciente);
+
+    
 }

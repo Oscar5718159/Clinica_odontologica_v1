@@ -28,5 +28,18 @@ public class AdminViewController {
     public String paginaTratamientos() {
         return "admin/tratamientos/formulario"; 
     }
-    
+
+    @GetMapping("/inscripcion/vista-materia")
+    public String paginaInscripcion() {
+        return "admin/inscripcion/vista-materia"; 
+    }
+    @GetMapping("/aprobacion/vista-aprobacion")
+    public String paginaAprobacion() {
+        return "admin/aprobacion/vista-aprobacion"; 
+    }
+
+    @GetMapping("/cupo/vista-cupo")
+    public String paginaCupo() {
+        return "admin/cupo/vista-cupo"; 
+    }
 }

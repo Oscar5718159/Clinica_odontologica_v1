@@ -13,4 +13,5 @@ public interface TratamientoService {
         
         void eliminar(Long id);
         List<Tratamiento> obtenerPorTipoTratamiento(Long idTipoTratamiento);
+
 }

@@ -40,7 +40,12 @@ public class ClinicaServiceImpl implements ClinicaService {
     }
 
     @Override
-    public List<Clinica> buscarPorTurno(String turno) {
-        return clinicaRepository.findByTurno(turno);
+    public List<Clinica> buscarPorTurno(String nombreTurno) {
+        return clinicaRepository.findByTurno_NombreTurno(nombreTurno);
+    }
+
+    @Override
+    public List<Clinica> obtenerPorRote(Long roteId) {
+        return clinicaRepository.findByRote_IdRote(roteId);
     }
 }

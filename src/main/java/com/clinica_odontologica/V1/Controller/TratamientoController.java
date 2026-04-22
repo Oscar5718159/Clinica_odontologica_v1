@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tratamientos")
@@ -60,4 +61,6 @@ public class TratamientoController {
         List<Tratamiento> tratamientos = tratamientoService.obtenerPorTipoTratamiento(idTipoTratamiento);
         return ResponseEntity.ok(tratamientos);
     }
+
+
 }

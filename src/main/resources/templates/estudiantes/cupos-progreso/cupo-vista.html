@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Progreso - Estudiante</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div class="max-w-6xl mx-auto p-4 sm:p-6">
+        <!-- Encabezado -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Mi Progreso en Tratamientos</h1>
+                    <p class="text-gray-600 mt-1">Seguimiento de tratamientos por materia</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <!-- Ya no mostramos el campo ID, porque se toma del login -->
+                    <!-- Pero podemos mantenerlo oculto o mostrarlo solo para pruebas -->
+                    <div class="flex items-center space-x-2" style="display: none;" id="manualIdDiv">
+                        <label for="studentIdInput" class="text-gray-700 font-medium">ID Estudiante:</label>
+                        <input type="number" id="studentIdInput" value="1" class="border border-gray-300 rounded-lg px-3 py-1 w-24 text-center">
+                        <button id="loadStudentBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-lg">Cargar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor de datos del estudiante -->
+        <div id="studentDashboard" class="bg-white rounded-xl shadow-md p-6">
+            <div class="flex justify-between items-center flex-wrap gap-2 mb-6">
+                <div>
+                    <h2 id="studentName" class="text-2xl font-semibold text-gray-800">---</h2>
+                    <p id="studentCode" class="text-gray-600">Código: ---</p>
+                </div>
+                <div class="flex gap-2">
+                    <button id="refreshBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                    <span id="lastUpdate" class="text-sm text-gray-500 self-center">Última actualización: --</span>
+                </div>
+            </div>
+            <div id="materiasContainer" class="space-y-6">
+                <div class="text-center py-8 text-gray-500">Cargando tus materias...</div>
+            </div>
+            <div class="mt-4 text-xs text-gray-400 text-center">
+                <i class="fas fa-info-circle"></i> Los datos se actualizan automáticamente cada 5 segundos.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de la API
+        const API_BASE_URL = ''; // si está en el mismo origen, vacío; si no, ej: 'http://localhost:8080'
+
+        let currentStudentId = null;
+        let pollingInterval = null;
+
+        // Función para obtener el progreso desde el backend
+        async function fetchStudentProgress(studentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/estudiantes/${studentId}/progreso`);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Estudiante no encontrado');
+                    }
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                const data = await response.json();
+                return data; // array de ProgresoMateriaDTO
+            } catch (error) {
+                console.error('Error al obtener progreso:', error);
+                throw error;
+            }
+        }
+
+        // Función para obtener información adicional del estudiante (nombre, código)
+        async function fetchStudentInfo(studentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/estudiantes/${studentId}`);
+                if (!response.ok) {
+                    throw new Error('Error al obtener información del estudiante');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error al obtener info del estudiante:', error);
+                return null;
+            }
+        }
+
+        // Renderizar el dashboard con los datos
+        function renderDashboard(materiasData, studentInfo) {
+            const container = document.getElementById('materiasContainer');
+            if (!materiasData || materiasData.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-gray-500">No hay materias inscritas o no se encontraron tratamientos.</div>';
+                return;
+            }
+
+            let html = '';
+            for (const materia of materiasData) {
+                // Calcular totales para la barra de progreso de la materia
+                let totalRequerido = 0;
+                let totalRealizado = 0;
+                materia.tratamientos.forEach(t => {
+                    totalRequerido += t.requerido;
+                    totalRealizado += t.realizado;
+                });
+                const porcentajeMateria = totalRequerido === 0 ? 0 : (totalRealizado / totalRequerido) * 100;
+
+                html += `
+                    <div class="border rounded-lg p-4 bg-gray-50 shadow-sm">
+                        <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
+                            <h3 class="text-lg font-semibold text-gray-800">${escapeHtml(materia.nombreMateria)}</h3>
+                            <span class="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">${totalRealizado}/${totalRequerido} tratamientos completados</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                            <div class="bg-blue-600 h-2.5 rounded-full progress-bar" style="width: ${porcentajeMateria}%"></div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="bg-gray-200">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left">Tratamiento</th>
+                                        <th class="px-4 py-2 text-center">Requerido</th>
+                                        <th class="px-4 py-2 text-center">Realizado</th>
+                                        <th class="px-4 py-2 text-center">Faltante</th>
+                                        <th class="px-4 py-2 text-center">Progreso</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+                for (const trat of materia.tratamientos) {
+                    const faltante = trat.requerido - trat.realizado;
+                    const porcentajeTrat = trat.requerido === 0 ? 0 : (trat.realizado / trat.requerido) * 100;
+                    html += `
+                        <tr class="border-b">
+                            <td class="px-4 py-2 font-medium">${escapeHtml(trat.nombreTratamiento)}</td>
+                            <td class="px-4 py-2 text-center">${trat.requerido}</td>
+                            <td class="px-4 py-2 text-center">${trat.realizado}</td>
+                            <td class="px-4 py-2 text-center font-bold ${faltante > 0 ? 'text-red-600' : 'text-green-600'}">${faltante}</td>
+                            <td class="px-4 py-2 text-center">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${porcentajeTrat}%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+
+            // Actualizar datos del estudiante en el header
+            if (studentInfo) {
+                const nombreCompleto = studentInfo.usuario?.persona?.nombre + ' ' + studentInfo.usuario?.persona?.apellidoPaterno || `Estudiante ID ${currentStudentId}`;
+                document.getElementById('studentName').innerText = nombreCompleto;
+                document.getElementById('studentCode').innerHTML = `Código: ${studentInfo.codigoEstudiante || '---'}`;
+            } else {
+                document.getElementById('studentName').innerText = `Estudiante ID ${currentStudentId}`;
+                document.getElementById('studentCode').innerHTML = `Código: ---`;
+            }
+
+            document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
+        }
+
+        // Función principal para cargar datos
+        async function loadData(studentId) {
+            if (!studentId) return;
+            try {
+                // Obtener progreso
+                const progreso = await fetchStudentProgress(studentId);
+                // Obtener información del estudiante
+                const studentInfo = await fetchStudentInfo(studentId);
+                // Renderizar
+                renderDashboard(progreso, studentInfo);
+            } catch (error) {
+                const container = document.getElementById('materiasContainer');
+                container.innerHTML = `<div class="text-center py-8 text-red-500">Error al cargar datos: ${error.message}</div>`;
+                document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
+            }
+        }
+
+        // Iniciar polling (actualización automática cada 5 segundos)
+        function startPolling() {
+            if (pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(() => {
+                if (currentStudentId) loadData(currentStudentId);
+            }, 5000);
+        }
+
+        // Detener polling (si es necesario)
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        // Evento de carga manual (si se muestra el input)
+        document.getElementById('loadStudentBtn')?.addEventListener('click', () => {
+            const newId = parseInt(document.getElementById('studentIdInput').value);
+            if (isNaN(newId)) {
+                alert('Ingrese un ID válido');
+                return;
+            }
+            currentStudentId = newId;
+            // Guardar en sessionStorage para que persista
+            sessionStorage.setItem('idEstudiante', currentStudentId);
+            loadData(currentStudentId);
+            startPolling();
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            if (currentStudentId) loadData(currentStudentId);
+        });
+
+        // ========== INICIALIZACIÓN ==========
+        // Al cargar la página, obtener el ID del estudiante desde sessionStorage (se guarda al iniciar sesión)
+        const storedId = sessionStorage.getItem('idEstudiante');
+        if (storedId && !isNaN(parseInt(storedId))) {
+            currentStudentId = parseInt(storedId);
+            // Opcional: mostrar el ID en el input manual si está visible
+            const inputManual = document.getElementById('studentIdInput');
+            if (inputManual) inputManual.value = currentStudentId;
+            loadData(currentStudentId);
+            startPolling();
+        } else {
+            // Si no hay ID guardado, mostrar el campo manual y mensaje
+            document.getElementById('manualIdDiv')?.style.removeProperty('display');
+            document.getElementById('materiasContainer').innerHTML = '<div class="text-center py-8 text-gray-500">No se encontró un estudiante autenticado. Ingresa tu ID manualmente.</div>';
+            // También podrías redirigir al login si es necesario
+        }
+
+        // Función auxiliar para escapar HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+    </script>
+</body>
+</html>

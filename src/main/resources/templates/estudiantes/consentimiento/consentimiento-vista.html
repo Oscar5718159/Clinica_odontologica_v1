@@ -905,7 +905,7 @@
     <div class="progress-steps">
       <span class="step active"><i class="fas fa-search"></i> Buscar</span>
       <span class="step"><i class="fas fa-clinic-medical"></i> Clínica</span>
-      <span class="step"><i class="fas fa-tags"></i> Tipo</span>
+      <span class="step"><i class="fas fa-tags"></i> Materia</span>
       <span class="step"><i class="fas fa-tooth"></i> Tratamiento</span>
       <span class="step"><i class="fas fa-file-signature"></i> Consentir</span>
       <span class="step"><i class="fas fa-check-circle"></i> Finalizar</span>
@@ -1338,42 +1338,54 @@ async function cargarDocentesDeClinica(idClinica) {
     }
 }
 
-// NUEVA FUNCIÓN: Cargar tipos de tratamiento por clínica
-async function cargarTiposPorClinica(idClinica) {
-    try {
-        const response = await fetch(`/api/tipos-tratamiento/por-clinica/${idClinica}`);
-        if (!response.ok) throw new Error('Error al cargar tipos de tratamiento');
-        const tipos = await response.json();
-        const container = document.getElementById('tiposTratamientoContainer');
-        container.innerHTML = '';
+  async function cargarMateriasPorClinica(idClinica) {
+      try {
+          const response = await fetch(`/api/materias/clinica/${idClinica}`);
+          if (!response.ok) throw new Error('Error al cargar materias');
+          const materias = await response.json();
+          const container = document.getElementById('tiposTratamientoContainer');
+          container.innerHTML = '';
 
-        tipos.forEach(tipo => {
-            const opcion = document.createElement('div');
-            opcion.className = 'option-card';
-            opcion.dataset.id = tipo.idTipoTratamiento;
-            opcion.dataset.nombre = tipo.nombreTipo;
-            opcion.dataset.descripcion = tipo.descripcionTipo;
+          materias.forEach(materia => {
+              const opcion = document.createElement('div');
+              opcion.className = 'option-card';
+              opcion.dataset.id = materia.id_materia || materia.idMateria;
+              opcion.dataset.nombre = materia.nombreMateria;
+              opcion.dataset.descripcion = materia.descripcionMateria;
 
-            opcion.innerHTML = `
-                <h4>${tipo.nombreTipo}</h4>
-                <p>${tipo.descripcionTipo || 'Sin descripción'}</p>
-            `;
+              opcion.innerHTML = `
+                  <h4>${materia.nombreMateria}</h4>
+                  <p>${materia.descripcionMateria || 'Sin descripción'}</p>
+              `;
+              opcion.addEventListener('click', () => seleccionarMateria(opcion));
+              container.appendChild(opcion);
+          });
 
-            opcion.addEventListener('click', () => seleccionarTipoTratamiento(opcion));
-            container.appendChild(opcion);
-        });
+          document.getElementById('seccionTiposTratamiento').style.display = 'block';
+          document.getElementById('seccionTratamiento').style.display = 'none';
+          document.getElementById('seccionProcedimiento').style.display = 'none';
+          document.getElementById('seccionDecision').style.display = 'none';
+          actualizarProgreso(3); // Ahora el paso 3 es "Materia"
+      } catch (error) {
+          console.error('Error cargando materias:', error);
+      }
+  }
 
-        // Mostrar la sección de tipos y ocultar la de tratamientos hasta que se seleccione un tipo
-        document.getElementById('seccionTiposTratamiento').style.display = 'block';
-        document.getElementById('seccionTratamiento').style.display = 'none';
-        document.getElementById('seccionProcedimiento').style.display = 'none';
-        document.getElementById('seccionDecision').style.display = 'none';
-    } catch (error) {
-        console.error('Error cargando tipos:', error);
-        // Fallback: mostrar un mensaje o cargar datos mock
-    }
-}
+  let materiaSeleccionada = null;
 
+  function seleccionarMateria(element) {
+      document.querySelectorAll('#tiposTratamientoContainer .option-card').forEach(o => o.classList.remove('selected'));
+      element.classList.add('selected');
+
+      materiaSeleccionada = {
+          id: element.dataset.id,
+          nombre: element.dataset.nombre,
+          descripcion: element.dataset.descripcion
+      };
+      
+      // Cargar tratamientos de esta materia
+      cargarTratamientosPorMateria(materiaSeleccionada.id);
+  }
 // NUEVA FUNCIÓN: Manejar selección de tipo de tratamiento
 function seleccionarTipoTratamiento(element) {
     // Quitar selección previa
@@ -1387,11 +1399,9 @@ function seleccionarTipoTratamiento(element) {
     // Cargar los tratamientos de este tipo
     cargarTratamientosPorTipo(idTipo);
 }
-
-// NUEVA FUNCIÓN: Cargar tratamientos por tipo (reemplaza a cargarTratamientosPorClinica)
-async function cargarTratamientosPorTipo(idTipo) {
+async function cargarTratamientosPorMateria(idMateria) {
     try {
-        const response = await fetch(`/api/tratamientos/por-tipo/${idTipo}`);
+        const response = await fetch(`/api/cupos/tratamientos-por-materia/${idMateria}`);
         if (!response.ok) throw new Error('Error al cargar tratamientos');
         const tratamientos = await response.json();
         const container = document.getElementById('tratamientosContainer');
@@ -1401,18 +1411,17 @@ async function cargarTratamientosPorTipo(idTipo) {
             agregarTarjetaTratamiento(container, {
                 id: t.idTratamiento,
                 nombre: t.nombreTratamiento,
-                descripcion: t.descripcionTratamiento,
+                descripcion: t.descripcionTratamiento || 'Sin descripción disponible',
                 precio: formatearPrecio(t.precioTratamiento),
-                categoria: t.tipoTratamiento?.nombreTipo || 'General'
+                categoria: materiaSeleccionada?.nombre || 'Tratamiento',
+                cupos: t.cuposDisponibles
             });
         });
 
-        // Mostrar la sección de tratamientos y continuar el flujo
         document.getElementById('seccionTratamiento').style.display = 'block';
-        actualizarProgreso(4); // Paso 4: Tratamiento
+        actualizarProgreso(4);
     } catch (error) {
         console.error('Error cargando tratamientos:', error);
-        // mostrarTodosLosTratamientosMock(); // fallback
     }
 }
 
@@ -1450,8 +1459,8 @@ function seleccionarClinica(element) {
     document.getElementById('seccionDoctor').style.display = 'none';
     document.getElementById('formularioConsentimiento').style.display = 'block';
     
-    // Cargar tipos de tratamiento de esta clínica
-    cargarTiposPorClinica(clinicaSeleccionada.id);
+    // Cargar materias de esta clínica
+    cargarMateriasPorClinica(clinicaSeleccionada.id);
 
     // Ocultar secciones que aún no corresponden
     document.getElementById('seccionTiposTratamiento').style.display = 'none'; // se mostrará cuando lleguen los tipos
@@ -1504,6 +1513,7 @@ function agregarTarjetaTratamiento(container, tratamiento) {
         <h4>${tratamiento.nombre}</h4>
         <p>${tratamiento.descripcion}</p>
         <div class="price-tag">${tratamiento.precio}</div>
+        ${tratamiento.cupos != null ? `<div class="cuota-tag">Cupos disponibles: ${tratamiento.cupos}</div>` : ''}
     `;
 
     opcion.addEventListener('click', () => seleccionarTratamiento(opcion, tratamiento));
@@ -1799,8 +1809,8 @@ document.getElementById('btnGuardarTodo').addEventListener('click', async functi
         idConsulta: consultaSeleccionada.idConsulta,
         idDocente: parseInt(docenteSeleccionado.id),
         idTratamiento: parseInt(tratamientoSeleccionado.id),
-        // --- NUEVO: incluir idEstudiante ---
         idEstudiante: parseInt(idEstudiante),
+        idMateria: parseInt(materiaSeleccionada.id), 
         nombreTratamiento: tratamientoSeleccionado.nombre,
         descripcionTratamiento: tratamientoSeleccionado.descripcion,
         precioTratamiento: parseFloat(tratamientoSeleccionado.precio.replace(/[^0-9.-]/g, '')),

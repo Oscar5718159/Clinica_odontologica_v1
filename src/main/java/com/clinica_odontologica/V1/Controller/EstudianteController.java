@@ -1,5 +1,6 @@
 package com.clinica_odontologica.V1.Controller;
 
+import com.clinica_odontologica.V1.Model.Dto.ProgresoMateriaDTO;
 import com.clinica_odontologica.V1.Model.Entity.Estudiante;
 import com.clinica_odontologica.V1.Service.EstudianteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,4 +37,11 @@ public class EstudianteController {
         List<Estudiante> estudiantes = estudianteService.buscarPorCodigoEstudiante(codigo);
         return ResponseEntity.ok(estudiantes);
     }
+
+    @GetMapping("/{id}/progreso")
+    public ResponseEntity<List<ProgresoMateriaDTO>> obtenerProgreso(@PathVariable Long id) {
+        List<ProgresoMateriaDTO> progreso = estudianteService.obtenerProgresoPorEstudiante(id);
+        return ResponseEntity.ok(progreso);
+    }
+
 }

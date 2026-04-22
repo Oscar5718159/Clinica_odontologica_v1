@@ -14,11 +14,16 @@ public class Clinica {
     @Column(name = "id_clinica")
     private Long idClinica;
 
+    @ManyToOne
+    @JoinColumn(name = "id_rote", nullable = false)
+    private Rote rote;
+
     @Column(name = "nombre_clinica", length = 100, nullable = false)
     private String nombreClinica;
 
-    @Column(name = "turno", length = 50)
-    private String turno;
+    @ManyToOne
+    @JoinColumn(name = "id_turno", nullable = false)
+    private Turno turno;
 
     @Column(name = "capacidad_maxima")
     private Integer capacidadMaxima;
@@ -32,7 +37,6 @@ public class Clinica {
 
     public Clinica(String nombreClinica, String turno, Integer capacidadMaxima) {
         this.nombreClinica = nombreClinica;
-        this.turno = turno;
         this.capacidadMaxima = capacidadMaxima;
     }
 
@@ -52,14 +56,22 @@ public class Clinica {
     public void setNombreClinica(String nombreClinica) {
         this.nombreClinica = nombreClinica;
     }
+    public Rote getRote() {
+        return rote;
+    }
 
-    public String getTurno() {
+    public void setRote(Rote rote) {
+        this.rote = rote;
+    }
+
+    public Turno getTurno() {
         return turno;
     }
 
-    public void setTurno(String turno) {
+    public void setTurno(Turno turno) {
         this.turno = turno;
     }
+
 
     public Integer getCapacidadMaxima() {
         return capacidadMaxima;

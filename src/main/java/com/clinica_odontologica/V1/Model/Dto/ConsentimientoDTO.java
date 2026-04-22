@@ -10,6 +10,7 @@ public class ConsentimientoDTO {
     private Long idDocente;
     private Long idTratamiento;   
     private Long idEstudiante;
+    private Long idMateria;
 
     // Datos copia del tratamiento (para mantener histórico)
     private String nombreTratamiento;
@@ -55,6 +56,14 @@ public class ConsentimientoDTO {
 
     public String getNombreTratamiento() {
         return nombreTratamiento;
+    }
+
+    public Long getIdMateria() {
+        return idMateria;
+    }
+
+    public void setIdMateria(Long idMateria) {
+        this.idMateria = idMateria;
     }
 
     public Long getIdEstudiante() {

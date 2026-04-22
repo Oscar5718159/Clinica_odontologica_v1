@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inscripciones | Clínica Odontológica</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Transiciones personalizadas */
+        .modal-transition {
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+        .step-indicator {
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen p-4 md:p-8 font-sans">
+
+<div class="max-w-3xl mx-auto">
+    <!-- Encabezado con botón flotante -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+                <i class="fas fa-graduation-cap text-blue-600"></i>
+                Inscripción de Materias
+            </h1>
+            <p class="text-gray-500 mt-1">Asigna estudiantes a materias por período académico</p>
+        </div>
+        <button id="openPeriodoModalBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow-md transition flex items-center gap-2">
+            <i class="fas fa-calendar-plus"></i> Agregar Período
+        </button>
+    </div>
+
+    <!-- Tarjeta principal -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="p-6 md:p-8">
+            <!-- Paso 1: Buscar estudiante -->
+            <div class="mb-8">
+                <label class="block font-semibold text-gray-700 mb-2">
+                    <i class="fas fa-user-graduate mr-2 text-blue-500"></i>Buscar estudiante (RU o nombre)
+                </label>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-grow">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        <input type="text" id="searchStudentInput" placeholder="Ej: 20210001 o Juan Pérez" 
+                               class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+                    </div>
+                    <button id="btnSearchStudent" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition shadow-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+                <div id="studentResults" class="mt-3 space-y-2 max-h-64 overflow-y-auto rounded-lg"></div>
+                <input type="hidden" id="selectedStudentId">
+            </div>
+
+            <!-- Paso 2: Seleccionar materia -->
+            <div class="mb-8">
+                <label class="block font-semibold text-gray-700 mb-2">
+                    <i class="fas fa-book-open mr-2 text-green-500"></i>Materia
+                </label>
+                <select id="materiaSelect" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 bg-white">
+                    <option value="">-- Seleccione materia --</option>
+                </select>
+            </div>
+
+            <!-- Paso 3: Seleccionar período -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="block font-semibold text-gray-700">
+                        <i class="fas fa-calendar-alt mr-2 text-purple-500"></i>Período Académico
+                    </label>
+                    <button id="refreshPeriodosBtn" class="text-sm text-indigo-600 hover:text-indigo-800 transition">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+                <select id="periodoSelect" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-400 bg-white">
+                    <option value="">-- Seleccione período --</option>
+                </select>
+            </div>
+
+            <!-- Botón de inscripción -->
+            <button id="btnInscribir" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-xl shadow-md transition transform hover:scale-[1.02] flex items-center justify-center gap-2 text-lg">
+                <i class="fas fa-save"></i> Inscribir Materia
+            </button>
+            <div id="resultMessage" class="mt-5 hidden p-3 rounded-lg text-center font-medium"></div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PARA AGREGAR PERÍODO -->
+<div id="periodoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden modal-transition">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform transition-all">
+        <div class="flex justify-between items-center border-b px-6 py-4">
+            <h3 class="text-xl font-bold text-gray-800">
+                <i class="fas fa-plus-circle text-indigo-500 mr-2"></i>Nuevo Período
+            </h3>
+            <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 transition">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6 space-y-4">
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Nombre del período *</label>
+                <input type="text" id="periodoNombre" placeholder="Ej: 2024, 2025-A, Semestre I-2024" 
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-300">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Fecha de inicio *</label>
+                <input type="date" id="periodoFechaInicio" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-300">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Fecha de fin *</label>
+                <input type="date" id="periodoFechaFin" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-300">
+            </div>
+        </div>
+        <div class="bg-gray-50 px-6 py-4 rounded-b-2xl flex justify-end gap-3">
+            <button id="cancelModalBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">Cancelar</button>
+            <button id="savePeriodoBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center gap-2">
+                <i class="fas fa-check"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = ''; // Cambia si tu backend corre en otro puerto ej: 'http://localhost:8080'
+    let selectedStudent = null;
+
+    // ==================== FUNCIONES DE CARGA ====================
+    async function cargarPeriodos() {
+        const select = document.getElementById('periodoSelect');
+        select.innerHTML = '<option value="">-- Cargando períodos... --</option>';
+        try {
+            const res = await fetch(`${API_BASE}/api/periodos/activos`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const periodos = await res.json();
+            select.innerHTML = '<option value="">-- Seleccione período --</option>';
+            if (periodos.length === 0) {
+                select.innerHTML += '<option disabled>No hay períodos disponibles</option>';
+            } else {
+                periodos.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.idPeriodo;
+                    option.textContent = `${p.nombrePeriodo} (${p.fechaInicio} → ${p.fechaFin})`;
+                    select.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Error cargando períodos:', error);
+            select.innerHTML = '<option disabled>Error al cargar períodos</option>';
+        }
+    }
+
+    async function cargarMaterias() {
+        const select = document.getElementById('materiaSelect');
+        select.innerHTML = '<option value="">-- Cargando materias... --</option>';
+        try {
+            const res = await fetch(`${API_BASE}/api/materias`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const materias = await res.json();
+            select.innerHTML = '<option value="">-- Seleccione materia --</option>';
+            materias.forEach(m => {
+                const option = document.createElement('option');
+                option.value = m.id_materia;
+                option.textContent = `${m.nombreMateria} (Cód: ${m.codigoMateria})`;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error cargando materias:', error);
+            select.innerHTML = '<option disabled>Error al cargar materias</option>';
+        }
+    }
+
+    // ==================== BÚSQUEDA DE ESTUDIANTES ====================
+    document.getElementById('btnSearchStudent').addEventListener('click', async () => {
+        const query = document.getElementById('searchStudentInput').value.trim();
+        if (!query) {
+            mostrarMensajeTemporal('Ingrese un RU o nombre para buscar', 'warning');
+            return;
+        }
+
+        const resultsDiv = document.getElementById('studentResults');
+        resultsDiv.innerHTML = '<div class="text-center py-3 text-gray-500"><i class="fas fa-spinner fa-spin"></i> Buscando...</div>';
+
+        try {
+            let estudiantes = [];
+            // Buscar por código si es numérico
+            if (!isNaN(query) && query.length > 0) {
+                const res = await fetch(`${API_BASE}/api/estudiantes/buscar-por-codigo?codigo=${query}`);
+                if (res.ok) estudiantes = await res.json();
+            }
+            // Si no hay resultados, buscar por nombre
+            if (estudiantes.length === 0 && query.length > 2) {
+                const res = await fetch(`${API_BASE}/api/estudiantes/buscar-por-nombre?nombre=${encodeURIComponent(query)}`);
+                if (res.ok) estudiantes = await res.json();
+            }
+
+            if (estudiantes.length === 0) {
+                resultsDiv.innerHTML = '<div class="bg-red-50 text-red-600 p-3 rounded-lg text-center">No se encontraron estudiantes</div>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '';
+            estudiantes.forEach(est => {
+                const nombreCompleto = `${est.usuario?.persona?.nombre || ''} ${est.usuario?.persona?.apellidoPaterno || ''}`.trim() || 'Sin nombre';
+                const div = document.createElement('div');
+                div.className = 'border border-gray-200 rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition flex justify-between items-center card-hover';
+                div.innerHTML = `
+                    <div>
+                        <div class="font-semibold text-gray-800">${nombreCompleto}</div>
+                        <div class="text-sm text-gray-500">RU: ${est.codigoEstudiante} </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-blue-400"></i>
+                `;
+                div.addEventListener('click', () => {
+                    selectedStudent = est;
+                    document.getElementById('selectedStudentId').value = est.idEstudiante;
+                    resultsDiv.innerHTML = `
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-3 flex items-start gap-3">
+                            <i class="fas fa-check-circle text-green-500 text-xl mt-0.5"></i>
+                            <div>
+                                <div class="font-medium text-green-800">Estudiante seleccionado</div>
+                                <div class="text-sm text-gray-700">${nombreCompleto} (RU: ${est.codigoEstudiante})</div>
+                            </div>
+                        </div>
+                    `;
+                    // Actualizar paso visual (opcional)
+                    actualizarIndicePaso(1);
+                });
+                resultsDiv.appendChild(div);
+            });
+        } catch (error) {
+            resultsDiv.innerHTML = '<div class="bg-red-50 text-red-600 p-3 rounded-lg">Error en la búsqueda</div>';
+        }
+    });
+
+    // ==================== INSCRIPCIÓN ====================
+    document.getElementById('btnInscribir').addEventListener('click', async () => {
+        const estudianteId = document.getElementById('selectedStudentId').value;
+        const materiaId = document.getElementById('materiaSelect').value;
+        const periodoId = document.getElementById('periodoSelect').value;
+
+        if (!estudianteId || !materiaId || !periodoId) {
+            mostrarMensajeTemporal('❌ Complete todos los campos: estudiante, materia y período', 'error');
+            return;
+        }
+
+        const inscripcion = {
+            estudiante: { idEstudiante: parseInt(estudianteId) },
+            materia: { id_materia: parseInt(materiaId) },
+            periodo: { idPeriodo: parseInt(periodoId) },
+            fechaInscripcion: new Date().toISOString().split('T')[0],
+            estadoInscripcion: 'cursando'
+        };
+
+        const btn = document.getElementById('btnInscribir');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/inscripciones`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(inscripcion)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                mostrarMensajeTemporal('✅ Inscripción exitosa', 'success');
+                // Limpiar selección de estudiante
+                document.getElementById('selectedStudentId').value = '';
+                document.getElementById('studentResults').innerHTML = '';
+                document.getElementById('searchStudentInput').value = '';
+                selectedStudent = null;
+                // Opcional: resetear selects (pero mantener materias y periodos)
+            } else {
+                throw new Error(data.error || 'Error en el servidor');
+            }
+        } catch (error) {
+            mostrarMensajeTemporal(`⚠️ ${error.message}`, 'error');
+        } finally {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    });
+
+    // ==================== MODAL DE NUEVO PERÍODO ====================
+    const modal = document.getElementById('periodoModal');
+    const openBtn = document.getElementById('openPeriodoModalBtn');
+    const closeBtns = ['closeModalBtn', 'cancelModalBtn'];
+
+    function abrirModal() {
+        modal.classList.remove('hidden');
+        // Limpiar campos
+        document.getElementById('periodoNombre').value = '';
+        document.getElementById('periodoFechaInicio').value = '';
+        document.getElementById('periodoFechaFin').value = '';
+    }
+    function cerrarModal() {
+        modal.classList.add('hidden');
+    }
+
+    openBtn.addEventListener('click', abrirModal);
+    closeBtns.forEach(id => {
+        document.getElementById(id).addEventListener('click', cerrarModal);
+    });
+    // Cerrar al hacer clic fuera del contenido
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) cerrarModal();
+    });
+
+    // Guardar nuevo período
+    document.getElementById('savePeriodoBtn').addEventListener('click', async () => {
+        const nombre = document.getElementById('periodoNombre').value.trim();
+        const fechaInicio = document.getElementById('periodoFechaInicio').value;
+        const fechaFin = document.getElementById('periodoFechaFin').value;
+
+        if (!nombre || !fechaInicio || !fechaFin) {
+            mostrarMensajeModal('Todos los campos son obligatorios', 'error');
+            return;
+        }
+
+        const nuevoPeriodo = {
+            nombrePeriodo: nombre,
+            fechaInicio: fechaInicio,
+            fechaFin: fechaFin
+        };
+
+        const saveBtn = document.getElementById('savePeriodoBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        saveBtn.disabled = true;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/periodos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(nuevoPeriodo)
+            });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Error al guardar');
+            }
+            const periodoGuardado = await res.json();
+            mostrarMensajeModal('Período creado correctamente', 'success');
+            cerrarModal();
+            // Recargar la lista de períodos
+            await cargarPeriodos();
+            // Opcional: seleccionar automáticamente el nuevo período
+            const select = document.getElementById('periodoSelect');
+            const option = Array.from(select.options).find(opt => opt.value == periodoGuardado.idPeriodo);
+            if (option) option.selected = true;
+        } catch (error) {
+            mostrarMensajeModal(error.message, 'error');
+        } finally {
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+        }
+    });
+
+    // Función para mensajes temporales dentro del modal
+    function mostrarMensajeModal(mensaje, tipo) {
+        let msgDiv = document.getElementById('modalMessage');
+        if (!msgDiv) {
+            msgDiv = document.createElement('div');
+            msgDiv.id = 'modalMessage';
+            msgDiv.className = 'mt-3 p-2 rounded text-sm text-center';
+            document.querySelector('#periodoModal .p-6').appendChild(msgDiv);
+        }
+        msgDiv.className = `mt-3 p-2 rounded text-sm text-center ${tipo === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+        msgDiv.innerHTML = tipo === 'error' ? `<i class="fas fa-exclamation-circle"></i> ${mensaje}` : `<i class="fas fa-check-circle"></i> ${mensaje}`;
+        setTimeout(() => {
+            if (msgDiv) msgDiv.remove();
+        }, 3000);
+    }
+
+    // Mensaje temporal en la tarjeta principal
+    function mostrarMensajeTemporal(mensaje, tipo) {
+        const msgDiv = document.getElementById('resultMessage');
+        msgDiv.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700', 'bg-yellow-100', 'text-yellow-700');
+        if (tipo === 'success') {
+            msgDiv.classList.add('bg-green-100', 'text-green-700');
+        } else if (tipo === 'error') {
+            msgDiv.classList.add('bg-red-100', 'text-red-700');
+        } else {
+            msgDiv.classList.add('bg-yellow-100', 'text-yellow-700');
+        }
+        msgDiv.innerHTML = `<i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2"></i> ${mensaje}`;
+        msgDiv.classList.remove('hidden');
+        setTimeout(() => msgDiv.classList.add('hidden'), 4000);
+    }
+
+    // Actualizar visual del paso (simple)
+    function actualizarIndicePaso(paso) {
+        const steps = document.querySelectorAll('.step-indicator');
+        steps.forEach((step, idx) => {
+            const circle = step.querySelector('span:first-child');
+            if (idx + 1 === paso) {
+                circle.classList.remove('bg-gray-300', 'text-gray-600');
+                circle.classList.add('bg-blue-600', 'text-white');
+            } else if ((idx + 1) < paso) {
+                circle.classList.remove('bg-gray-300', 'text-gray-600', 'bg-blue-600');
+                circle.classList.add('bg-green-500', 'text-white');
+            }
+        });
+    }
+
+    // Refresh manual de períodos
+    document.getElementById('refreshPeriodosBtn').addEventListener('click', () => {
+        cargarPeriodos();
+        mostrarMensajeTemporal('Lista de períodos actualizada', 'success');
+    });
+
+    // Carga inicial
+    cargarPeriodos();
+    cargarMaterias();
+</script>
+</body>
+</html>

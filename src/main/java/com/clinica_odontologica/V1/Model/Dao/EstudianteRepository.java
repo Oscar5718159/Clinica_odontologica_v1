@@ -32,3 +32,4 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Long> {
     @Query("SELECT e FROM Estudiante e WHERE e.usuario.persona.nombre LIKE %:nombre%")
     List<Estudiante> buscarPorNombrePersona(@Param("nombre") String nombre);
 }
+

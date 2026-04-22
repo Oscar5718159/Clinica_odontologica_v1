@@ -43,6 +43,9 @@ public class EstudianteViewController {
         return "estudiantes/seguimiento/seguimiento-vista";
     }
     
+    @GetMapping("/cupos-progreso/cupo-vista")
+    public String mostrarCupo() {
+        return "estudiantes/cupos-progreso/cupo-vista";
+    }
 
-  
 }

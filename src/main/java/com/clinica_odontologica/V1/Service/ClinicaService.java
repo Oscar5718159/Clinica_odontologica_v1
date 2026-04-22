@@ -18,4 +18,6 @@ public interface ClinicaService {
     
     List<Clinica> buscarPorTurno(String turno);
 
+    List<Clinica> obtenerPorRote(Long roteId);
+
 }

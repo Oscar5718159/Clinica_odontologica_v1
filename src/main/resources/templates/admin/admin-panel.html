@@ -32,18 +32,9 @@
                 <span class="menu-text">Dashboard</span>
                 <span class="badge">3</span>
             </li>
-            <li onclick="loadPage('/recepcion/paginas/registro_paciente', 'Nuevo Paciente', 'historiaClinicaFrame', this)">
-                <i class="fas fa-user-injured"></i>
-                <span class="menu-text">Nuevo Paciente</span>
-            </li>
-            <li onclick="loadPage('solicitud_insumos', 'Solicitud de Insumos', 'solicitudInsumosFrame', this)">
-                <i class="fas fa-box"></i>
-                <span class="menu-text">Solicitud de insumos</span>
-            </li>
-            <li onclick="loadPage('/recepcion/paginas/historial_clinico', 'Historial Clínico', 'historiaClinicaFrame', this)">
-                <i class="fas fa-history"></i>
-                <span class="menu-text">Historial Clínico</span>
-            </li>
+            <li onclick="loadPage('/admin/historia-clinica/vista-historia', 'Historia Clinica', 'historiaClinicaFrame', this)">
+                <i class="fas fa-file-medical"></i>
+                <span class="menu-text">Historia Clinica</span>
             <li onclick="loadPage('/admin/tipos-tratamiento/vista-tipo', 'Tipo Tratamiento', 'tipoTratamientoFrame', this)">
                 <i class="fas fa-edit"></i>
                 <span class="menu-text">Tipo Tratamiento</span>
@@ -52,35 +43,20 @@
                 <i class="fas fa-table"></i>
                 <span class="menu-text">Tratamientos</span>
             </li>
-            <li>
+            <li onclick="loadPage('/admin/inscripcion/vista-materia', 'Inscripciones', 'inscripcionFrame', this)">
                 <i class="fas fa-chart-bar"></i>
-                <span class="menu-text">Charts</span>
-                <span class="badge">20</span>
+                <span class="menu-text">Inscripciones</span>
             </li>
-            <li>
+            <li onclick="loadPage('/admin/aprobacion/vista-aprobacion', 'Aprobacion', 'aprobacionFrame', this)">
                 <i class="fas fa-th"></i>
-                <span class="menu-text">Widgets</span>
-                <span class="badge">10</span>
+                <span class="menu-text">Aprobacion</span>
             </li>
-            <li>
+            <li onclick="loadPage('/admin/cupo/vista-cupo', 'Cupos', 'cuposFrame', this)">
                 <i class="fas fa-star"></i>
-                <span class="menu-text">Icons</span>
+                <span class="menu-text">Cupos</span>
                 <span class="badge">0</span>
             </li>
-            <li>
-                <i class="fas fa-map-marker-alt"></i>
-                <span class="menu-text">Maps</span>
-                <span class="badge">0</span>
-            </li>
-            <li>
-                <i class="fas fa-file"></i>
-                <span class="menu-text">Pages</span>
-                <span class="badge">18</span>
-            </li>
-            <li>
-                <i class="fas fa-calendar-alt"></i>
-                <span class="menu-text">Calendar</span>
-            </li>
+        
         </ul>
         
         <button class="buy-btn">
@@ -303,7 +279,20 @@
         <div id="tratamientosContent" class="content-area">
             <iframe id="tratamientosFrame" src="about:blank"></iframe>
         </div>
-        
+        <div id="inscripcionContent" class="content-area">
+            <iframe id="inscripcionFrame" src="about:blank"></iframe>
+
+        </div>
+
+        <div id="aprobacionContent" class="content-area">
+            <iframe id="aprobacionFrame" src="about:blank"></iframe>
+
+        </div>
+
+        <div id="cuposContent" class="content-area">
+            <iframe id="cuposFrame" src="about:blank"></iframe>
+
+        </div>
     </div>
 
     <script>
@@ -352,8 +341,14 @@
                 document.getElementById('tipoTratamientoContent').classList.add('active');
             } else if (frameId === 'tratamientosFrame') {
                 document.getElementById('tratamientosContent').classList.add('active');
+            } else if (frameId === 'inscripcionFrame') {
+                document.getElementById('inscripcionContent').classList.add('active');
+            } else if (frameId === 'aprobacionFrame') {
+                document.getElementById('aprobacionContent').classList.add('active');
+            } else if (frameId === 'cuposFrame') {
+                document.getElementById('cuposContent').classList.add('active');
             }
-            
+
             // Activar el item del menú clickeado
             // Preferimos el menuItem pasado desde el onclick (this). Si no existe, intentamos usar event como fallback.
             if (menuItem && menuItem.classList) {

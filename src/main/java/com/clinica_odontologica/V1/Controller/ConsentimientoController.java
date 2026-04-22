@@ -1,19 +1,17 @@
 package com.clinica_odontologica.V1.Controller;
 
-import com.clinica_odontologica.V1.Model.Entity.Consentimiento;
-import com.clinica_odontologica.V1.Model.Entity.Consulta;
-import com.clinica_odontologica.V1.Model.Entity.Docente;
-import com.clinica_odontologica.V1.Model.Entity.Estudiante;
+
 import com.clinica_odontologica.V1.Service.EstudianteService;
-import com.clinica_odontologica.V1.Model.Entity.Persona;
-import com.clinica_odontologica.V1.Model.Entity.SolicitudInsumo;
-import com.clinica_odontologica.V1.Model.Entity.Tratamiento;
+import com.clinica_odontologica.V1.Model.Entity.*;
+import com.clinica_odontologica.V1.Service.*;
 import com.clinica_odontologica.V1.Model.Dto.ConsentimientoDTO;
 import com.clinica_odontologica.V1.Model.Dto.ConsentimientoDetalleDTO;
 import com.clinica_odontologica.V1.Model.Dto.DocenteDTO;
 import com.clinica_odontologica.V1.Service.ConsentimientoService;
 import com.clinica_odontologica.V1.Service.ConsultaService;
 import com.clinica_odontologica.V1.Service.DocenteService;
+
+
 import com.clinica_odontologica.V1.Service.SolicitudInsumoService;
 import com.clinica_odontologica.V1.Service.TratamientoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +48,18 @@ public class ConsentimientoController {
 
     @Autowired
     private EstudianteService estudianteService;
+
+    @Autowired
+    private InscripcionMateriaService inscripcionMateriaService;
+
+    @Autowired
+    private DetalleConsentimientoService detalleConsentimientoService;
+
+    @Autowired
+    private TratamientoRealizadoService tratamientoRealizadoService;
+
+
+
     @GetMapping("/obtener-docentes")
     @ResponseBody
     public ResponseEntity<?> obtenerDocentes() {
@@ -114,17 +125,16 @@ public class ConsentimientoController {
     @ResponseBody
     public ResponseEntity<?> crearConsentimiento(@RequestBody ConsentimientoDTO dto) {
         try {
-            // Validaciones
+            // Validaciones básicas
             if (dto.getIdConsulta() == null) return badRequest("idConsulta requerido");
             if (dto.getIdDocente() == null) return badRequest("idDocente requerido");
             if (dto.getIdTratamiento() == null) return badRequest("idTratamiento requerido");
             if (dto.getIdEstudiante() == null) return badRequest("idEstudiante requerido");
+            if (dto.getIdMateria() == null) return badRequest("idMateria requerido"); // NUEVA VALIDACIÓN
             if (dto.getExplicacion() == null || dto.getExplicacion().trim().isEmpty())
                 return badRequest("Explicación requerida");
             if (dto.getDecision() == null || (!dto.getDecision().equals("aceptar") && !dto.getDecision().equals("rechazar")))
                 return badRequest("Decisión inválida");
-
-
 
             // Obtener entidades relacionadas
             Consulta consulta = consultaService.obtenerPorId(dto.getIdConsulta())
@@ -133,28 +143,47 @@ public class ConsentimientoController {
                     .orElseThrow(() -> new RuntimeException("Docente no encontrado"));
             Tratamiento tratamiento = tratamientoService.obtenerPorId(dto.getIdTratamiento())
                     .orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
-
             Estudiante estudiante = estudianteService.obtenerPorId(dto.getIdEstudiante())
                     .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
 
-            // Crear consentimiento
+            // ========== NUEVO: OBTENER INSCRIPCIÓN ACTIVA ==========
+            InscripcionMateria inscripcion = inscripcionMateriaService
+                    .obtenerInscripcionActivaPorEstudianteYMateria(dto.getIdEstudiante(), dto.getIdMateria())
+                    .orElseThrow(() -> new RuntimeException("El estudiante no está inscrito activamente en esta materia"));
+
+            // Crear Consentimiento
             Consentimiento consentimiento = new Consentimiento();
             consentimiento.setConsulta(consulta);
             consentimiento.setDocente(docente);
             consentimiento.setTratamiento(tratamiento);
             consentimiento.setEstudiante(estudiante);
-            tratamiento.setNombreTratamiento(dto.getNombreTratamiento());
-            tratamiento.setDescripcionTratamiento(dto.getDescripcionTratamiento());
-            tratamiento.setPrecioTratamiento(dto.getPrecioTratamiento());
             consentimiento.setExplicacion(dto.getExplicacion());
             consentimiento.setDecision(dto.getDecision());
             consentimiento.setFecha(LocalDateTime.now());
             consentimiento.setEstado(true);
 
-            // Guardar consentimiento (primero para tener ID)
             Consentimiento guardado = consentimientoService.guardar(consentimiento);
 
-            // Si hay insumos, guardarlos
+            // ========== CREAR DETALLE CONSENTIMIENTO ==========
+            DetalleConsentimiento detalle = new DetalleConsentimiento();
+            detalle.setConsentimiento(guardado);
+            detalle.setTratamiento(tratamiento);
+            detalle.setCantidadTratamiento(1);   // valor inicial (luego el docente lo cambiará al validar)
+            detalle.setEstadoDetalle(true);      // pendiente de validación
+            detalle = detalleConsentimientoService.guardar(detalle);
+
+            // ========== CREAR TRATAMIENTO REALIZADO (PENDIENTE) ==========
+            TratamientoRealizado realizado = new TratamientoRealizado();
+            realizado.setInscripcionMateria(inscripcion);
+            realizado.setDetalleConsentimiento(detalle);
+            realizado.setTratamiento(tratamiento);
+            realizado.setDocente(docente);
+            realizado.setFechaRealizacion(LocalDate.now());
+            realizado.setValidacion(false);      // aún no validado por el docente
+            realizado.setCantidadTratamiento(1); // temporal
+            tratamientoRealizadoService.guardar(realizado);
+
+            // Guardar insumos (si existen)
             if (dto.getInsumos() != null && !dto.getInsumos().isEmpty()) {
                 List<SolicitudInsumo> insumos = dto.getInsumos().stream()
                     .map(i -> {
@@ -165,7 +194,6 @@ public class ConsentimientoController {
                         return si;
                     })
                     .collect(Collectors.toList());
-                // Necesitas un servicio para guardar insumos
                 solicitudInsumoService.guardarTodos(insumos);
             }
 
@@ -184,6 +212,7 @@ public class ConsentimientoController {
     private ResponseEntity<?> badRequest(String mensaje) {
         return ResponseEntity.badRequest().body(Map.of("error", mensaje));
     }
+
 
     // Obtener consentimiento por consulta
     @GetMapping("/por-consulta/{idConsulta}")

@@ -8,5 +8,7 @@ public interface ClinicaRepository extends JpaRepository<Clinica, Long> {
     
     List<Clinica> findByNombreClinicaContainingIgnoreCase(String nombre);
     
-    List<Clinica> findByTurno(String turno);
+    List<Clinica> findByTurno_NombreTurno(String nombreTurno);
+
+    List<Clinica> findByRote_IdRote(Long idRote);
 }

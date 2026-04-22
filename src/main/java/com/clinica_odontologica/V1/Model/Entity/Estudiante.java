@@ -25,6 +25,9 @@ public class Estudiante {
     @Column(name="gestion",nullable=false,length = 43)
     private String gestion;
 
+    @ManyToOne
+    @JoinColumn(name = "id_rote_actual", nullable = false)
+    private Rote roteActual;
     @Column(name="codigo_estudiante",nullable=false)
     private Integer codigoEstudiante;
 

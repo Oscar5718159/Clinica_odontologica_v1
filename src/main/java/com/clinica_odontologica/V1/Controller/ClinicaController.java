@@ -38,7 +38,7 @@ public class ClinicaController {
             return new ClinicaConDocenteDTO(
                 clinica.getIdClinica(),
                 clinica.getNombreClinica(),
-                clinica.getTurno(),
+                clinica.getTurno().getNombreTurno(),
                 nombreDoctor
             );
         }).collect(Collectors.toList());
